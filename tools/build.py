@@ -36,6 +36,9 @@ def web():
     if d.exists():
         shutil.rmtree(d)
     d.mkdir()
+    bid = hashlib.sha1(s.encode('utf-8')).hexdigest()[:12]
+    s = s.replace('<meta http-equiv="Cache-Control" content="no-cache">', f'<meta http-equiv="Cache-Control" content="no-cache">\n<meta name="wu-build" content="{bid}">', 1)
+    (d / 'build.json').write_text(json.dumps({'b': bid}), encoding='utf-8')
     (d / 'index.html').write_text(s, encoding='utf-8')
     for f in ['shim.js', 'datenschutz.html', 'icon.svg', 'icon-180.png', 'icon-192.png', 'icon-512.png']:
         shutil.copy(R / 'web' / f, d / f)

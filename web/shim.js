@@ -627,6 +627,22 @@
     FM.addListener('notificationReceived', function (e) { var n = e && e.notification; if (n && n.title) toast(n.title + (n.body ? ': ' + n.body : '')); });
   }
 
+  /* ---------- Neue Fassung der Web-Version sofort laden ---------- */
+  (function freshCheck() {
+    var me = document.querySelector('meta[name="wu-build"]'), cur = me && me.content;
+    if (!cur || RET) return;
+    fetch('build.json?t=' + now(), { cache: 'no-store' }).then(function (r) { return r.ok ? r.json() : null; }).then(function (j) {
+      if (!j || !j.b || j.b === cur) { try { sessionStorage.removeItem('wu_fresh'); } catch (e) { } return; }
+      var n = 0; try { n = Number(sessionStorage.getItem('wu_fresh') || 0); sessionStorage.setItem('wu_fresh', n + 1); } catch (e) { }
+      if (n < 2) location.replace(HOME + '?b=' + j.b);
+    }).catch(function () { });
+  })();
+  document.addEventListener('visibilitychange', function () {
+    if (document.visibilityState !== 'visible') return;
+    var me = document.querySelector('meta[name="wu-build"]'), cur = me && me.content; if (!cur) return;
+    fetch('build.json?t=' + now(), { cache: 'no-store' }).then(function (r) { return r.ok ? r.json() : null; }).then(function (j) { if (j && j.b && j.b !== cur) location.replace(HOME + '?b=' + j.b); }).catch(function () { });
+  });
+
   /* ---------- Start ---------- */
   var startP = (async function () {
     if (RET) { var r = await handleReturn(RET); if (r === 'stop') return 'stop'; }
