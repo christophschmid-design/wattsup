@@ -416,7 +416,7 @@
       '<div class="wu-c"><h3 style="margin-top:0">Kosten ' + (m) + '</h3><p style="margin:0"><b>' + usd(sum) + '</b> für ' + lst.length + (lst.length === 1 ? ' Planung' : ' Planungen') + (lim > 0 ? ', Grenze ' + usd(lim) + (sum >= lim ? ' ' + st(false, 'erreicht') : sum >= lim * .8 ? ' ' + st('w', 'über 80 %') : '') : '') + '</p>' +
       (lst.length ? '<table class="wu-tb">' + lst.slice(-6).reverse().map(function (x) { return '<tr><td>' + new Date(x.ts).toLocaleString('de-AT', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' }) + ', ' + (MODELS[x.model] ? MODELS[x.model].n : x.model) + '</td><td>' + usd(x.usd) + '</td></tr>'; }).join('') + '</table>' : '') +
       '<p class="wu-mu">Berechnet aus dem gemeldeten Verbrauch und der Preisliste. Maßgeblich ist die Abrechnung in der Anthropic Console.</p></div>' +
-      (CAPN ? '<div class="wu-c"><h3 style="margin-top:0">Benachrichtigungen</h3>' + chk('wu-nMood', 'Morgengefühl ab ' + ((window.WU_STATE && WU_STATE.mFrom) || 5) + ' Uhr', c.nMood !== false) + chk('wu-nAct', 'Neue Strava-Aktivität bewerten', c.nAct !== false) + chk('wu-nPlan', 'Sonntag 19 Uhr: Wochenplanung', c.nPlan !== false) + '<p class="wu-mu">Widget: Startbildschirm lange drücken → Widgets → WattsUp.</p></div>' : '') + (CAPN ? '<div class="wu-c"><h3 style="margin-top:0">Gewicht aus Google Health ' + (c.hcOk && c.hcOn !== false ? st(true, 'verbunden') : st('w', 'aus')) + '</h3><p class="wu-mu">Übernimmt Gewicht und Körperfett deiner Renpho-Waage automatisch über Health Connect, jeweils die erste Messung des Tages.' + (c.hcVal ? ' Zuletzt: ' + String(c.hcVal.kg).replace('.', ',') + ' kg am ' + c.hcVal.d.slice(8, 10) + '.' + c.hcVal.d.slice(5, 7) + '.' : '') + '</p><button class="wu-b" data-wu="hc">' + (c.hcOk ? 'Jetzt abgleichen' : 'Verbinden') + '</button>' + (c.hcOk ? '<button class="wu-b alt" data-wu="hcx">' + (c.hcOn === false ? 'Einschalten' : 'Ausschalten') + '</button>' : '') + '</div>' : '') + (CAPN ? '<div class="wu-c"><h3 style="margin-top:0">Push für neue Aktivitäten ' + (c.pushOk ? st(true, 'aktiv') : st('w', 'aus')) + '</h3><p class="wu-mu">Sofortige Meldung, sobald eine Aktivität auf Strava landet. Ohne Push prüft die App etwa alle 30 Minuten.</p>' + fld('wu-pushUrl', 'Adresse des Push-Dienstes', c.pushUrl, 'text', 'https://wattsup-push.….workers.dev') + '<button class="wu-b" data-wu="push">' + (c.pushOk ? 'Neu einrichten' : 'Push aktivieren') + '</button>' + (c.pushOk ? '<button class="wu-b alt" data-wu="pusht">Test senden</button>' : '') + '</div>' : '') + (CAPN ? '<div class="wu-c"><h3 style="margin-top:0">App-Version</h3><p style="margin:0" id="wu-ver">' + (UPD ? '1.' + UPD.cur + (UPD.newer ? ', neu verfügbar: 1.' + UPD.latest : ', aktuell') : 'wird geprüft …') + '</p><button class="wu-b alt" data-wu="updchk">Nach Update suchen</button>' + (UPD && UPD.newer ? '<button class="wu-b" data-wu="upd">Jetzt aktualisieren</button>' : '') + '</div>' : '') + '<div class="wu-c"><h3 style="margin-top:0">Daten</h3><p class="wu-mu">Daten aus der Claude-Version übernehmen: dort im Menü „Daten für WattsUp exportieren“ und die Datei hier wählen.</p><input type="file" id="wu-imp" accept=".json,.txt,application/json,text/plain"><button class="wu-b alt" data-wu="exp">Sicherung exportieren</button></div>' +
+      (CAPN ? '<div class="wu-c"><h3 style="margin-top:0">Benachrichtigungen</h3>' + chk('wu-nMood', 'Morgengefühl ab ' + ((window.WU_STATE && WU_STATE.mFrom) || 5) + ' Uhr', c.nMood !== false) + chk('wu-nAct', 'Neue Strava-Aktivität bewerten', c.nAct !== false) + chk('wu-nPlan', 'Sonntag 19 Uhr: Wochenplanung', c.nPlan !== false) + '<p class="wu-mu">Widget: Startbildschirm lange drücken → Widgets → WattsUp.</p></div>' : '') + (CAPN ? '<div class="wu-c"><h3 style="margin-top:0">Gewicht aus Google Health ' + (c.hcOk && c.hcOn !== false ? st(true, 'verbunden') : st('w', 'aus')) + '</h3><p class="wu-mu">Übernimmt Gewicht und Körperfett der Renpho-Waage sowie Schlaf, Ruhepuls und HRV der Uhr automatisch über Health Connect.' + (c.hcOk && c.hcScope !== 2 ? ' <b>Neu: Schlaf, Ruhepuls und HRV. Bitte einmal „Verbinden“ tippen und alles erlauben.</b>' : '') + '' + (c.hcVal ? ' Zuletzt: ' + String(c.hcVal.kg).replace('.', ',') + ' kg am ' + c.hcVal.d.slice(8, 10) + '.' + c.hcVal.d.slice(5, 7) + '.' : '') + '</p><button class="wu-b" data-wu="hc">' + (c.hcOk && c.hcScope === 2 ? 'Jetzt abgleichen' : 'Verbinden') + '</button>' + (c.hcOk ? '<button class="wu-b alt" data-wu="hcx">' + (c.hcOn === false ? 'Einschalten' : 'Ausschalten') + '</button>' : '') + '</div>' : '') + (CAPN ? '<div class="wu-c"><h3 style="margin-top:0">Push für neue Aktivitäten ' + (c.pushOk ? st(true, 'aktiv') : st('w', 'aus')) + '</h3><p class="wu-mu">Sofortige Meldung, sobald eine Aktivität auf Strava landet. Ohne Push prüft die App etwa alle 30 Minuten.</p>' + fld('wu-pushUrl', 'Adresse des Push-Dienstes', c.pushUrl, 'text', 'https://wattsup-push.….workers.dev') + '<button class="wu-b" data-wu="push">' + (c.pushOk ? 'Neu einrichten' : 'Push aktivieren') + '</button>' + (c.pushOk ? '<button class="wu-b alt" data-wu="pusht">Test senden</button>' : '') + '</div>' : '') + (CAPN ? '<div class="wu-c"><h3 style="margin-top:0">App-Version</h3><p style="margin:0" id="wu-ver">' + (UPD ? '1.' + UPD.cur + (UPD.newer ? ', neu verfügbar: 1.' + UPD.latest : ', aktuell') : 'wird geprüft …') + '</p><button class="wu-b alt" data-wu="updchk">Nach Update suchen</button>' + (UPD && UPD.newer ? '<button class="wu-b" data-wu="upd">Jetzt aktualisieren</button>' : '') + '</div>' : '') + '<div class="wu-c"><h3 style="margin-top:0">Daten</h3><p class="wu-mu">Daten aus der Claude-Version übernehmen: dort im Menü „Daten für WattsUp exportieren“ und die Datei hier wählen.</p><input type="file" id="wu-imp" accept=".json,.txt,application/json,text/plain"><button class="wu-b alt" data-wu="exp">Sicherung exportieren</button></div>' +
       '<button class="wu-b" data-wu="save">Speichern</button><button class="wu-b alt" data-wu="close">Schließen</button><p class="wu-mu">WattsUp ' + VER + (CAPN ? ', Android' : ', Browser') + '</p>';
   }
   function saveForm() {
@@ -558,13 +558,13 @@
       var av = await HC.isAvailable();
       if (!av || !av.available) { if (force) toast('Health Connect ist auf diesem Handy nicht verfügbar' + (av && av.reason ? ': ' + av.reason : '.')); return; }
       if (force) {
-        var st = null; try { st = await HC.requestAuthorization({ read: ['weight', 'bodyFat'], write: [] }); } catch (e) { }
+        var st = null; try { st = await HC.requestAuthorization({ read: ['weight', 'bodyFat', 'sleep', 'restingHeartRate', 'heartRateVariability'], write: [] }); } catch (e) { }
         if (!st || (st.readAuthorized || []).indexOf('weight') < 0) {
           /* Manche Versionen melden den Status ungenau: Lesen trotzdem versuchen */
           try { await HC.readSamples({ dataType: 'weight', startDate: new Date(now() - 864e5).toISOString(), endDate: new Date().toISOString(), limit: 1 }); }
           catch (e) { toast('Kein Zugriff auf das Gewicht. Bitte in Health Connect bei WattsUp „Gewicht“ erlauben.'); try { if (HC.openHealthConnectSettings) await HC.openHealthConnectSettings(); } catch (x) { } return; }
         }
-        setCfg({ hcOk: now(), hcOn: true });
+        setCfg({ hcOk: now(), hcOn: true, hcScope: 2 });
       }
       var r = await HC.readSamples({ dataType: 'weight', startDate: new Date(now() - 30 * 864e5).toISOString(), endDate: new Date().toISOString(), limit: 300, ascending: true });
       var by = {}, bf = {};
@@ -576,6 +576,7 @@
       var list = Object.keys(by).concat(Object.keys(bf)).filter(function (d, i, a) { return a.indexOf(d) === i; }).sort().map(function (d) { return [d, by[d] != null ? by[d] : null, bf[d] != null ? bf[d] : null]; });
       for (var i = 0; i < 50 && !window.WU_WT; i++) await new Promise(function (ok) { setTimeout(ok, 300); });
       var n = window.WU_WT ? await window.WU_WT(list) : 0;
+      try { await recSync(); } catch (e) { }
       var wl = list.filter(function (x) { return x[1] != null; }), last = wl.length ? wl[wl.length - 1] : null;
       setCfg({ hcLast: now(), hcVal: last ? { d: last[0], kg: Math.round(last[1] * 10) / 10 } : null });
       if (n) toast(n === 1 ? 'Neues Gewicht übernommen: ' + String(Math.round(last[1] * 10) / 10).replace('.', ',') + ' kg' : n + ' Gewichtswerte übernommen.');
@@ -584,6 +585,39 @@
     finally { hcBusy = false; }
   }
   WU.hcSync = hcSync;
+  /* Schlaf, Ruhepuls, HRV */
+  async function hcRead(type, days) {
+    try { var r = await HC.readSamples({ dataType: type, startDate: new Date(now() - days * 864e5).toISOString(), endDate: new Date().toISOString(), limit: 1000, ascending: true }); return (r && r.samples) || []; } catch (e) { return []; }
+  }
+  function stg(x) { return String(x.stage || x.sleepState || x.type || x.state || '').toLowerCase(); }
+  function mins(a, b) { return Math.max(0, (new Date(b) - new Date(a)) / 60000); }
+  async function recSync() {
+    var out = {};
+    function O(d) { return out[d] = out[d] || { d: d }; }
+    var sl = await hcRead('sleep', 35);
+    sl.forEach(function (x) {
+      var end = x.endDate || x.startDate; if (!end) return;
+      var o = O(dayOf(end)), segs = Array.isArray(x.stages) && x.stages.length ? x.stages : (x.sleepState ? [x] : null);
+      if (segs) {
+        segs.forEach(function (g) {
+          var a = g.startDate || g.start || g.startTime, b = g.endDate || g.end || g.endTime, m = a && b ? mins(a, b) : 0, k = stg(g);
+          if (/awake|out/.test(k)) o.awake = (o.awake || 0) + m;
+          else if (/inbed|in_bed/.test(k)) { }
+          else { o.sl = (o.sl || 0) + m; if (/deep/.test(k)) { o.deep = (o.deep || 0) + m; o.st = true; } else if (/rem/.test(k)) { o.rem = (o.rem || 0) + m; o.st = true; } else if (/light/.test(k)) { o.light = (o.light || 0) + m; o.st = true; } }
+        });
+      } else { o.sl = (o.sl || 0) + mins(x.startDate, x.endDate); }
+    });
+    var rh = await hcRead('restingHeartRate', 35), rb = {};
+    rh.forEach(function (x) { var d = dayOf(x.startDate); if (x.value > 25 && x.value < 120) rb[d] = rb[d] == null ? x.value : Math.min(rb[d], x.value); });
+    Object.keys(rb).forEach(function (d) { O(d).rhr = Math.round(rb[d]); });
+    var hv = await hcRead('heartRateVariability', 35), hb = {};
+    hv.forEach(function (x) { var d = dayOf(x.startDate); if (x.value > 3 && x.value < 300) (hb[d] = hb[d] || []).push(x.value); });
+    Object.keys(hb).forEach(function (d) { O(d).hrv = Math.round(hb[d].reduce(function (a, b) { return a + b; }, 0) / hb[d].length); });
+    var list = Object.keys(out).sort().map(function (d) { var o = out[d]; ['sl', 'deep', 'rem', 'light', 'awake'].forEach(function (k) { if (o[k] != null) o[k] = Math.round(o[k]); }); return o; });
+    for (var i = 0; i < 50 && !window.WU_REC; i++) await new Promise(function (ok) { setTimeout(ok, 300); });
+    if (window.WU_REC && list.length) await window.WU_REC(list);
+    setCfg({ recLast: now(), recN: list.length });
+  }
   if (CAPN) {
     setTimeout(function () { hcSync(false); }, 4000);
     document.addEventListener('visibilitychange', function () { if (document.visibilityState === 'visible') hcSync(false); });

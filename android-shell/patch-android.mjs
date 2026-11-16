@@ -106,6 +106,9 @@ if (fs.existsSync('google-services.json')) {
 {
   let mh = fs.readFileSync(man, 'utf8');
   if (!mh.includes('android.permission.health.READ_WEIGHT')) mh = mh.replace('</manifest>', '    <uses-permission android:name="android.permission.health.READ_WEIGHT" />\n</manifest>');
+  if (!mh.includes('android.permission.health.READ_SLEEP')) mh = mh.replace('</manifest>', '    <uses-permission android:name="android.permission.health.READ_SLEEP" />\n</manifest>');
+  if (!mh.includes('android.permission.health.READ_RESTING_HEART_RATE')) mh = mh.replace('</manifest>', '    <uses-permission android:name="android.permission.health.READ_RESTING_HEART_RATE" />\n</manifest>');
+  if (!mh.includes('android.permission.health.READ_HEART_RATE_VARIABILITY')) mh = mh.replace('</manifest>', '    <uses-permission android:name="android.permission.health.READ_HEART_RATE_VARIABILITY" />\n</manifest>');
   if (!mh.includes('android.permission.health.READ_BODY_FAT')) mh = mh.replace('</manifest>', '    <uses-permission android:name="android.permission.health.READ_BODY_FAT" />\n</manifest>');
   if (!mh.includes('com.google.android.apps.healthdata')) mh = mh.replace('</manifest>', '    <queries>\n        <package android:name="com.google.android.apps.healthdata" />\n    </queries>\n</manifest>');
   if (!mh.includes('ACTION_SHOW_PERMISSIONS_RATIONALE')) mh = mh.replace('</activity>', `    <intent-filter>
