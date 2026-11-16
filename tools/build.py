@@ -19,8 +19,10 @@ def rep(s, old, new, count=1):
 
 def web():
     s = SRC
-    head = ('<link rel="manifest" href="manifest.webmanifest">\n'
-            '<script src="shim.js"></script>\n')
+    import hashlib
+    hv = hashlib.sha1((R / 'web' / 'shim.js').read_bytes()).hexdigest()[:10]
+    head = ('<meta http-equiv="Cache-Control" content="no-cache">\n<link rel="manifest" href="manifest.webmanifest">\n'
+            f'<script src="shim.js?v={hv}"></script>\n')
     s = rep(s, '<title>WattsUp</title>', '<title>WattsUp</title>\n' + head)
     s = rep(s, MENU_ANCHOR, '<li data-k="wu" role="button" tabindex="0"><b>Verbindungen und Kosten</b>'
             '<span>Strava, Google, Claude-Schlüssel und Kosten der Planung</span></li>' + MENU_ANCHOR)
