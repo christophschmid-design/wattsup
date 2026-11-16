@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "556333908068",
+    "project_id": "wattsup-514916",
+    "storage_bucket": "wattsup-514916.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:556333908068:android:ef19ad15394405375fdf71",
+        "android_client_info": {
+          "package_name": "at.christophschmid.wattsup"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "556333908068-n4d0cgoiofebr6869e2svmcift23m21g.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB9Hfe50ef-FpX-8BNwsfsFLCQ9kFDFAcQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "556333908068-n4d0cgoiofebr6869e2svmcift23m21g.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
