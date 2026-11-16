@@ -3,6 +3,7 @@ package at.christophschmid.wattsup;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.view.View;
+import android.view.WindowManager;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
@@ -24,11 +25,15 @@ public class MainActivity extends BridgeActivity {
         WindowInsetsControllerCompat ctl = new WindowInsetsControllerCompat(getWindow(), getWindow().getDecorView());
         ctl.setAppearanceLightStatusBars(false);
         ctl.setAppearanceLightNavigationBars(false);
+        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
+        final int bars = WindowInsetsCompat.Type.systemBars() | WindowInsetsCompat.Type.displayCutout();
         ViewCompat.setOnApplyWindowInsetsListener(host, (v, insets) -> {
-            Insets b = insets.getInsets(WindowInsetsCompat.Type.systemBars() | WindowInsetsCompat.Type.displayCutout());
+            Insets b = insets.getInsets(bars);
             Insets ime = insets.getInsets(WindowInsetsCompat.Type.ime());
             v.setPadding(b.left, b.top, b.right, Math.max(b.bottom, ime.bottom));
-            return WindowInsetsCompat.CONSUMED;
+            // Nur die Leisten als erledigt markieren, Tastatur-Infos weiterreichen,
+            // damit die Webansicht Eingabefelder normal bedienen kann.
+            return new WindowInsetsCompat.Builder(insets).setInsets(bars, Insets.NONE).build();
         });
         ViewCompat.requestApplyInsets(host);
     }
