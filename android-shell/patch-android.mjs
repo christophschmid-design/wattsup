@@ -1,9 +1,13 @@
 // Passt das von Capacitor erzeugte Android-Projekt an: Rücksprung-Adresse für die
-// Google-Anmeldung, Signatur, Versionsnummer und App-Symbol.
+// Google-Anmeldung, Widget, Updates, Signatur, Versionsnummer und App-Symbol.
 import fs from 'node:fs';
 import path from 'node:path';
 
 const A = 'android/app';
+const PKG = 'at/christophschmid/wattsup';
+function must(ok, msg) { if (!ok) { console.error('Anpassung fehlgeschlagen: ' + msg); process.exit(1); } }
+
+// Manifest
 const man = `${A}/src/main/AndroidManifest.xml`;
 let m = fs.readFileSync(man, 'utf8');
 if (!m.includes('android:scheme="wattsup"')) {
@@ -13,10 +17,21 @@ if (!m.includes('android:scheme="wattsup"')) {
                 <category android:name="android.intent.category.BROWSABLE" />
                 <data android:scheme="wattsup" />
             </intent-filter>
-        </activity>`);
-  fs.writeFileSync(man, m);
+        </activity>
+        <receiver android:name=".WattsUpWidget" android:exported="false" android:label="WattsUp">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data android:name="android.appwidget.provider" android:resource="@xml/wattsup_widget_info" />
+        </receiver>`);
 }
+for (const p of ['android.permission.REQUEST_INSTALL_PACKAGES', 'android.permission.POST_NOTIFICATIONS']) {
+  if (!m.includes(p)) m = m.replace('</manifest>', `    <uses-permission android:name="${p}" />\n</manifest>`);
+}
+fs.writeFileSync(man, m);
+must(m.includes('WattsUpWidget') && m.includes('REQUEST_INSTALL_PACKAGES'), 'Manifest');
 
+// Gradle: Signatur, Version, Hintergrund-Plugin
 const g = `${A}/build.gradle`;
 let b = fs.readFileSync(g, 'utf8');
 b = b.replace(/versionCode \d+/, 'versionCode Integer.parseInt(System.getenv("VCODE") ?: "1")');
@@ -33,14 +48,28 @@ if (!b.includes('signingConfigs')) {
     buildTypes {`);
   b = b.replace(/release \{\s*\n(\s*)minifyEnabled/, (s, ind) => `release {\n${ind}signingConfig signingConfigs.release\n${ind}minifyEnabled`);
 }
-fs.writeFileSync(g, b);
-if (!b.includes('signingConfig signingConfigs.release')) { console.error('Signatur nicht eingetragen'); process.exit(1); }
-
-const src = 'res/android', dst = `${A}/src/main/res`;
-for (const d of fs.readdirSync(src)) {
-  fs.mkdirSync(path.join(dst, d), { recursive: true });
-  for (const f of fs.readdirSync(path.join(src, d))) fs.copyFileSync(path.join(src, d, f), path.join(dst, d, f));
+if (!b.includes('background-runner/android/src/main/libs')) {
+  b = b.replace(/\nrepositories \{/, `\nrepositories {\n    flatDir {\n        dirs '../../node_modules/@capacitor/background-runner/android/src/main/libs', 'libs'\n    }`);
 }
+fs.writeFileSync(g, b);
+must(b.includes('signingConfig signingConfigs.release'), 'Signatur');
+must(b.includes('background-runner/android/src/main/libs'), 'flatDir für Hintergrund-Plugin');
+
+// Java-Code
+const jd = `${A}/src/main/java/${PKG}`;
+fs.mkdirSync(jd, { recursive: true });
+for (const f of fs.readdirSync('native/java')) fs.copyFileSync(`native/java/${f}`, `${jd}/${f}`);
+
+// Ressourcen: App-Symbol, Widget
+const dst = `${A}/src/main/res`;
+function copyTree(src) {
+  for (const d of fs.readdirSync(src)) {
+    fs.mkdirSync(path.join(dst, d), { recursive: true });
+    for (const f of fs.readdirSync(path.join(src, d))) fs.copyFileSync(path.join(src, d, f), path.join(dst, d, f));
+  }
+}
+copyTree('res/android');
+copyTree('native/res');
 const ad = `${dst}/mipmap-anydpi-v26`;
 fs.mkdirSync(ad, { recursive: true });
 const xml = `<?xml version="1.0" encoding="utf-8"?>
@@ -51,4 +80,10 @@ const xml = `<?xml version="1.0" encoding="utf-8"?>
 `;
 fs.writeFileSync(`${ad}/ic_launcher.xml`, xml);
 fs.writeFileSync(`${ad}/ic_launcher_round.xml`, xml);
+
+// Download-Ordner für Updates freigeben
+const fp = `${dst}/xml/file_paths.xml`;
+let x = fs.existsSync(fp) ? fs.readFileSync(fp, 'utf8') : '<?xml version="1.0" encoding="utf-8"?>\n<paths xmlns:android="http://schemas.android.com/apk/res/android">\n</paths>\n';
+if (!x.includes('wu_cache')) x = x.replace('</paths>', '    <cache-path name="wu_cache" path="." />\n</paths>');
+fs.writeFileSync(fp, x);
 console.log('Android-Projekt angepasst');

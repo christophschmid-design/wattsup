@@ -5,8 +5,31 @@
   "server": {
     "url": "https://christophschmid-design.github.io/wattsup/",
     "androidScheme": "https",
-    "allowNavigation": ["christophschmid-design.github.io", "www.strava.com", "strava.com", "*.strava.com"]
+    "allowNavigation": [
+      "christophschmid-design.github.io",
+      "www.strava.com",
+      "strava.com",
+      "*.strava.com"
+    ]
   },
-  "android": { "backgroundColor": "#0f2236" },
-  "plugins": { "CapacitorHttp": { "enabled": true } }
+  "android": {
+    "backgroundColor": "#0f2236"
+  },
+  "plugins": {
+    "CapacitorHttp": {
+      "enabled": true
+    },
+    "BackgroundRunner": {
+      "label": "at.christophschmid.wattsup.check",
+      "src": "runners/check.js",
+      "event": "check",
+      "repeat": true,
+      "interval": 30,
+      "autoStart": true
+    },
+    "LocalNotifications": {
+      "smallIcon": "ic_stat_wattsup",
+      "iconColor": "#3DDC97"
+    }
+  }
 }

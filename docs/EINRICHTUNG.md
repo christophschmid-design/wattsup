@@ -91,3 +91,13 @@ Neue Versionen: Änderungen an Inhalt und Funktionen kommen beim nächsten Start
 ## Surface oder anderer PC
 
 Web-Version in Edge öffnen → Menü (…) → **Apps** → **Diese Website als App installieren**. Schlüssel einmal eintragen, die Daten kommen über Google.
+
+## Benachrichtigungen, Widget und Updates (Android)
+
+- **Benachrichtigungen:** Beim ersten Start fragt Android, ob WattsUp Mitteilungen senden darf → **Zulassen**. Einstellbar im Menü unter Verbindungen und Kosten:
+  - Morgengefühl ab 5 Uhr (entfällt, sobald es eingetragen ist)
+  - Neue Strava-Aktivität bewerten (Prüfung etwa alle 30 Minuten)
+  - Sonntag 19 Uhr: Wochenplanung
+- **Widget:** Startbildschirm lange drücken → **Widgets** → **WattsUp** auf den Startbildschirm ziehen. Es zeigt Tagesampel, heutige Einheit, Form und Fitness.
+- **Updates:** Gibt es eine neue App-Version, erscheint unten in WattsUp ein Hinweis. **Jetzt aktualisieren** lädt sie herunter und öffnet die Installation. Beim ersten Mal fragt Android einmalig, ob WattsUp Apps installieren darf.
+- Falls die Benachrichtigungen bei neuen Aktivitäten ausbleiben: In den Android-Einstellungen bei WattsUp unter **Akku** „Nicht eingeschränkt“ wählen.

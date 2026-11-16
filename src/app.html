@@ -1912,6 +1912,10 @@ function mc(xs,arr,col,title,unit,xl){var pts=[],i;for(i=0;i<xs.length;i++)if(ar
 var dec=unit==='km/h'?1:0,mn=Infinity;pts.forEach(function(p){if(p[1]<mn)mn=p[1]});return'<h3>'+E(title)+' <small class="mu">'+(title==='Höhe'?IC.fmtn(mn,0)+' bis '+IC.fmtn(mx,0)+' m Seehöhe':'Ø '+IC.fmtn(c?sm/c:0,dec)+' · max. '+IC.fmtn(mx,dec)+' '+E(unit))+'</small></h3>'+IC.ph({id:'mc-'+IC.mg+'-'+title,grp:IC.mg,h:130,aria:title,x:{type:'num',dom:[xs[0],xs[xs.length-1]],fmt:xl,tip:xl},series:[{n:title,c:col,k:title==='Höhe'?'area':'line',op:title==='Höhe'?.2:null,w:1.6,dec:dec,u:unit,pts:pts}],tol:Infinity})}
 var _rall6=rall;rall=function(){_rall6();try{rIC()}catch(e){logErr('App','Diagramme',e)}};
 
+/* WattsUp: Zustand für Widget und Benachrichtigungen */
+function wuState(){var t=iso(new Date()),r=rdy(),p=PM[t],tm=PM[addD(t,1)],X=window.ACT||[],dn=X.filter(function(x){return x.day===t}),n=S?S.fm.length:0;
+return{ts:Date.now(),day:t,lv:r?r.lv:-1,amp:r?RL3[r.lv]:'',rec:r?r.rec:'',today:p?p[2]:'',tss:p?p[1]:0,done:dn.map(function(x){return x.name}).join(', '),tomorrow:tm?tm[2]:'',form:n?Math.round(S.fm[n-1]):null,fit:n?Math.round(S.ct[n-1]):null,md:Object.keys(MOOD).filter(function(d){return d>=t}),moodOn:CF.mood!==false,mFrom:Number(CF.mFrom)||5}}
+var _rallW=rall;rall=function(){_rallW();try{window.WU_STATE=wuState();if(window.WU_SYNC)window.WU_SYNC(window.WU_STATE)}catch(e){}};
 function tabRefresh(t,force){var n=Date.now();if(!force&&LT[t]&&n-LT[t]<20000)return Promise.resolve();LT[t]=n;lastV=n;var b=$('rf');b.classList.add('sp');
 if(t==='plan'||t==='saison'||force)wx(force);
 return H.live().then(function(){if(t==='analyse'||t==='saison'||force)return lp()}).catch(function(){}).then(function(){b.classList.remove('sp');rall();if(t==='einheiten')vzAll()})}

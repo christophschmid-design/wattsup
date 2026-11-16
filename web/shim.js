@@ -4,7 +4,7 @@
    Die App selbst bleibt unverändert. */
 (function () {
   'use strict';
-  var VER = 'web-1';
+  var VER = 'web-2';
   var HOME = location.origin + location.pathname.replace(/index\.html$/, '');
   var CAPN = !!(window.Capacitor && window.Capacitor.isNativePlatform && window.Capacitor.isNativePlatform());
   var PL = (window.Capacitor && window.Capacitor.Plugins) || {};
@@ -387,11 +387,12 @@
     '.wu-st{display:inline-block;font-size:.78rem;font-weight:700;padding:3px 9px;border-radius:999px;margin-left:6px}.wu-ok{background:#d9f5e8;color:#0b7a4b}.wu-no{background:#fde4df;color:#b2361f}.wu-wa{background:#fff1d6;color:#9a6200}' +
     '.wu-x{float:right;border:0;background:#e3ebf5;border-radius:50%;width:34px;height:34px;font-size:18px;cursor:pointer;color:#0f2236}.wu-cp{font:12px ui-monospace,monospace;background:#e9eef4;padding:6px 8px;border-radius:8px;word-break:break-all;display:block;margin-top:4px}' +
     '.wu-t{position:fixed;left:50%;top:calc(env(safe-area-inset-top,0px) + 14px);transform:translateX(-50%);background:#0f2236;color:#fff;padding:10px 16px;border-radius:12px;font:14px system-ui;z-index:10000;max-width:88vw;box-shadow:0 6px 18px rgba(0,0,0,.3)}' +
-    '.wu-tb{width:100%;border-collapse:collapse;font-size:.86rem}.wu-tb td{padding:4px 0;border-bottom:1px solid #e3e9f0}.wu-tb td:last-child{text-align:right}';
+    '.wu-upd{position:fixed;left:12px;right:12px;bottom:calc(env(safe-area-inset-bottom,0px) + 14px);z-index:9998;background:#0f2236;color:#fff;border-radius:16px;padding:12px 12px 12px 16px;display:flex;align-items:center;gap:10px;box-shadow:0 8px 24px rgba(0,0,0,.35);font:14px system-ui}.wu-upd>div{flex:1}.wu-upd b{display:block}.wu-upd span{color:#9fb3c8;font-size:12px}.wu-upd .wu-b{margin:0;background:#3ddc97;color:#0f2236}.wu-upd .wu-x{background:#1d3550;color:#fff;width:30px;height:30px;font-size:16px}.wu-tb{width:100%;border-collapse:collapse;font-size:.86rem}.wu-tb td{padding:4px 0;border-bottom:1px solid #e3e9f0}.wu-tb td:last-child{text-align:right}';
   function addCss() { if (document.getElementById('wu-css')) return; var s = document.createElement('style'); s.id = 'wu-css'; s.textContent = CSS; document.head.appendChild(s); }
   var tT = null;
   function toast(m) { addCss(); var t = document.querySelector('.wu-t'); if (!t) { t = document.createElement('div'); t.className = 'wu-t'; document.body.appendChild(t); } t.textContent = m; t.hidden = false; clearTimeout(tT); tT = setTimeout(function () { t.hidden = true; }, 4000); }
   function st(ok, txt) { return '<span class="wu-st ' + (ok === true ? 'wu-ok' : ok === 'w' ? 'wu-wa' : 'wu-no') + '">' + txt + '</span>'; }
+  function chk(id, lab, on) { return '<label style="display:flex;align-items:center;gap:10px;font-size:.95rem;color:inherit;margin:10px 0"><input type="checkbox" id="' + id + '"' + (on ? ' checked' : '') + ' style="width:22px;height:22px">' + lab + '</label>'; }
   function fld(id, lab, val, type, ph) { return '<label for="' + id + '">' + lab + '</label><input id="' + id + '" type="' + (type || 'text') + '" value="' + E(val || '') + '" placeholder="' + E(ph || '') + '" autocomplete="off" autocapitalize="off" spellcheck="false">'; }
   function render(note) {
     var c = cfg(), m = monthKey(now()), lst = costs().filter(function (x) { return monthKey(x.ts) === m; }), sum = monthSum(), lim = Number(c.limit || 0);
@@ -415,13 +416,16 @@
       '<div class="wu-c"><h3 style="margin-top:0">Kosten ' + (m) + '</h3><p style="margin:0"><b>' + usd(sum) + '</b> für ' + lst.length + (lst.length === 1 ? ' Planung' : ' Planungen') + (lim > 0 ? ', Grenze ' + usd(lim) + (sum >= lim ? ' ' + st(false, 'erreicht') : sum >= lim * .8 ? ' ' + st('w', 'über 80 %') : '') : '') + '</p>' +
       (lst.length ? '<table class="wu-tb">' + lst.slice(-6).reverse().map(function (x) { return '<tr><td>' + new Date(x.ts).toLocaleString('de-AT', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' }) + ', ' + (MODELS[x.model] ? MODELS[x.model].n : x.model) + '</td><td>' + usd(x.usd) + '</td></tr>'; }).join('') + '</table>' : '') +
       '<p class="wu-mu">Berechnet aus dem gemeldeten Verbrauch und der Preisliste. Maßgeblich ist die Abrechnung in der Anthropic Console.</p></div>' +
-      '<div class="wu-c"><h3 style="margin-top:0">Daten</h3><p class="wu-mu">Daten aus der Claude-Version übernehmen: dort im Menü „Daten für WattsUp exportieren“ und die Datei hier wählen.</p><input type="file" id="wu-imp" accept=".json,.txt,application/json,text/plain"><button class="wu-b alt" data-wu="exp">Sicherung exportieren</button></div>' +
+      (CAPN ? '<div class="wu-c"><h3 style="margin-top:0">Benachrichtigungen</h3>' + chk('wu-nMood', 'Morgengefühl ab ' + ((window.WU_STATE && WU_STATE.mFrom) || 5) + ' Uhr', c.nMood !== false) + chk('wu-nAct', 'Neue Strava-Aktivität bewerten', c.nAct !== false) + chk('wu-nPlan', 'Sonntag 19 Uhr: Wochenplanung', c.nPlan !== false) + '<p class="wu-mu">Widget: Startbildschirm lange drücken → Widgets → WattsUp.</p></div>' : '') + (CAPN ? '<div class="wu-c"><h3 style="margin-top:0">App-Version</h3><p style="margin:0" id="wu-ver">' + (UPD ? '1.' + UPD.cur + (UPD.newer ? ', neu verfügbar: 1.' + UPD.latest : ', aktuell') : 'wird geprüft …') + '</p><button class="wu-b alt" data-wu="updchk">Nach Update suchen</button>' + (UPD && UPD.newer ? '<button class="wu-b" data-wu="upd">Jetzt aktualisieren</button>' : '') + '</div>' : '') + '<div class="wu-c"><h3 style="margin-top:0">Daten</h3><p class="wu-mu">Daten aus der Claude-Version übernehmen: dort im Menü „Daten für WattsUp exportieren“ und die Datei hier wählen.</p><input type="file" id="wu-imp" accept=".json,.txt,application/json,text/plain"><button class="wu-b alt" data-wu="exp">Sicherung exportieren</button></div>' +
       '<button class="wu-b" data-wu="save">Speichern</button><button class="wu-b alt" data-wu="close">Schließen</button><p class="wu-mu">WattsUp ' + VER + (CAPN ? ', Android' : ', Browser') + '</p>';
   }
   function saveForm() {
     function v(id) { var e = document.getElementById(id); return e ? e.value.trim() : undefined; }
     var lim = parseFloat(String(v('wu-limit') || '0').replace(',', '.'));
+    function cb(id) { var e = document.getElementById(id); return e ? e.checked : undefined; }
+    if (CAPN && document.getElementById('wu-nMood')) setCfg({ nMood: cb('wu-nMood'), nAct: cb('wu-nAct'), nPlan: cb('wu-nPlan') });
     setCfg({ stId: v('wu-stId'), stSec: v('wu-stSec'), gId: v('wu-gId'), gSec: v('wu-gSec'), cal: v('wu-cal') || CAL0, aKey: v('wu-aKey'), model: v('wu-model'), once: v('wu-once') || null, limit: isNaN(lim) ? 0 : lim });
+    lastSig = ''; if (window.WU_STATE && window.WU_SYNC) window.WU_SYNC(window.WU_STATE);
   }
   var WU = {
     open: function (note) { addCss(); var o = document.getElementById('wu-ov'); if (!o) { o = document.createElement('div'); o.id = 'wu-ov'; o.className = 'wu-ov'; document.body.appendChild(o); o.addEventListener('click', onClick); o.addEventListener('change', onChange); } o.innerHTML = '<div class="wu-sh" role="dialog" aria-modal="true">' + render(note) + '</div>'; o.hidden = false; },
@@ -441,6 +445,8 @@
     if (k === 'gx') { ls('wu_google', null); syncSt('aus'); WU.open(); }
     if (k === 'sync') { await pull(); await push(); WU.open(); toast(SYNC.st === 'ok' ? 'Abgeglichen.' : 'Abgleich fehlgeschlagen.'); }
     if (k === 'exp') exportData();
+    if (k === 'updchk') { await checkUpdate(true); WU.open(); if (UPD && !UPD.newer) toast('WattsUp ist aktuell.'); }
+    if (k === 'upd') { WU.close(); doUpdate(document.getElementById('wu-upd')); }
   }
   async function onChange(e) {
     if (e.target.id !== 'wu-imp' || !e.target.files || !e.target.files[0]) return;
@@ -467,6 +473,97 @@
     if (!t) return; e.preventDefault(); e.stopImmediatePropagation(); WU.open();
   }, true);
 
+  /* ---------- Android: Widget, Benachrichtigungen, Updates ---------- */
+  var NAT = PL.WattsUpNative, LN = PL.LocalNotifications, PREF = PL.Preferences, BR = PL.BackgroundRunner;
+  var RUN = 'at.christophschmid.wattsup.check', APK = 'https://github.com/christophschmid-design/wattsup/releases/download/apk/wattsup.apk';
+  function nOn(k) { return cfg()[k] !== false; }
+  var lastSig = '', lastSync = 0, permAsked = false;
+  async function notifPerm() {
+    if (!LN) return false;
+    try { var p = await LN.checkPermissions(); if (p.display === 'granted') return true; if (permAsked) return false; permAsked = true; p = await LN.requestPermissions(); return p.display === 'granted'; } catch (e) { return false; }
+  }
+  function at(day, h, m) { var d = new Date(day + 'T00:00:00'); d.setHours(h, m || 0, 0, 0); return d; }
+  async function schedule(st) {
+    if (!LN || !(await notifPerm())) return;
+    var ids = [], i; for (i = 0; i < 8; i++) ids.push({ id: 100 + i }); ids.push({ id: 200 });
+    try { await LN.cancel({ notifications: ids }); } catch (e) { }
+    var list = [], nowT = now();
+    if (nOn('nMood') && st.moodOn) {
+      for (i = 0; i < 8; i++) {
+        var d = new Date(); d.setDate(d.getDate() + i);
+        var day = d.getFullYear() + '-' + ('0' + (d.getMonth() + 1)).slice(-2) + '-' + ('0' + d.getDate()).slice(-2);
+        var t = at(day, st.mFrom || 5, 0);
+        if (t.getTime() <= nowT || (st.md || []).indexOf(day) >= 0) continue;
+        list.push({ id: 100 + i, title: 'Guten Morgen! Wie fühlst du dich?', body: 'Kurz das Morgengefühl eintragen, dann passt die Tagesampel.', schedule: { at: t, allowWhileIdle: true }, extra: { k: 'mood' }, smallIcon: 'ic_stat_wattsup' });
+      }
+    }
+    if (nOn('nPlan')) {
+      var s = new Date(); s.setDate(s.getDate() + ((7 - s.getDay()) % 7)); s.setHours(19, 0, 0, 0); if (s.getTime() <= nowT) s.setDate(s.getDate() + 7);
+      list.push({ id: 200, title: 'Wochenplanung', body: 'Zeit, die nächste Woche mit WattsUp zu planen.', schedule: { at: s, allowWhileIdle: true }, extra: { k: 'plan' }, smallIcon: 'ic_stat_wattsup' });
+    }
+    if (list.length) try { await LN.schedule({ notifications: list }); } catch (e) { }
+  }
+  async function runnerCfg() {
+    if (!BR || !stOk()) return;
+    var c = cfg(), t = stTok(), lastAct = (window.ACT || []).reduce(function (m, a) { var s = a.start || a.start_local || ''; return s > m ? s : m; }, '');
+    try {
+      var r = await BR.dispatchEvent({ label: RUN, event: 'config', details: { stId: c.stId, stSec: c.stSec, tok: t, on: nOn('nAct'), last: '' } });
+      if (r && r.tok && t && r.tok.x > t.x) ls('wu_strava', r.tok);
+    } catch (e) { }
+  }
+  window.WU_SYNC = function (st) {
+    if (!CAPN) return;
+    var sig = JSON.stringify([st.day, st.lv, st.today, st.done, st.tomorrow, st.form, st.fit, st.md, st.moodOn, st.mFrom, cfg().nMood, cfg().nPlan]);
+    if (sig === lastSig && now() - lastSync < 600000) return;
+    lastSig = sig; lastSync = now();
+    if (PREF) PREF.set({ key: 'wu_widget', value: JSON.stringify(st) }).then(function () { if (NAT) NAT.updateWidget(); }).catch(function () { });
+    schedule(st);
+    runnerCfg();
+  };
+  if (CAPN && LN) {
+    LN.addListener('localNotificationActionPerformed', function () { location.reload(); });
+  }
+  if (CAPN && PL.App) {
+    var shown = now();
+    PL.App.addListener('appStateChange', function (s) { if (s.isActive && now() - shown > 15 * 60000) location.reload(); if (!s.isActive) shown = now(); });
+  }
+  /* Neue App-Version */
+  var UPD = null;
+  async function checkUpdate(force) {
+    if (!CAPN || !PL.App) return null;
+    var last = lg('wu_updchk', { t: 0, v: 0 });
+    var info = await PL.App.getInfo(), cur = Number(info.build) || 0, latest = last.v;
+    if (force || now() - last.t > 6 * 3600000) {
+      try {
+        var r = await fetch('https://api.github.com/repos/christophschmid-design/wattsup/releases/tags/apk', { headers: { Accept: 'application/vnd.github+json' } });
+        if (r.ok) { var j = await r.json(), m = /Version 1\.(\d+)/.exec(j.body || ''); if (m) latest = Number(m[1]); ls('wu_updchk', { t: now(), v: latest }); }
+      } catch (e) { }
+    }
+    UPD = { cur: cur, latest: latest, newer: latest > cur };
+    if (UPD.newer) updBanner();
+    return UPD;
+  }
+  function updBanner() {
+    addCss(); if (document.getElementById('wu-upd') || lg('wu_updskip', 0) === UPD.latest) return;
+    var b = document.createElement('div'); b.id = 'wu-upd'; b.className = 'wu-upd';
+    b.innerHTML = '<div><b>Neue App-Version 1.' + UPD.latest + '</b><span>Installiert: 1.' + UPD.cur + '</span></div><button class="wu-b" data-wu="upd">Jetzt aktualisieren</button><button class="wu-x" data-wu="updx" aria-label="Später">×</button>';
+    b.addEventListener('click', function (e) { var k = e.target.closest('[data-wu]'); if (!k) return; if (k.getAttribute('data-wu') === 'updx') { ls('wu_updskip', UPD.latest); b.remove(); } else doUpdate(b); });
+    document.body.appendChild(b);
+  }
+  async function doUpdate(el) {
+    if (!NAT) { location.href = APK; return; }
+    try {
+      var ok = await NAT.canInstall();
+      if (!ok.allowed) { toast('Bitte erlauben, dass WattsUp Apps installieren darf, dann erneut tippen.'); await NAT.openInstallSettings(); return; }
+      var lab = el && el.querySelector('b'); if (lab) lab.textContent = 'Wird geladen …';
+      var h = await NAT.addListener('progress', function (e) { if (lab) lab.textContent = 'Wird geladen … ' + e.pct + ' %'; });
+      await NAT.installApk({ url: APK });
+      try { h.remove(); } catch (e) { }
+      if (lab) lab.textContent = 'Installation bestätigen';
+    } catch (e) { toast(e.message || 'Update fehlgeschlagen'); }
+  }
+  WU.checkUpdate = checkUpdate; WU.doUpdate = doUpdate;
+
   /* ---------- Start ---------- */
   var startP = (async function () {
     if (RET) { var r = await handleReturn(RET); if (r === 'stop') return 'stop'; }
@@ -476,6 +573,7 @@
   document.addEventListener('DOMContentLoaded', function () {
     startP.then(function (r) {
       if (r === 'stop') return;
+      checkUpdate(false);
       var c = cfg();
       if (!stOk() || !c.aKey || !gOk()) setTimeout(function () { WU.open(!stOk() ? 'Willkommen bei WattsUp. Verbinde zuerst Strava, dann Google und hinterlege den Schlüssel für Claude.' : !gOk() ? 'Google ist noch nicht verbunden. Ohne Google gibt es keinen Kalender und keinen Abgleich zwischen Geräten.' : 'Für die Planung fehlt noch der Schlüssel für die Claude-Schnittstelle.'); }, 600);
     });
