@@ -429,7 +429,7 @@
     lastSig = ''; if (window.WU_STATE && window.WU_SYNC) window.WU_SYNC(window.WU_STATE);
   }
   var WU = {
-    open: function (note) { addCss(); var o = document.getElementById('wu-ov'); if (!o) { o = document.createElement('div'); o.id = 'wu-ov'; o.className = 'wu-ov'; document.body.appendChild(o); o.addEventListener('click', onClick); o.addEventListener('change', onChange); } o.innerHTML = '<div class="wu-sh" role="dialog" aria-modal="true">' + render(note) + '</div>'; o.hidden = false; },
+    open: function (note) { var sh = document.getElementById('sh'), sx = document.getElementById('shx'); if (sh && !sh.hidden && sx) sx.click(); addCss(); var o = document.getElementById('wu-ov'); if (!o) { o = document.createElement('div'); o.id = 'wu-ov'; o.className = 'wu-ov'; document.body.appendChild(o); o.addEventListener('click', onClick); o.addEventListener('change', onChange); } o.innerHTML = '<div class="wu-sh" role="dialog" aria-modal="true">' + render(note) + '</div>'; o.hidden = false; },
     close: function () { var o = document.getElementById('wu-ov'); if (o) o.hidden = true; },
     toast: toast, exportData: exportData
   };
