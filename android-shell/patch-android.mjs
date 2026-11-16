@@ -102,6 +102,28 @@ if (fs.existsSync('google-services.json')) {
 } else {
   console.log('Ohne Push-Nachrichten (google-services.json fehlt)');
 }
+// Health Connect: Berechtigung, Begründungs-Einstieg und Abfrage der Health-Connect-App
+{
+  let mh = fs.readFileSync(man, 'utf8');
+  if (!mh.includes('android.permission.health.READ_WEIGHT')) mh = mh.replace('</manifest>', '    <uses-permission android:name="android.permission.health.READ_WEIGHT" />\n</manifest>');
+  if (!mh.includes('com.google.android.apps.healthdata')) mh = mh.replace('</manifest>', '    <queries>\n        <package android:name="com.google.android.apps.healthdata" />\n    </queries>\n</manifest>');
+  if (!mh.includes('ACTION_SHOW_PERMISSIONS_RATIONALE')) mh = mh.replace('</activity>', `    <intent-filter>
+                <action android:name="androidx.health.ACTION_SHOW_PERMISSIONS_RATIONALE" />
+            </intent-filter>
+        </activity>
+        <activity-alias
+            android:name="ViewPermissionUsageActivity"
+            android:exported="true"
+            android:targetActivity=".MainActivity"
+            android:permission="android.permission.START_VIEW_PERMISSION_USAGE">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW_PERMISSION_USAGE" />
+                <category android:name="android.intent.category.HEALTH_PERMISSIONS" />
+            </intent-filter>
+        </activity-alias>`);
+  fs.writeFileSync(man, mh);
+  must(mh.includes('HEALTH_PERMISSIONS') && mh.includes('READ_WEIGHT'), 'Health-Connect-Manifest');
+}
 // Health Connect: Mindestversion Android 8 und Datenschutz-Link
 const vg = 'android/variables.gradle';
 if (fs.existsSync(vg)) {

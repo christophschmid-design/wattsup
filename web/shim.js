@@ -558,8 +558,12 @@
       var av = await HC.isAvailable();
       if (!av || !av.available) { if (force) toast('Health Connect ist auf diesem Handy nicht verfügbar' + (av && av.reason ? ': ' + av.reason : '.')); return; }
       if (force) {
-        var st = await HC.requestAuthorization({ read: ['weight'], write: [] });
-        if ((st.readAuthorized || []).indexOf('weight') < 0) { toast('Kein Zugriff auf das Gewicht erlaubt.'); return; }
+        var st = null; try { st = await HC.requestAuthorization({ read: ['weight'], write: [] }); } catch (e) { }
+        if (!st || (st.readAuthorized || []).indexOf('weight') < 0) {
+          /* Manche Versionen melden den Status ungenau: Lesen trotzdem versuchen */
+          try { await HC.readSamples({ dataType: 'weight', startDate: new Date(now() - 864e5).toISOString(), endDate: new Date().toISOString(), limit: 1 }); }
+          catch (e) { toast('Kein Zugriff auf das Gewicht. Bitte in Health Connect bei WattsUp „Gewicht“ erlauben.'); try { if (HC.openHealthConnectSettings) await HC.openHealthConnectSettings(); } catch (x) { } return; }
+        }
         setCfg({ hcOk: now(), hcOn: true });
       }
       var r = await HC.readSamples({ dataType: 'weight', startDate: new Date(now() - 30 * 864e5).toISOString(), endDate: new Date().toISOString(), limit: 300, ascending: true });
