@@ -416,7 +416,7 @@
       '<div class="wu-c"><h3 style="margin-top:0">Kosten ' + (m) + '</h3><p style="margin:0"><b>' + usd(sum) + '</b> für ' + lst.length + (lst.length === 1 ? ' Planung' : ' Planungen') + (lim > 0 ? ', Grenze ' + usd(lim) + (sum >= lim ? ' ' + st(false, 'erreicht') : sum >= lim * .8 ? ' ' + st('w', 'über 80 %') : '') : '') + '</p>' +
       (lst.length ? '<table class="wu-tb">' + lst.slice(-6).reverse().map(function (x) { return '<tr><td>' + new Date(x.ts).toLocaleString('de-AT', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' }) + ', ' + (MODELS[x.model] ? MODELS[x.model].n : x.model) + '</td><td>' + usd(x.usd) + '</td></tr>'; }).join('') + '</table>' : '') +
       '<p class="wu-mu">Berechnet aus dem gemeldeten Verbrauch und der Preisliste. Maßgeblich ist die Abrechnung in der Anthropic Console.</p></div>' +
-      (CAPN ? '<div class="wu-c"><h3 style="margin-top:0">Benachrichtigungen</h3>' + chk('wu-nMood', 'Morgengefühl ab ' + ((window.WU_STATE && WU_STATE.mFrom) || 5) + ' Uhr', c.nMood !== false) + chk('wu-nAct', 'Neue Strava-Aktivität bewerten', c.nAct !== false) + chk('wu-nPlan', 'Sonntag 19 Uhr: Wochenplanung', c.nPlan !== false) + '<p class="wu-mu">Widget: Startbildschirm lange drücken → Widgets → WattsUp.</p></div>' : '') + (CAPN ? '<div class="wu-c"><h3 style="margin-top:0">Push für neue Aktivitäten ' + (c.pushOk ? st(true, 'aktiv') : st('w', 'aus')) + '</h3><p class="wu-mu">Sofortige Meldung, sobald eine Aktivität auf Strava landet. Ohne Push prüft die App etwa alle 30 Minuten.</p>' + fld('wu-pushUrl', 'Adresse des Push-Dienstes', c.pushUrl, 'text', 'https://wattsup-push.….workers.dev') + '<button class="wu-b" data-wu="push">' + (c.pushOk ? 'Neu einrichten' : 'Push aktivieren') + '</button>' + (c.pushOk ? '<button class="wu-b alt" data-wu="pusht">Test senden</button>' : '') + '</div>' : '') + (CAPN ? '<div class="wu-c"><h3 style="margin-top:0">App-Version</h3><p style="margin:0" id="wu-ver">' + (UPD ? '1.' + UPD.cur + (UPD.newer ? ', neu verfügbar: 1.' + UPD.latest : ', aktuell') : 'wird geprüft …') + '</p><button class="wu-b alt" data-wu="updchk">Nach Update suchen</button>' + (UPD && UPD.newer ? '<button class="wu-b" data-wu="upd">Jetzt aktualisieren</button>' : '') + '</div>' : '') + '<div class="wu-c"><h3 style="margin-top:0">Daten</h3><p class="wu-mu">Daten aus der Claude-Version übernehmen: dort im Menü „Daten für WattsUp exportieren“ und die Datei hier wählen.</p><input type="file" id="wu-imp" accept=".json,.txt,application/json,text/plain"><button class="wu-b alt" data-wu="exp">Sicherung exportieren</button></div>' +
+      (CAPN ? '<div class="wu-c"><h3 style="margin-top:0">Benachrichtigungen</h3>' + chk('wu-nMood', 'Morgengefühl ab ' + ((window.WU_STATE && WU_STATE.mFrom) || 5) + ' Uhr', c.nMood !== false) + chk('wu-nAct', 'Neue Strava-Aktivität bewerten', c.nAct !== false) + chk('wu-nPlan', 'Sonntag 19 Uhr: Wochenplanung', c.nPlan !== false) + '<p class="wu-mu">Widget: Startbildschirm lange drücken → Widgets → WattsUp.</p></div>' : '') + (CAPN ? '<div class="wu-c"><h3 style="margin-top:0">Gewicht aus Google Health ' + (c.hcOk && c.hcOn !== false ? st(true, 'verbunden') : st('w', 'aus')) + '</h3><p class="wu-mu">Übernimmt die Werte deiner Renpho-Waage automatisch über Health Connect, jeweils die erste Messung des Tages.' + (c.hcVal ? ' Zuletzt: ' + String(c.hcVal.kg).replace('.', ',') + ' kg am ' + c.hcVal.d.slice(8, 10) + '.' + c.hcVal.d.slice(5, 7) + '.' : '') + '</p><button class="wu-b" data-wu="hc">' + (c.hcOk ? 'Jetzt abgleichen' : 'Verbinden') + '</button>' + (c.hcOk ? '<button class="wu-b alt" data-wu="hcx">' + (c.hcOn === false ? 'Einschalten' : 'Ausschalten') + '</button>' : '') + '</div>' : '') + (CAPN ? '<div class="wu-c"><h3 style="margin-top:0">Push für neue Aktivitäten ' + (c.pushOk ? st(true, 'aktiv') : st('w', 'aus')) + '</h3><p class="wu-mu">Sofortige Meldung, sobald eine Aktivität auf Strava landet. Ohne Push prüft die App etwa alle 30 Minuten.</p>' + fld('wu-pushUrl', 'Adresse des Push-Dienstes', c.pushUrl, 'text', 'https://wattsup-push.….workers.dev') + '<button class="wu-b" data-wu="push">' + (c.pushOk ? 'Neu einrichten' : 'Push aktivieren') + '</button>' + (c.pushOk ? '<button class="wu-b alt" data-wu="pusht">Test senden</button>' : '') + '</div>' : '') + (CAPN ? '<div class="wu-c"><h3 style="margin-top:0">App-Version</h3><p style="margin:0" id="wu-ver">' + (UPD ? '1.' + UPD.cur + (UPD.newer ? ', neu verfügbar: 1.' + UPD.latest : ', aktuell') : 'wird geprüft …') + '</p><button class="wu-b alt" data-wu="updchk">Nach Update suchen</button>' + (UPD && UPD.newer ? '<button class="wu-b" data-wu="upd">Jetzt aktualisieren</button>' : '') + '</div>' : '') + '<div class="wu-c"><h3 style="margin-top:0">Daten</h3><p class="wu-mu">Daten aus der Claude-Version übernehmen: dort im Menü „Daten für WattsUp exportieren“ und die Datei hier wählen.</p><input type="file" id="wu-imp" accept=".json,.txt,application/json,text/plain"><button class="wu-b alt" data-wu="exp">Sicherung exportieren</button></div>' +
       '<button class="wu-b" data-wu="save">Speichern</button><button class="wu-b alt" data-wu="close">Schließen</button><p class="wu-mu">WattsUp ' + VER + (CAPN ? ', Android' : ', Browser') + '</p>';
   }
   function saveForm() {
@@ -446,6 +446,8 @@
     if (k === 'gx') { ls('wu_google', null); syncSt('aus'); WU.open(); }
     if (k === 'sync') { await pull(); await push(); WU.open(); toast(SYNC.st === 'ok' ? 'Abgeglichen.' : 'Abgleich fehlgeschlagen.'); }
     if (k === 'exp') exportData();
+    if (k === 'hc') { await hcSync(true); WU.open(); }
+    if (k === 'hcx') { setCfg({ hcOn: cfg().hcOn === false }); WU.open(); }
     if (k === 'push') { try { await pushActivate(); } catch (x) { toast('Push einrichten fehlgeschlagen: ' + (x.message || x)); } WU.open(); }
     if (k === 'pusht') { try { await pushTest(); } catch (x) { toast('Test fehlgeschlagen: ' + (x.message || x)); } }
     if (k === 'updchk') { await checkUpdate(true); WU.open(); if (UPD && !UPD.newer) toast('WattsUp ist aktuell.'); }
@@ -543,6 +545,42 @@
     var shown = now();
     PL.App.addListener('appStateChange', function (s) { if (s.isActive && now() - shown > 15 * 60000) location.reload(); if (!s.isActive) shown = now(); });
   }
+  /* Gewicht aus Health Connect (Google Health, Renpho) */
+  var HC = PL.Health, hcBusy = false;
+  function dayOf(iso) { var d = new Date(iso); return d.getFullYear() + '-' + ('0' + (d.getMonth() + 1)).slice(-2) + '-' + ('0' + d.getDate()).slice(-2); }
+  async function hcSync(force) {
+    if (!CAPN || hcBusy) return;
+    var c = cfg();
+    if (!HC) { if (force) toast('Diese App-Version kann Health Connect noch nicht lesen. Bitte zuerst aktualisieren.'); return; }
+    if (!force && (!c.hcOk || c.hcOn === false || now() - (c.hcLast || 0) < 30 * 60000)) return;
+    hcBusy = true;
+    try {
+      var av = await HC.isAvailable();
+      if (!av || !av.available) { if (force) toast('Health Connect ist auf diesem Handy nicht verfügbar' + (av && av.reason ? ': ' + av.reason : '.')); return; }
+      if (force) {
+        var st = await HC.requestAuthorization({ read: ['weight'], write: [] });
+        if ((st.readAuthorized || []).indexOf('weight') < 0) { toast('Kein Zugriff auf das Gewicht erlaubt.'); return; }
+        setCfg({ hcOk: now(), hcOn: true });
+      }
+      var r = await HC.readSamples({ dataType: 'weight', startDate: new Date(now() - 30 * 864e5).toISOString(), endDate: new Date().toISOString(), limit: 300, ascending: true });
+      var by = {};
+      (r && r.samples || []).forEach(function (x) { var d = dayOf(x.startDate), kg = x.unit === 'pound' ? x.value * 0.45359 : x.value; if (!by[d]) by[d] = kg; });
+      var list = Object.keys(by).sort().map(function (d) { return [d, by[d]]; });
+      for (var i = 0; i < 50 && !window.WU_WT; i++) await new Promise(function (ok) { setTimeout(ok, 300); });
+      var n = window.WU_WT ? await window.WU_WT(list) : 0;
+      var last = list.length ? list[list.length - 1] : null;
+      setCfg({ hcLast: now(), hcVal: last ? { d: last[0], kg: Math.round(last[1] * 10) / 10 } : null });
+      if (n) toast(n === 1 ? 'Neues Gewicht übernommen: ' + String(Math.round(last[1] * 10) / 10).replace('.', ',') + ' kg' : n + ' Gewichtswerte übernommen.');
+      else if (force) toast(list.length ? 'Gewicht ist aktuell.' : 'In den letzten 30 Tagen keine Gewichtswerte gefunden.');
+    } catch (e) { if (force) toast('Health Connect: ' + (e.message || e)); }
+    finally { hcBusy = false; }
+  }
+  WU.hcSync = hcSync;
+  if (CAPN) {
+    setTimeout(function () { hcSync(false); }, 4000);
+    document.addEventListener('visibilitychange', function () { if (document.visibilityState === 'visible') hcSync(false); });
+  }
+
   /* Sprung aus einer Benachrichtigung direkt in den passenden Dialog */
   var T0 = now();
   function goFrom(o) {

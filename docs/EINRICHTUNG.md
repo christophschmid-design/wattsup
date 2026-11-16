@@ -134,3 +134,9 @@ Dann **Actions** → **Push-Dienst veröffentlichen** → **Run workflow**. Die 
 1. Sobald die google-services.json im Projekt ist, kommt eine neue App-Version → in der App aktualisieren.
 2. Menü → **Verbindungen und Kosten** → **Push für neue Aktivitäten** → Adresse eintragen → **Push aktivieren**.
 3. Eine Test-Nachricht erscheint. Ab dann meldet WattsUp neue Aktivitäten sofort, die 30-Minuten-Prüfung schaltet sich ab.
+
+## 9. Gewicht automatisch von der Waage (Health Connect)
+
+1. In der Renpho-App die Verbindung zu **Google Health / Health Connect** einschalten (Gewicht freigeben).
+2. In WattsUp: Menü → **Verbindungen und Kosten** → **Gewicht aus Google Health** → **Verbinden** → bei Android den Zugriff auf **Gewicht** erlauben.
+3. Ab dann übernimmt WattsUp beim Öffnen automatisch neue Werte (die erste Messung des Tages) in den Gewichtsverlauf und rechnet damit Watt pro Kilo und die Zeitprognose.

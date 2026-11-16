@@ -102,4 +102,13 @@ if (fs.existsSync('google-services.json')) {
 } else {
   console.log('Ohne Push-Nachrichten (google-services.json fehlt)');
 }
+// Health Connect: Mindestversion Android 8 und Datenschutz-Link
+const vg = 'android/variables.gradle';
+if (fs.existsSync(vg)) {
+  let v = fs.readFileSync(vg, 'utf8');
+  v = v.replace(/minSdkVersion\s*=\s*\d+/, 'minSdkVersion = 26');
+  fs.writeFileSync(vg, v);
+}
+fs.mkdirSync(`${dst}/values`, { recursive: true });
+fs.writeFileSync(`${dst}/values/wu_strings.xml`, '<?xml version="1.0" encoding="utf-8"?>\n<resources>\n    <string name="health_connect_privacy_policy_url">https://christophschmid-design.github.io/wattsup/datenschutz.html</string>\n</resources>\n');
 console.log('Android-Projekt angepasst');
