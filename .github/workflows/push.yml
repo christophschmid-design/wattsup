@@ -1,0 +1,29 @@
+name: Push-Dienst veröffentlichen
+on:
+  push:
+    branches: [main]
+    paths: ['worker/**', '.github/workflows/push.yml']
+  workflow_dispatch:
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Secrets prüfen
+        env:
+          T: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          A: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          F: ${{ secrets.FCM_SA }}
+        run: |
+          [ -n "$T" ] || { echo "::error::Secret CLOUDFLARE_API_TOKEN fehlt"; exit 1; }
+          [ -n "$A" ] || { echo "::error::Secret CLOUDFLARE_ACCOUNT_ID fehlt"; exit 1; }
+          [ -n "$F" ] || { echo "::error::Secret FCM_SA fehlt"; exit 1; }
+      - uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          workingDirectory: worker
+          secrets: |
+            FCM_SA
+        env:
+          FCM_SA: ${{ secrets.FCM_SA }}

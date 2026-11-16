@@ -101,3 +101,36 @@ Web-Version in Edge öffnen → Menü (…) → **Apps** → **Diese Website als
 - **Widget:** Startbildschirm lange drücken → **Widgets** → **WattsUp** auf den Startbildschirm ziehen. Es zeigt Tagesampel, heutige Einheit, Form und Fitness.
 - **Updates:** Gibt es eine neue App-Version, erscheint unten in WattsUp ein Hinweis. **Jetzt aktualisieren** lädt sie herunter und öffnet die Installation. Beim ersten Mal fragt Android einmalig, ob WattsUp Apps installieren darf.
 - Falls die Benachrichtigungen bei neuen Aktivitäten ausbleiben: In den Android-Einstellungen bei WattsUp unter **Akku** „Nicht eingeschränkt“ wählen.
+
+## 8. Push-Nachrichten für neue Aktivitäten (etwa 25 Minuten)
+
+Ablauf: Strava meldet eine neue Aktivität an einen kleinen Dienst bei Cloudflare, der schickt über Firebase sofort eine Nachricht ans Handy. Beides ist kostenlos.
+
+**A. Firebase (Google)**
+1. Öffne **console.firebase.google.com** → **Projekt erstellen** bzw. **Firebase zu einem Google Cloud-Projekt hinzufügen** → das bestehende Projekt **WattsUp** wählen. Google Analytics brauchst du nicht.
+2. In der Projektübersicht **App hinzufügen** → **Android**:
+   - Android-Paketname: `at.christophschmid.wattsup`
+   - App-Nickname: `WattsUp`, SHA-1 leer lassen → **App registrieren**
+3. **google-services.json herunterladen**. Diese Datei darfst du Claude im Chat schicken; Claude legt sie ins Projekt.
+4. Zahnrad → **Projekteinstellungen** → **Dienstkonten** → **Neuen privaten Schlüssel generieren** → JSON-Datei wird heruntergeladen.
+   Diese Datei ist geheim: **nicht** in den Chat schicken, sondern den kompletten Inhalt als GitHub-Secret `FCM_SA` speichern (siehe C).
+
+**B. Cloudflare**
+1. Konto anlegen auf **dash.cloudflare.com** (kostenloser Plan).
+2. Links **Workers & Pages** öffnen. Beim ersten Mal wird eine eigene Subdomain abgefragt, zum Beispiel `christoph-schmid` → speichern.
+3. Rechts auf der Übersicht steht die **Account ID** → kopieren.
+4. Oben rechts Profil → **Mein Profil** → **API-Token** → **Token erstellen** → Vorlage **Cloudflare Workers bearbeiten** → **Weiter zur Zusammenfassung** → **Token erstellen** → Token kopieren.
+
+**C. GitHub-Secrets** (Settings → Secrets and variables → Actions → New repository secret)
+| Name | Wert |
+|---|---|
+| `CLOUDFLARE_API_TOKEN` | Token aus B4 |
+| `CLOUDFLARE_ACCOUNT_ID` | Account ID aus B3 |
+| `FCM_SA` | kompletter Inhalt der JSON-Datei aus A4 |
+
+Dann **Actions** → **Push-Dienst veröffentlichen** → **Run workflow**. Die Adresse des Dienstes findest du bei Cloudflare unter Workers & Pages → **wattsup-push**, zum Beispiel `https://wattsup-push.christoph-schmid.workers.dev`.
+
+**D. In WattsUp**
+1. Sobald die google-services.json im Projekt ist, kommt eine neue App-Version → in der App aktualisieren.
+2. Menü → **Verbindungen und Kosten** → **Push für neue Aktivitäten** → Adresse eintragen → **Push aktivieren**.
+3. Eine Test-Nachricht erscheint. Ab dann meldet WattsUp neue Aktivitäten sofort, die 30-Minuten-Prüfung schaltet sich ab.

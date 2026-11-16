@@ -86,4 +86,20 @@ const fp = `${dst}/xml/file_paths.xml`;
 let x = fs.existsSync(fp) ? fs.readFileSync(fp, 'utf8') : '<?xml version="1.0" encoding="utf-8"?>\n<paths xmlns:android="http://schemas.android.com/apk/res/android">\n</paths>\n';
 if (!x.includes('wu_cache')) x = x.replace('</paths>', '    <cache-path name="wu_cache" path="." />\n</paths>');
 fs.writeFileSync(fp, x);
+// Push-Nachrichten (nur wenn google-services.json vorhanden)
+if (fs.existsSync('google-services.json')) {
+  fs.copyFileSync('google-services.json', `${A}/google-services.json`);
+  let mm = fs.readFileSync(man, 'utf8');
+  if (!mm.includes('default_notification_icon')) {
+    mm = mm.replace('<application', '<application').replace(/(<application[^>]*>)/, `$1
+        <meta-data android:name="com.google.firebase.messaging.default_notification_icon" android:resource="@drawable/ic_stat_wattsup" />
+        <meta-data android:name="com.google.firebase.messaging.default_notification_color" android:resource="@color/wu_accent" />`);
+    fs.writeFileSync(man, mm);
+  }
+  fs.mkdirSync(`${dst}/values`, { recursive: true });
+  fs.writeFileSync(`${dst}/values/wu_colors.xml`, '<?xml version="1.0" encoding="utf-8"?>\n<resources>\n    <color name="wu_accent">#3DDC97</color>\n</resources>\n');
+  console.log('Push-Nachrichten aktiviert');
+} else {
+  console.log('Ohne Push-Nachrichten (google-services.json fehlt)');
+}
 console.log('Android-Projekt angepasst');

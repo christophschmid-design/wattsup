@@ -416,14 +416,15 @@
       '<div class="wu-c"><h3 style="margin-top:0">Kosten ' + (m) + '</h3><p style="margin:0"><b>' + usd(sum) + '</b> für ' + lst.length + (lst.length === 1 ? ' Planung' : ' Planungen') + (lim > 0 ? ', Grenze ' + usd(lim) + (sum >= lim ? ' ' + st(false, 'erreicht') : sum >= lim * .8 ? ' ' + st('w', 'über 80 %') : '') : '') + '</p>' +
       (lst.length ? '<table class="wu-tb">' + lst.slice(-6).reverse().map(function (x) { return '<tr><td>' + new Date(x.ts).toLocaleString('de-AT', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' }) + ', ' + (MODELS[x.model] ? MODELS[x.model].n : x.model) + '</td><td>' + usd(x.usd) + '</td></tr>'; }).join('') + '</table>' : '') +
       '<p class="wu-mu">Berechnet aus dem gemeldeten Verbrauch und der Preisliste. Maßgeblich ist die Abrechnung in der Anthropic Console.</p></div>' +
-      (CAPN ? '<div class="wu-c"><h3 style="margin-top:0">Benachrichtigungen</h3>' + chk('wu-nMood', 'Morgengefühl ab ' + ((window.WU_STATE && WU_STATE.mFrom) || 5) + ' Uhr', c.nMood !== false) + chk('wu-nAct', 'Neue Strava-Aktivität bewerten', c.nAct !== false) + chk('wu-nPlan', 'Sonntag 19 Uhr: Wochenplanung', c.nPlan !== false) + '<p class="wu-mu">Widget: Startbildschirm lange drücken → Widgets → WattsUp.</p></div>' : '') + (CAPN ? '<div class="wu-c"><h3 style="margin-top:0">App-Version</h3><p style="margin:0" id="wu-ver">' + (UPD ? '1.' + UPD.cur + (UPD.newer ? ', neu verfügbar: 1.' + UPD.latest : ', aktuell') : 'wird geprüft …') + '</p><button class="wu-b alt" data-wu="updchk">Nach Update suchen</button>' + (UPD && UPD.newer ? '<button class="wu-b" data-wu="upd">Jetzt aktualisieren</button>' : '') + '</div>' : '') + '<div class="wu-c"><h3 style="margin-top:0">Daten</h3><p class="wu-mu">Daten aus der Claude-Version übernehmen: dort im Menü „Daten für WattsUp exportieren“ und die Datei hier wählen.</p><input type="file" id="wu-imp" accept=".json,.txt,application/json,text/plain"><button class="wu-b alt" data-wu="exp">Sicherung exportieren</button></div>' +
+      (CAPN ? '<div class="wu-c"><h3 style="margin-top:0">Benachrichtigungen</h3>' + chk('wu-nMood', 'Morgengefühl ab ' + ((window.WU_STATE && WU_STATE.mFrom) || 5) + ' Uhr', c.nMood !== false) + chk('wu-nAct', 'Neue Strava-Aktivität bewerten', c.nAct !== false) + chk('wu-nPlan', 'Sonntag 19 Uhr: Wochenplanung', c.nPlan !== false) + '<p class="wu-mu">Widget: Startbildschirm lange drücken → Widgets → WattsUp.</p></div>' : '') + (CAPN ? '<div class="wu-c"><h3 style="margin-top:0">Push für neue Aktivitäten ' + (c.pushOk ? st(true, 'aktiv') : st('w', 'aus')) + '</h3><p class="wu-mu">Sofortige Meldung, sobald eine Aktivität auf Strava landet. Ohne Push prüft die App etwa alle 30 Minuten.</p>' + fld('wu-pushUrl', 'Adresse des Push-Dienstes', c.pushUrl, 'text', 'https://wattsup-push.….workers.dev') + '<button class="wu-b" data-wu="push">' + (c.pushOk ? 'Neu einrichten' : 'Push aktivieren') + '</button>' + (c.pushOk ? '<button class="wu-b alt" data-wu="pusht">Test senden</button>' : '') + '</div>' : '') + (CAPN ? '<div class="wu-c"><h3 style="margin-top:0">App-Version</h3><p style="margin:0" id="wu-ver">' + (UPD ? '1.' + UPD.cur + (UPD.newer ? ', neu verfügbar: 1.' + UPD.latest : ', aktuell') : 'wird geprüft …') + '</p><button class="wu-b alt" data-wu="updchk">Nach Update suchen</button>' + (UPD && UPD.newer ? '<button class="wu-b" data-wu="upd">Jetzt aktualisieren</button>' : '') + '</div>' : '') + '<div class="wu-c"><h3 style="margin-top:0">Daten</h3><p class="wu-mu">Daten aus der Claude-Version übernehmen: dort im Menü „Daten für WattsUp exportieren“ und die Datei hier wählen.</p><input type="file" id="wu-imp" accept=".json,.txt,application/json,text/plain"><button class="wu-b alt" data-wu="exp">Sicherung exportieren</button></div>' +
       '<button class="wu-b" data-wu="save">Speichern</button><button class="wu-b alt" data-wu="close">Schließen</button><p class="wu-mu">WattsUp ' + VER + (CAPN ? ', Android' : ', Browser') + '</p>';
   }
   function saveForm() {
     function v(id) { var e = document.getElementById(id); return e ? e.value.trim() : undefined; }
     var lim = parseFloat(String(v('wu-limit') || '0').replace(',', '.'));
     function cb(id) { var e = document.getElementById(id); return e ? e.checked : undefined; }
-    if (CAPN && document.getElementById('wu-nMood')) setCfg({ nMood: cb('wu-nMood'), nAct: cb('wu-nAct'), nPlan: cb('wu-nPlan') });
+    if (CAPN && document.getElementById('wu-nMood')) { var wasAct = cfg().nAct !== false; setCfg({ nMood: cb('wu-nMood'), nAct: cb('wu-nAct'), nPlan: cb('wu-nPlan') }); if (wasAct !== (cfg().nAct !== false)) pushTopic(cfg().nAct !== false); }
+    if (document.getElementById('wu-pushUrl')) setCfg({ pushUrl: v('wu-pushUrl') });
     setCfg({ stId: v('wu-stId'), stSec: v('wu-stSec'), gId: v('wu-gId'), gSec: v('wu-gSec'), cal: v('wu-cal') || CAL0, aKey: v('wu-aKey'), model: v('wu-model'), once: v('wu-once') || null, limit: isNaN(lim) ? 0 : lim });
     lastSig = ''; if (window.WU_STATE && window.WU_SYNC) window.WU_SYNC(window.WU_STATE);
   }
@@ -445,6 +446,8 @@
     if (k === 'gx') { ls('wu_google', null); syncSt('aus'); WU.open(); }
     if (k === 'sync') { await pull(); await push(); WU.open(); toast(SYNC.st === 'ok' ? 'Abgeglichen.' : 'Abgleich fehlgeschlagen.'); }
     if (k === 'exp') exportData();
+    if (k === 'push') { try { await pushActivate(); } catch (x) { toast('Push einrichten fehlgeschlagen: ' + (x.message || x)); } WU.open(); }
+    if (k === 'pusht') { try { await pushTest(); } catch (x) { toast('Test fehlgeschlagen: ' + (x.message || x)); } }
     if (k === 'updchk') { await checkUpdate(true); WU.open(); if (UPD && !UPD.newer) toast('WattsUp ist aktuell.'); }
     if (k === 'upd') { WU.close(); doUpdate(document.getElementById('wu-upd')); }
   }
@@ -507,7 +510,7 @@
     if (!BR || !stOk()) return;
     var c = cfg(), t = stTok(), lastAct = (window.ACT || []).reduce(function (m, a) { var s = a.start || a.start_local || ''; return s > m ? s : m; }, '');
     try {
-      var r = await BR.dispatchEvent({ label: RUN, event: 'config', details: { stId: c.stId, stSec: c.stSec, tok: t, on: nOn('nAct'), last: '' } });
+      var r = await BR.dispatchEvent({ label: RUN, event: 'config', details: { stId: c.stId, stSec: c.stSec, tok: t, on: nOn('nAct') && !cfg().pushOk, last: '' } });
       if (r && r.tok && t && r.tok.x > t.x) ls('wu_strava', r.tok);
     } catch (e) { }
   }
@@ -563,6 +566,43 @@
     } catch (e) { toast(e.message || 'Update fehlgeschlagen'); }
   }
   WU.checkUpdate = checkUpdate; WU.doUpdate = doUpdate;
+  /* Push über Strava-Webhook, Cloudflare und Firebase */
+  var FM = PL.FirebaseMessaging;
+  function pushBase() { return String(cfg().pushUrl || '').trim().replace(/\/+$/, ''); }
+  async function pushTopic(on) {
+    var c = cfg(); if (!FM || !c.pushTopic) return;
+    try { if (on) await FM.subscribeToTopic({ topic: c.pushTopic }); else await FM.unsubscribeFromTopic({ topic: c.pushTopic }); } catch (e) { }
+  }
+  async function pushActivate() {
+    var c = cfg(), url = pushBase();
+    if (!FM) { toast('Diese App-Version kann noch keine Push-Nachrichten. Bitte zuerst aktualisieren.'); return; }
+    if (!/^https:\/\//.test(url)) { toast('Bitte zuerst die Adresse des Push-Dienstes eintragen.'); return; }
+    if (!stOk()) { toast('Bitte zuerst Strava verbinden.'); return; }
+    var p = await FM.requestPermissions();
+    if (p.receive !== 'granted') { toast('Benachrichtigungen sind für WattsUp nicht erlaubt.'); return; }
+    toast('Push wird eingerichtet …');
+    var a = await athlete(), topic = 'wattsup_' + a.id;
+    await FM.subscribeToTopic({ topic: topic });
+    var base = 'https://www.strava.com/api/v3/push_subscriptions', au = qs({ client_id: c.stId, client_secret: c.stSec });
+    var ex = await http(base + '?' + au) || [], has = false;
+    for (var i = 0; i < ex.length; i++) {
+      if (ex[i].callback_url === url) has = true;
+      else await http(base + '/' + ex[i].id + '?' + au, { method: 'DELETE' });
+    }
+    if (!has) await http(base, { method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded' }, body: qs({ client_id: c.stId, client_secret: c.stSec, callback_url: url, verify_token: 'wattsup' }) });
+    setCfg({ pushOk: now(), pushTopic: topic, pushUrl: url });
+    runnerCfg();
+    await pushTest();
+  }
+  async function pushTest() {
+    var c = cfg(), id = String(c.pushTopic || '').split('_')[1];
+    var r = await http(pushBase() + '/test?athlete=' + encodeURIComponent(id));
+    toast(r && r.ok ? 'Push ist aktiv. Die Test-Nachricht sollte gleich erscheinen.' : 'Test fehlgeschlagen: ' + (r && r.error || ''));
+  }
+  if (CAPN && FM) {
+    FM.addListener('notificationActionPerformed', function () { location.reload(); });
+    FM.addListener('notificationReceived', function (e) { var n = e && e.notification; if (n && n.title) toast(n.title + (n.body ? ': ' + n.body : '')); });
+  }
 
   /* ---------- Start ---------- */
   var startP = (async function () {
