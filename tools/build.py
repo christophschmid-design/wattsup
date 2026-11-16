@@ -35,7 +35,7 @@ def web():
         shutil.rmtree(d)
     d.mkdir()
     (d / 'index.html').write_text(s, encoding='utf-8')
-    for f in ['shim.js', 'icon.svg', 'icon-180.png', 'icon-192.png', 'icon-512.png']:
+    for f in ['shim.js', 'datenschutz.html', 'icon.svg', 'icon-180.png', 'icon-192.png', 'icon-512.png']:
         shutil.copy(R / 'web' / f, d / f)
     (d / 'manifest.webmanifest').write_text(json.dumps({
         'name': 'WattsUp', 'short_name': 'WattsUp', 'start_url': './', 'scope': './',
