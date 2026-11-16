@@ -1,0 +1,12 @@
+{
+  "appId": "at.christophschmid.wattsup",
+  "appName": "WattsUp",
+  "webDir": "www",
+  "server": {
+    "url": "https://christophschmid-design.github.io/wattsup/",
+    "androidScheme": "https",
+    "allowNavigation": ["christophschmid-design.github.io", "www.strava.com", "strava.com", "*.strava.com"]
+  },
+  "android": { "backgroundColor": "#0f2236" },
+  "plugins": { "CapacitorHttp": { "enabled": true } }
+}
