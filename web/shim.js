@@ -470,6 +470,19 @@
     Object.keys(a).forEach(function (k) { if (!a[k].del && a[k].d != null) o.db[k.split('/').pop()] = a[k].d; });
     await DL.save({ filename: 'wattsup-sicherung-' + new Date().toISOString().slice(0, 10) + '.json', data: JSON.stringify(o) });
   }
+  /* Links nach außen (Strava-Aktivitäten, Google-Kalender, Hilfe) an Android übergeben */
+  if (CAPN) {
+    window.addEventListener('click', function (e) {
+      var a = e.target.closest && e.target.closest('a[href]'); if (!a) return;
+      var u; try { u = new URL(a.href, location.href); } catch (x) { return; }
+      if (u.origin === location.origin || u.protocol === 'wattsup:') return;
+      if (/strava\.com$/.test(u.hostname) && /^\/oauth/.test(u.pathname)) return;
+      e.preventDefault(); e.stopImmediatePropagation();
+      var N = PL.WattsUpNative;
+      if (N && N.openUrl) N.openUrl({ url: u.href }).catch(function () { if (PL.Browser) PL.Browser.open({ url: u.href }); });
+      else if (PL.Browser) PL.Browser.open({ url: u.href });
+    }, true);
+  }
   /* Menüeintrag in der App abfangen */
   window.addEventListener('click', function (e) {
     var t = e.target.closest && e.target.closest('[data-k="wu"]');
