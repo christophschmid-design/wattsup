@@ -1915,6 +1915,8 @@ var _rall6=rall;rall=function(){_rall6();try{rIC()}catch(e){logErr('App','Diagra
 /* WattsUp: Zustand für Widget und Benachrichtigungen */
 function wuState(){var t=iso(new Date()),r=rdy(),p=PM[t],tm=PM[addD(t,1)],X=window.ACT||[],dn=X.filter(function(x){return x.day===t}),n=S?S.fm.length:0;
 return{ts:Date.now(),day:t,lv:r?r.lv:-1,amp:r?RL3[r.lv]:'',rec:r?r.rec:'',today:p?p[2]:'',tss:p?p[1]:0,done:dn.map(function(x){return x.name}).join(', '),tomorrow:tm?tm[2]:'',form:n?Math.round(S.fm[n-1]):null,fit:n?Math.round(S.ct[n-1]):null,md:Object.keys(MOOD).filter(function(d){return d>=t}),moodOn:CF.mood!==false,mFrom:Number(CF.mFrom)||5}}
+window.WU_OPEN=function(k){open(k);if(k.indexOf('a:')===0)setTimeout(function(){var r=document.querySelector('#shb .rpe');if(r){var box=r.parentElement||r,sh=$('sh'),hd=sh.querySelector('.shh'),br=box.getBoundingClientRect(),sr=sh.getBoundingClientRect(),dn=Math.min(br.bottom-sr.bottom+16,br.top-sr.top-(hd?hd.offsetHeight:56)-8);if(dn>0)sh.scrollTo({top:sh.scrollTop+dn,behavior:'smooth'})}},150)};
+window.WU_ACTS=function(){return(window.ACT||[]).map(function(a){return{id:String(a.id),day:a.day,rated:!!LOG[a.id]}})};
 var _rallW=rall;rall=function(){_rallW();try{window.WU_STATE=wuState();if(window.WU_SYNC)window.WU_SYNC(window.WU_STATE)}catch(e){}};
 function tabRefresh(t,force){var n=Date.now();if(!force&&LT[t]&&n-LT[t]<20000)return Promise.resolve();LT[t]=n;lastV=n;var b=$('rf');b.classList.add('sp');
 if(t==='plan'||t==='saison'||force)wx(force);

@@ -524,12 +524,35 @@
     runnerCfg();
   };
   if (CAPN && LN) {
-    LN.addListener('localNotificationActionPerformed', function () { location.reload(); });
+    LN.addListener('localNotificationActionPerformed', function (e) { var x = (e && e.notification && e.notification.extra) || {}; goFrom({ k: x.k }); });
   }
   if (CAPN && PL.App) {
     var shown = now();
     PL.App.addListener('appStateChange', function (s) { if (s.isActive && now() - shown > 15 * 60000) location.reload(); if (!s.isActive) shown = now(); });
   }
+  /* Sprung aus einer Benachrichtigung direkt in den passenden Dialog */
+  var T0 = now();
+  function goFrom(o) {
+    if (!o || (o.k !== 'mood' && o.k !== 'act')) { if (now() - T0 > 8000) location.reload(); return; }
+    try { sessionStorage.setItem('wu_go', JSON.stringify({ k: o.k, id: o.id || null, t: now() })); } catch (e) { }
+    if (now() - T0 > 8000) location.reload(); else goRun();
+  }
+  function goRun() {
+    var o = null; try { o = JSON.parse(sessionStorage.getItem('wu_go') || 'null'); } catch (e) { }
+    if (!o || now() - o.t > 120000) { try { sessionStorage.removeItem('wu_go'); } catch (e) { } return; }
+    var t0 = now();
+    function done() { try { sessionStorage.removeItem('wu_go'); } catch (e) { } }
+    (function tick() {
+      if (now() - t0 > 25000) { done(); return; }
+      if (!window.WU_OPEN || !window.WU_STATE) { setTimeout(tick, 400); return; }
+      if (o.k === 'mood') { done(); WU.close(); window.WU_OPEN('mood'); return; }
+      var L = window.WU_ACTS ? window.WU_ACTS() : [], a = o.id ? L.filter(function (x) { return x.id === String(o.id); })[0] : null;
+      if (!a && o.id && now() - t0 < 20000) { setTimeout(tick, 600); return; }
+      if (!a) { var srt = L.slice().sort(function (x, y) { return x.day < y.day ? 1 : -1; }); a = srt.filter(function (x) { return !x.rated; })[0] || srt[0]; }
+      done(); if (a) { WU.close(); window.WU_OPEN('a:' + a.id); }
+    })();
+  }
+  goRun();
   /* Neue App-Version */
   var UPD = null;
   async function checkUpdate(force) {
@@ -600,7 +623,7 @@
     toast(r && r.ok ? 'Push ist aktiv. Die Test-Nachricht sollte gleich erscheinen.' : 'Test fehlgeschlagen: ' + (r && r.error || ''));
   }
   if (CAPN && FM) {
-    FM.addListener('notificationActionPerformed', function () { location.reload(); });
+    FM.addListener('notificationActionPerformed', function (e) { var d = (e && e.notification && e.notification.data) || {}; goFrom({ k: d.k, id: d.id }); });
     FM.addListener('notificationReceived', function (e) { var n = e && e.notification; if (n && n.title) toast(n.title + (n.body ? ': ' + n.body : '')); });
   }
 
