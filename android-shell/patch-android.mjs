@@ -34,8 +34,8 @@ must(m.includes('WattsUpWidget') && m.includes('REQUEST_INSTALL_PACKAGES'), 'Man
 // Gradle: Signatur, Version, Hintergrund-Plugin
 const g = `${A}/build.gradle`;
 let b = fs.readFileSync(g, 'utf8');
-b = b.replace(/versionCode \d+/, 'versionCode Integer.parseInt(System.getenv("VCODE") ?: "1")');
-b = b.replace(/versionName "[^"]*"/, 'versionName "1." + (System.getenv("VCODE") ?: "0")');
+b = b.replace(/versionCode\s*=?\s*\d+/, 'versionCode Integer.parseInt(System.getenv("VCODE") ?: "1")');
+b = b.replace(/versionName\s*=?\s*"[^"]*"/, 'versionName "1." + (System.getenv("VCODE") ?: "0")');
 if (!b.includes('signingConfigs')) {
   b = b.replace(/buildTypes \{/, `signingConfigs {
         release {
@@ -48,12 +48,9 @@ if (!b.includes('signingConfigs')) {
     buildTypes {`);
   b = b.replace(/release \{\s*\n(\s*)minifyEnabled/, (s, ind) => `release {\n${ind}signingConfig signingConfigs.release\n${ind}minifyEnabled`);
 }
-if (!b.includes('background-runner/android/src/main/libs')) {
-  b = b.replace(/\nrepositories \{/, `\nrepositories {\n    flatDir {\n        dirs '../../node_modules/@capacitor/background-runner/android/src/main/libs', 'libs'\n    }`);
-}
 fs.writeFileSync(g, b);
 must(b.includes('signingConfig signingConfigs.release'), 'Signatur');
-must(b.includes('background-runner/android/src/main/libs'), 'flatDir für Hintergrund-Plugin');
+must(b.includes('System.getenv("VCODE")'), 'Versionsnummer');
 
 // Java-Code
 const jd = `${A}/src/main/java/${PKG}`;

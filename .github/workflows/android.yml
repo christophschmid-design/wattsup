@@ -24,7 +24,7 @@ jobs:
       - name: Capacitor-Projekt erzeugen
         run: |
           npm install --no-audit --no-fund
-          if [ -f google-services.json ]; then npm install --no-audit --no-fund @capacitor-firebase/messaging@^7 firebase@^11; fi
+          if [ -f google-services.json ]; then npm install --no-audit --no-fund @capacitor-firebase/messaging@^8 firebase@^12; fi
           npx cap add android
           node patch-android.mjs
           npx cap sync android

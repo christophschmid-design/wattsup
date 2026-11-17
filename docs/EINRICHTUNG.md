@@ -96,11 +96,10 @@ Web-Version in Edge öffnen → Menü (…) → **Apps** → **Diese Website als
 
 - **Benachrichtigungen:** Beim ersten Start fragt Android, ob WattsUp Mitteilungen senden darf → **Zulassen**. Einstellbar im Menü unter Verbindungen und Kosten:
   - Morgengefühl ab 5 Uhr (entfällt, sobald es eingetragen ist)
-  - Neue Strava-Aktivität bewerten (Prüfung etwa alle 30 Minuten)
+  - Neue Strava-Aktivität bewerten (per Push, siehe Schritt 8)
   - Sonntag 19 Uhr: Wochenplanung
 - **Widget:** Startbildschirm lange drücken → **Widgets** → **WattsUp** auf den Startbildschirm ziehen. Es zeigt Tagesampel, heutige Einheit, Form und Fitness.
 - **Updates:** Gibt es eine neue App-Version, erscheint unten in WattsUp ein Hinweis. **Jetzt aktualisieren** lädt sie herunter und öffnet die Installation. Beim ersten Mal fragt Android einmalig, ob WattsUp Apps installieren darf.
-- Falls die Benachrichtigungen bei neuen Aktivitäten ausbleiben: In den Android-Einstellungen bei WattsUp unter **Akku** „Nicht eingeschränkt“ wählen.
 
 ## 8. Push-Nachrichten für neue Aktivitäten (etwa 25 Minuten)
 
@@ -133,7 +132,7 @@ Dann **Actions** → **Push-Dienst veröffentlichen** → **Run workflow**. Die 
 **D. In WattsUp**
 1. Sobald die google-services.json im Projekt ist, kommt eine neue App-Version → in der App aktualisieren.
 2. Menü → **Verbindungen und Kosten** → **Push für neue Aktivitäten** → Adresse eintragen → **Push aktivieren**.
-3. Eine Test-Nachricht erscheint. Ab dann meldet WattsUp neue Aktivitäten sofort, die 30-Minuten-Prüfung schaltet sich ab.
+3. Eine Test-Nachricht erscheint. Ab dann meldet WattsUp neue Aktivitäten sofort.
 
 ## 9. Gewicht automatisch von der Waage (Health Connect)
 
