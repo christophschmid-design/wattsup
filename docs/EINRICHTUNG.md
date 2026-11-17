@@ -139,3 +139,15 @@ Dann **Actions** → **Push-Dienst veröffentlichen** → **Run workflow**. Die 
 1. In der Renpho-App die Verbindung zu **Google Health / Health Connect** einschalten (Gewicht freigeben).
 2. In WattsUp: Menü → **Einstellungen** → **Gewicht aus Google Health** → **Verbinden** → bei Android den Zugriff auf **Gewicht** erlauben.
 3. Ab dann übernimmt WattsUp beim Öffnen automatisch neue Werte (die erste Messung des Tages) in den Gewichtsverlauf und rechnet damit Watt pro Kilo und die Zeitprognose.
+
+## 10. Zwift-Einheiten automatisch in Zwift (intervals.icu)
+
+WattsUp überträgt die geplanten Zwift-Einheiten der nächsten 7 Tage an intervals.icu, von dort erscheinen sie in Zwift (auch am Tablet). Kein Nachbauen im Workout Builder mehr.
+
+1. Auf **intervals.icu** ein kostenloses Konto anlegen.
+2. **Settings** → bei **Zwift** auf **Connect** → mit dem Zwift-Konto anmelden. Den Download von Aktivitäten abschalten bzw. keine Aktivitätsarten auswählen. Strava bei intervals.icu **nicht** verbinden.
+3. **Settings** → ganz unten **Developer Settings** → **API Key** anzeigen und kopieren.
+4. In WattsUp: Menü → **Einstellungen** → **Zwift über intervals.icu** → Schlüssel eintragen → **Speichern**.
+5. In Zwift: Die Einheit von heute steht auf dem Startbildschirm, alle weiteren unter **Workouts → Eigene → Intervals.icu**.
+
+Die FTP muss in Zwift und intervals.icu gleich sein. Nach dem Morgengefühl wird die Einheit des Tages bei gelber Ampel um 5 %, bei roter um 10 % reduziert, mit Begründung in der Beschreibung (abschaltbar).

@@ -392,7 +392,7 @@
   var tT = null;
   function toast(m) { addCss(); var t = document.querySelector('.wu-t'); if (!t) { t = document.createElement('div'); t.className = 'wu-t'; document.body.appendChild(t); } t.textContent = m; t.hidden = false; clearTimeout(tT); tT = setTimeout(function () { t.hidden = true; }, 4000); }
   function st(ok, txt) { return '<span class="wu-st ' + (ok === true ? 'wu-ok' : ok === 'w' ? 'wu-wa' : 'wu-no') + '">' + txt + '</span>'; }
-  function chk(id, lab, on) { return '<label style="display:flex;align-items:center;gap:10px;font-size:.95rem;color:inherit;margin:10px 0"><input type="checkbox" id="' + id + '"' + (on ? ' checked' : '') + ' style="width:22px;height:22px">' + lab + '</label>'; }
+  function chk(id, lab, on) { return '<label style="display:flex;align-items:center;gap:10px;font-size:.95rem;color:inherit;margin:10px 0"><input type="checkbox" id="' + id + '"' + (on ? ' checked' : '') + ' style="width:22px;height:22px;flex:none">' + lab + '</label>'; }
   function fld(id, lab, val, type, ph) { return '<label for="' + id + '">' + lab + '</label><input id="' + id + '" type="' + (type || 'text') + '" value="' + E(val || '') + '" placeholder="' + E(ph || '') + '" autocomplete="off" autocapitalize="off" spellcheck="false">'; }
   var PG = 'home';
   function hdr(t, sub) { return '<div class="wu-top">' + (PG !== 'home' ? '<button class="wu-bk" data-wu="pg:home" aria-label="Zurück">‹</button>' : '') + '<h2>' + t + '</h2>' + (PG === 'home' ? '<button class="wu-x" data-wu="close" aria-label="Schließen">×</button>' : '') + '</div>' + (sub ? '<p class="wu-mu">' + sub + '</p>' : ''); }
@@ -410,7 +410,8 @@
       ]) +
       grp('Verbindungen', [
         row('pg:strava', 'Strava', stOk() ? 'Aktivitäten und Leistungsdaten' : 'Noch nicht verbunden', stOk() ? st(true, 'verbunden') : st(false, 'aus')),
-        row('pg:google', 'Google Kalender und Abgleich', gOk() ? 'Kalender „Training“, Abgleich über Google Drive' : 'Noch nicht verbunden', gOk() ? syncChip() : st(false, 'aus'))
+        row('pg:google', 'Google Kalender und Abgleich', gOk() ? 'Kalender „Training“, Abgleich über Google Drive' : 'Noch nicht verbunden', gOk() ? syncChip() : st(false, 'aus')),
+        row('pg:intervals', 'Zwift über intervals.icu', c.ivKey ? (c.ivErr ? c.ivErr : 'Zwift-Einheiten automatisch in Zwift') : 'Noch nicht verbunden', c.ivKey && c.ivOn !== false ? (c.ivErr ? st(false, 'Fehler') : st(true, 'aktiv')) : st('w', 'aus'))
       ].concat(CAPN ? [row('pg:health', 'Gesundheitsdaten', 'Waage, Schlaf, Ruhepuls und HRV über Health Connect', c.hcOk && c.hcOn !== false ? st(true, 'verbunden') : st('w', 'aus'))] : [])) +
       grp('Planung', [
         row('pg:claude', 'Claude und Kosten', c.aKey ? (MODELS[c.model || 'claude-sonnet-5-5'] || {}).n + ', diesen Monat ' + usd(sum) + (lim > 0 ? ' von ' + usd(lim) : '') : 'Noch kein Schlüssel', c.aKey ? (lim > 0 && sum >= lim ? st(false, 'Grenze') : lim > 0 && sum >= lim * .8 ? st('w', '80 %') : st(true, 'bereit')) : st(false, 'aus'))
@@ -482,19 +483,33 @@
       '<p class="wu-mu">Schaltet die Vorschläge im Menü, den Hinweis am Freitag um 18 Uhr und die Berücksichtigung in der Wochenplanung gemeinsam ein oder aus. Geprüft werden 37 Touren in Salzburg, Bayern, Tirol und der Steiermark nach Lawinenlage, Schnee und Wetter, mit Link zu Skitourenguru.</p></div>' +
       '<button class="wu-b alt" data-wu="app:ski">Vorschläge ansehen</button>';
   }
+  function pageIntervals() {
+    var c = cfg(), ftp = window.WU_IV ? (window.WU_IV(false) || {}).ftp : null;
+    return hdr('Zwift über intervals.icu', 'Überträgt die geplanten Zwift-Einheiten der nächsten 7 Tage an intervals.icu. Von dort erscheinen sie in Zwift unter Workouts → Eigene → Intervals.icu, die Einheit von heute direkt auf dem Startbildschirm.') +
+      '<div class="wu-c"><p style="margin:0 0 4px">' + (c.ivKey && c.ivOn !== false ? (c.ivErr ? st(false, 'Fehler') : st(true, 'aktiv')) : st('w', 'aus')) + (c.ivLast ? ' zuletzt übertragen ' + new Date(c.ivLast).toLocaleString('de-AT', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' }) + ', ' + (c.ivN || 0) + (c.ivN === 1 ? ' Einheit' : ' Einheiten') : '') + '</p>' +
+      (c.ivErr ? '<p class="wu-mu">' + E(c.ivErr) + '</p>' : '') + (c.ivAdjNow ? '<p class="wu-mu">Heute angepasst: ' + E(c.ivAdjNow) + '</p>' : '') +
+      chk('wu-ivOn', 'Automatisch übertragen', c.ivOn !== false) +
+      chk('wu-ivAdj', 'Einheit von heute nach dem Morgengefühl an die Tagesform anpassen (gelb −5 %, rot −10 %)', c.ivAdj !== false) +
+      (c.ivKey ? '<button class="wu-b alt" data-wu="ivs">Jetzt übertragen</button>' : '') + '</div>' +
+      '<div class="wu-c"><p class="wu-mu" style="margin-top:0">Wichtig: Die FTP muss in Zwift und intervals.icu gleich sein' + (ftp ? ', in WattsUp aktuell ' + ftp + ' W' : '') + '. Die Leistung wird in Prozent der FTP übertragen.</p>' +
+      '<p class="wu-mu">Nur Workouts gehen hin, nichts kommt zurück. Damit dort keine Fahrten landen: Strava bei intervals.icu nicht verbinden und bei Zwift den Download von Aktivitäten abschalten.</p></div>' +
+      '<details class="wu-c"' + (c.ivKey ? '' : ' open') + '><summary>API-Schlüssel ' + (c.ivKey ? st(true, 'hinterlegt') : st(false, 'fehlt')) + '</summary>' + fld('wu-ivKey', 'intervals.icu → Settings → ganz unten „Developer Settings“ → API Key', c.ivKey, 'password') + '</details>' + saveBtn();
+  }
   function saveBtn() { return '<button class="wu-b" data-wu="save">Speichern</button>'; }
   function render(note) {
-    var f = { ski: pageSki, home: pageHome, strava: pageStrava, google: pageGoogle, health: pageHealth, claude: pageClaude, notif: pageNotif, app: pageApp, data: pageData }[PG] || pageHome;
+    var f = { intervals: pageIntervals, ski: pageSki, home: pageHome, strava: pageStrava, google: pageGoogle, health: pageHealth, claude: pageClaude, notif: pageNotif, app: pageApp, data: pageData }[PG] || pageHome;
     return f(note);
   }
   function saveForm() {
     function v(id) { var e = document.getElementById(id); return e ? e.value.trim() : undefined; }
     function cb(id) { var e = document.getElementById(id); return e ? e.checked : undefined; }
     var p = {};
-    [['wu-stId', 'stId'], ['wu-stSec', 'stSec'], ['wu-gId', 'gId'], ['wu-gSec', 'gSec'], ['wu-aKey', 'aKey'], ['wu-model', 'model'], ['wu-pushUrl', 'pushUrl']].forEach(function (x) { var val = v(x[0]); if (val !== undefined) p[x[1]] = val; });
+    [['wu-stId', 'stId'], ['wu-stSec', 'stSec'], ['wu-gId', 'gId'], ['wu-gSec', 'gSec'], ['wu-aKey', 'aKey'], ['wu-model', 'model'], ['wu-pushUrl', 'pushUrl'], ['wu-ivKey', 'ivKey']].forEach(function (x) { var val = v(x[0]); if (val !== undefined) p[x[1]] = val; });
     if (v('wu-cal') !== undefined) p.cal = v('wu-cal') || CAL0;
     if (v('wu-once') !== undefined) p.once = v('wu-once') || null;
     if (document.getElementById('wu-skiOn')) { var was = cfg().skiOn !== false, now2 = cb('wu-skiOn'); p.skiOn = now2; if (was !== now2 && FM && cfg().pushTopic) { try { if (now2) FM.subscribeToTopic({ topic: cfg().pushTopic + '_ski' }); else FM.unsubscribeFromTopic({ topic: cfg().pushTopic + '_ski' }); } catch (e) { } } }
+    if (document.getElementById('wu-ivOn')) { p.ivOn = cb('wu-ivOn'); p.ivAdj = cb('wu-ivAdj'); if (p.ivAdj !== (cfg().ivAdj !== false) || p.ivOn !== (cfg().ivOn !== false)) p.ivSig = ''; }
+    if (v('wu-ivKey') !== undefined && v('wu-ivKey') !== (cfg().ivKey || '')) p.ivSig = '';
     if (v('wu-limit') !== undefined) { var lim = parseFloat(String(v('wu-limit') || '0').replace(',', '.')); p.limit = isNaN(lim) ? 0 : lim; }
     if (document.getElementById('wu-nMood')) { var wasAct = cfg().nAct !== false; p.nMood = cb('wu-nMood'); p.nAct = cb('wu-nAct'); p.nPlan = cb('wu-nPlan'); p.nWeigh = cb('wu-nWeigh'); setCfg(p); if (wasAct !== (cfg().nAct !== false)) pushTopic(cfg().nAct !== false); }
     else setCfg(p);
@@ -538,6 +553,7 @@
     if (k === 'exp') exportData();
     if (k === 'hc') { await hcSync(true); WU.open(); }
     if (k === 'hcd') { hcDiag(); return; }
+    if (k === 'ivs') { await ivSync(true); WU.open(); }
     if (k === 'hcx') { setCfg({ hcOn: cfg().hcOn === false }); WU.open(); }
     if (k === 'push') { try { await pushActivate(); } catch (x) { toast('Push einrichten fehlgeschlagen: ' + (x.message || x)); } WU.open(); }
     if (k === 'pusht') { try { await pushTest(); } catch (x) { toast('Test fehlgeschlagen: ' + (x.message || x)); } }
@@ -759,6 +775,40 @@
     try { var r = await http(base + '/ski'); setCfg({ skiLast: now() }); for (var i = 0; i < 50 && !window.WU_SKISET; i++) await new Promise(function (ok) { setTimeout(ok, 300); }); if (window.WU_SKISET && r && r.alle) window.WU_SKISET(r); } catch (e) { }
   }
   WU.skiSync = skiSync;
+
+  /* Zwift über intervals.icu: geplante Zwift-Einheiten der nächsten 7 Tage übertragen.
+     Nur Workouts hin, nichts zurück. Läuft nur, wenn sich etwas geändert hat. */
+  var IVB = 'https://intervals.icu/api/v1/athlete/0';
+  function ivHdr() { return { Authorization: 'Basic ' + btoa('API_KEY:' + cfg().ivKey), 'Content-Type': 'application/json' }; }
+  var ivBusy = false;
+  async function ivSync(force) {
+    var c = cfg();
+    if (!c.ivKey || c.ivOn === false || ivBusy || !window.WU_IV) return;
+    var d = window.WU_IV(c.ivAdj !== false);
+    if (!d) return;
+    var ev = d.list.map(function (x) {
+      return { category: 'WORKOUT', start_date_local: x.start, type: 'VirtualRide', name: x.name, description: x.desc, filename: x.date + '.zwo', file_contents: x.xml, external_id: 'wu-' + x.date };
+    });
+    var t0 = new Date(), today = t0.getFullYear() + '-' + ('0' + (t0.getMonth() + 1)).slice(-2) + '-' + ('0' + t0.getDate()).slice(-2);
+    var sig = JSON.stringify([today, ev]);
+    if (!force && sig === c.ivSig) return;
+    ivBusy = true;
+    try {
+      if (ev.length) await http(IVB + '/events/bulk?upsert=true', { method: 'POST', headers: ivHdr(), body: JSON.stringify(ev) });
+      var ids = ev.map(function (e) { return e.external_id; });
+      var stale = (c.ivIds || []).filter(function (id) { return id.slice(3) >= today && ids.indexOf(id) < 0; });
+      if (stale.length) await http(IVB + '/events/bulk-delete', { method: 'PUT', headers: ivHdr(), body: JSON.stringify(stale.map(function (id) { return { external_id: id }; })) });
+      setCfg({ ivSig: sig, ivIds: ids, ivLast: now(), ivN: ev.length, ivAdjNow: (d.list[0] && d.list[0].date === today && d.list[0].adj) || '', ivErr: '' });
+      if (force) toast(ev.length ? ev.length + (ev.length === 1 ? ' Zwift-Einheit' : ' Zwift-Einheiten') + ' an intervals.icu übertragen.' : 'Keine Zwift-Einheiten in den nächsten 7 Tagen.' + (stale.length ? ' Alte Einträge entfernt.' : ''));
+    } catch (e) {
+      var m = e && e.status === 401 || e && e.status === 403 ? 'API-Schlüssel ungültig' : (!CAPN && e && e.code === 'network' ? 'Im Browser blockiert, bitte in der Android-App übertragen' : (e && e.message) || String(e));
+      setCfg({ ivErr: m });
+      if (force) toast('intervals.icu: ' + m);
+    } finally { ivBusy = false; }
+  }
+  WU.ivSync = ivSync;
+  setTimeout(function () { ivSync(false); }, 6000);
+  setInterval(function () { if (document.visibilityState === 'visible') ivSync(false); }, 60000);
   window.WU_SKI_ON = function () { return cfg().skiOn !== false; };
   setTimeout(function () { skiSync(false); }, 2500);
 
