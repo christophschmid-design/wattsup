@@ -15,7 +15,6 @@ jobs:
         with:
           distribution: temurin
           java-version: 17
-      - uses: android-actions/setup-android@v3
       - name: Karoo-Bibliothek holen und Coach einsetzen
         run: |
           git clone --quiet https://github.com/hammerheadnav/karoo-ext.git ext
