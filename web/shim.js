@@ -624,7 +624,8 @@
     if (!CAPN || hcBusy) return;
     var c = cfg();
     if (!HC) { if (force) toast('Diese App-Version kann Health Connect noch nicht lesen. Bitte zuerst aktualisieren.'); return; }
-    if (!force && (!c.hcOk || c.hcOn === false || now() - (c.hcLast || 0) < 30 * 60000)) return;
+    var d4 = new Date(); d4.setHours(4, 0, 0, 0); if (d4.getTime() > now()) d4.setDate(d4.getDate() - 1);
+    if (!force && (!c.hcOk || c.hcOn === false || (now() - (c.hcLast || 0) < 30 * 60000 && (c.hcLast || 0) > d4.getTime()))) return;
     hcBusy = true;
     try {
       var av = await HC.isAvailable();
@@ -721,7 +722,7 @@
     setCfg({ recLast: now(), recN: list.length });
   }
   if (CAPN) {
-    setTimeout(function () { hcSync(false); }, 4000);
+    hcSync(false);
     document.addEventListener('visibilitychange', function () { if (document.visibilityState === 'visible') hcSync(false); });
   }
 
@@ -740,7 +741,7 @@
     (function tick() {
       if (now() - t0 > 25000) { done(); return; }
       if (!window.WU_OPEN || !window.WU_STATE) { setTimeout(tick, 400); return; }
-      if (o.k === 'mood') { done(); WU.close(); window.WU_OPEN('mood'); return; }
+      if (o.k === 'mood') { done(); WU.close(); var go = function () { window.WU_OPEN('mood'); }; if (typeof hcSync === 'function' && cfg().hcOk) { Promise.race([hcSync(false), new Promise(function (r) { setTimeout(r, 6000); })]).then(go, go); } else go(); return; }
       var L = window.WU_ACTS ? window.WU_ACTS() : [], a = o.id ? L.filter(function (x) { return x.id === String(o.id); })[0] : null;
       if (!a && o.id && now() - t0 < 20000) { setTimeout(tick, 600); return; }
       if (!a) { var srt = L.slice().sort(function (x, y) { return x.day < y.day ? 1 : -1; }); a = srt.filter(function (x) { return !x.rated; })[0] || srt[0]; }
