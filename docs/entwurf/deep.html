@@ -1,0 +1,285 @@
+<!doctype html><html lang="de"><head><meta charset="utf-8"><link rel="stylesheet" href="base.css"><style>
+.scrn{position:absolute;inset:0;background:var(--bg);overflow:hidden}
+.in{padding:6px 18px 30px}
+.nav{display:flex;align-items:center;gap:10px;margin:6px 0 14px}
+.nav .bk{width:30px;height:30px;border-radius:50%;background:var(--card);display:grid;place-items:center;font-size:18px;color:var(--mu)}
+.nav b{font-size:20px;font-weight:800;letter-spacing:-.02em}
+.li{display:flex;align-items:center;justify-content:space-between;padding:13px 0;border-bottom:1px solid #1d3049;font-size:15px}
+.li:last-child{border:0}.li span{color:var(--mu);font-size:12px}
+.tile{background:var(--card);border-radius:18px;padding:12px;height:118px;display:flex;flex-direction:column;justify-content:space-between}
+.tile b{font-size:14px}
+.seg{display:flex;background:#0f1d30;border-radius:11px;padding:3px;gap:2px;margin-bottom:10px}
+.seg div{flex:1;text-align:center;font-size:12px;font-weight:700;padding:6px 0;border-radius:8px;color:var(--mu)}
+.seg div.on{background:var(--card2);color:var(--tx)}
+table{width:100%;border-collapse:collapse;font-size:13px}td,th{padding:7px 2px;text-align:right;border-bottom:1px solid #1d3049}th{color:var(--mu);font-weight:600;font-size:11px;text-transform:uppercase;letter-spacing:.05em}td:first-child,th:first-child{text-align:left}
+.leg{display:flex;gap:12px;font-size:11px;color:var(--mu);flex-wrap:wrap;margin-top:6px}.leg i{display:inline-block;width:10px;height:3px;border-radius:2px;margin-right:4px;vertical-align:middle}
+.tip{position:absolute;background:#e9f1fa;color:#0b1624;border-radius:12px;padding:8px 10px;font-size:12px;line-height:1.35;box-shadow:0 8px 24px rgba(0,0,0,.4);opacity:0;white-space:nowrap}
+.acc{background:var(--card);border-radius:16px;padding:11px 14px;margin-bottom:8px}
+.acc .h{display:flex;align-items:center;gap:8px;font-size:14px;font-weight:700}
+.acc .h span{margin-left:auto;font-size:11px;color:var(--mu);font-weight:600}
+.acc .b{overflow:hidden;font-size:13px;color:#c9d6e4;line-height:1.45}
+.dot{width:10px;height:10px;border-radius:50%;flex:none}
+.inp{background:#0f1d30;border:1px solid #284466;border-radius:12px;padding:11px 12px;font-size:14px;min-height:44px}
+.chg{display:flex;gap:10px;align-items:flex-start;padding:9px 0;border-bottom:1px solid #1d3049;font-size:13px}
+.chg .ck{width:22px;height:22px;border-radius:7px;background:#183d2f;color:var(--g);display:grid;place-items:center;font-weight:800;flex:none}
+.st{font-size:11px;font-weight:700;padding:3px 8px;border-radius:99px;background:#183d2f;color:var(--g)}
+.st.w{background:#3a2f17;color:var(--y)}
+.grp{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--mu);margin:14px 0 4px}
+</style></head><body>
+<div class="cap"><h1 id="ch"></h1><p id="cp"></p></div>
+<div class="ph">
+ <div class="sb"><span>18:05</span><span>▂▄▆ ▮</span></div>
+ <div class="scr" id="SCR">
+
+ <!-- WEG (unten) -->
+ <div class="scrn" id="weg"><div class="in">
+  <div class="top"><b>Weg</b><span>bis Ötztaler · 40 Wochen</span><div class="gear">⚙</div></div>
+  <div class="card"><div class="lab">Ötztaler-Prognose</div><div class="big">10:12 h</div><div class="mu" style="font-size:12px">Ziel unter 10:00 h</div></div>
+  <div class="card"><div class="lab" style="margin-bottom:10px">Ziele</div>
+   <div class="goal"><div class="row"><b>FTP</b><span><b>250 W</b> <span class="mu">→ 265 W</span></span></div><div class="bar"><i style="width:12%"></i></div></div>
+   <div class="goal" style="margin:0"><div class="row"><b>Gewicht</b><span><b>78,0 kg</b> <span class="mu">→ 74 kg</span></span></div><div class="bar"><i style="width:4%;background:var(--b)"></i></div></div></div>
+  <div class="card" style="border:1px solid #2e5f8f"><div class="lab" style="color:#9cc8ff">Jetzt · Grundlage 1</div><div style="font-size:15px;font-weight:700;margin-top:6px">Lange Zone-2-Einheiten, 1× SIT pro Woche, 2× Kraft</div></div>
+  <div class="card" style="padding:4px 16px">
+   <div class="li" id="mAna"><b>📊 Analysen</b><span>Form · Leistung · Zonen · Körper ›</span></div>
+   <div class="li" id="mArc"><b>🗂 Alle Einheiten</b><span>Archiv mit Filter ›</span></div>
+   <div class="li" id="mSai"><b>🗓 Saison im Detail</b><span>Phasen · Rennen · Bericht ›</span></div>
+   <div class="li"><b>⛷ Skitouren</b><span>Vorschlag fürs Wochenende ›</span></div>
+   <div class="li"><b>🏋 Kraftübungen</b><span>Programm und Timer ›</span></div>
+  </div>
+ </div></div>
+
+ <!-- ANALYSEN -->
+ <div class="scrn" id="ana"><div class="in">
+  <div class="nav"><div class="bk">‹</div><b>Analysen</b></div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+   <div class="tile" id="tForm"><div><b>Form &amp; Belastung</b><div class="mu" style="font-size:12px">Fitness 22 · Form +20</div></div><svg viewBox="0 0 140 40" height="40"><path d="M0,30 C20,20 40,14 60,12 C80,10 100,18 140,26" stroke="#5aa9ff" stroke-width="3" fill="none"/></svg></div>
+   <div class="tile" id="tLei"><div><b>Leistung</b><div class="mu" style="font-size:12px">20 min: 262 W</div></div><svg viewBox="0 0 140 40" height="40"><path d="M0,4 C20,14 40,22 70,26 C100,29 120,31 140,33" stroke="#f5b941" stroke-width="3" fill="none"/></svg></div>
+   <div class="tile" id="tZon"><div><b>Zonen &amp; Umfang</b><div class="mu" style="font-size:12px">4,5 h · 3 Einheiten</div></div><svg viewBox="0 0 140 40" height="40"><g fill="#3d7bb8"><rect x="2" y="12" width="14" height="28"/><rect x="22" y="20" width="14" height="20"/><rect x="42" y="8" width="14" height="32"/><rect x="62" y="16" width="14" height="24"/><rect x="82" y="22" width="14" height="18"/><rect x="102" y="28" width="14" height="12"/><rect x="122" y="34" width="14" height="6"/></g></svg></div>
+   <div class="tile" id="tGew"><div><b>Gewicht &amp; Körper</b><div class="mu" style="font-size:12px">78,0 kg · 3,2 W/kg</div></div><svg viewBox="0 0 140 40" height="40"><path d="M0,10 C30,12 60,18 90,22 C110,24 125,26 140,28" stroke="#3ddc97" stroke-width="3" fill="none"/></svg></div>
+  </div>
+  <div class="card" style="margin-top:12px;font-size:13px;color:#c9d6e4;line-height:1.45">💡 <b>Auffällig:</b> In den letzten 4 Wochen 60 % im Tempobereich, Soll sind 8 %. Mehr wirklich locker fahren.</div>
+ </div></div>
+
+ <!-- FORM -->
+ <div class="scrn" id="form"><div class="in">
+  <div class="nav"><div class="bk">‹</div><b>Form &amp; Belastung</b></div>
+  <div class="seg" id="fseg"><div>4 Wo</div><div class="on">3 Mon</div><div>Saison</div></div>
+  <div class="card" style="position:relative;padding:12px 10px">
+   <svg id="fsvg" width="100%" viewBox="0 0 340 200">
+    <path id="corr" d="" fill="#3ddc97" opacity=".12"/>
+    <g stroke="#1d3049"><line x1="0" y1="50" x2="340" y2="50"/><line x1="0" y1="100" x2="340" y2="100"/><line x1="0" y1="150" x2="340" y2="150"/></g>
+    <path id="fl1" pathLength="1" stroke-dasharray="1 1" d="" stroke="#5aa9ff" stroke-width="3" fill="none"/>
+    <path id="fl2" pathLength="1" stroke-dasharray="1 1" d="" stroke="#f5a14a" stroke-width="2" fill="none" opacity=".85"/>
+    <path id="fl3" pathLength="1" stroke-dasharray="1 1" d="" stroke="#3ddc97" stroke-width="2" fill="none"/>
+    <line id="fx" x1="0" y1="0" x2="0" y2="200" stroke="#fff" opacity="0" stroke-dasharray="3 3"/>
+   </svg>
+   <div class="leg"><span><i style="background:#5aa9ff"></i>Fitness</span><span><i style="background:#f5a14a"></i>Ermüdung</span><span><i style="background:#3ddc97"></i>Form</span><span><i style="background:#3ddc97;opacity:.3;height:8px"></i>Soll-Korridor</span></div>
+   <div class="tip" id="ftip" style="left:120px;top:30px"></div>
+  </div>
+  <div class="card" style="font-size:13px;line-height:1.5;color:#c9d6e4"><b style="color:var(--tx)">Was heißt das?</b><br>Fitness 22 liegt knapp unter dem Soll für Grundlage 1 (23–29). Form +20: sehr frisch, du kannst mehr Umfang vertragen.</div>
+  <div class="card" style="padding:6px 16px"><table><tr><th></th><th>Heute</th><th>Soll</th><th>4 Wo</th></tr><tr><td>Fitness</td><td><b>22</b></td><td>23–29</td><td style="color:var(--r)">−9</td></tr><tr><td>Ermüdung</td><td><b>2</b></td><td>17–32</td><td>−28</td></tr><tr><td>Form</td><td><b>+20</b></td><td>−10…5</td><td>+19</td></tr></table></div>
+ </div></div>
+
+ <!-- LEISTUNG -->
+ <div class="scrn" id="lei"><div class="in">
+  <div class="nav"><div class="bk">‹</div><b>Leistung</b></div>
+  <div class="seg" id="lseg"><div class="on">Frisch</div><div>Nach 2000 kJ</div></div>
+  <div class="card" style="padding:12px 10px">
+   <svg width="100%" viewBox="0 0 340 190">
+    <g stroke="#1d3049"><line x1="0" y1="40" x2="340" y2="40"/><line x1="0" y1="90" x2="340" y2="90"/><line x1="0" y1="140" x2="340" y2="140"/></g>
+    <g font-size="9" fill="#5f7590" font-family="Inter"><text x="2" y="186">5 s</text><text x="70" y="186">1 min</text><text x="150" y="186">5 min</text><text x="215" y="186">20 min</text><text x="268" y="186">1 h</text><text x="318" y="186">5 h</text></g>
+    <path d="M0,20 C40,60 70,95 110,112 C160,125 210,130 250,136 C290,142 320,150 340,156" stroke="#f5b941" stroke-width="3" fill="none"/>
+    <path id="dur" d="M0,30 C40,72 70,108 110,124 C160,138 210,146 250,152 C290,158 320,164 340,170" stroke="#ff6b6b" stroke-width="2.5" fill="none" stroke-dasharray="5 4" opacity="0"/>
+    <path d="M150,118 L340,130" stroke="#3ddc97" stroke-width="2" stroke-dasharray="3 4" fill="none"/>
+    <text x="336" y="124" text-anchor="end" font-size="9" fill="#3ddc97" font-family="Inter">nötig für &lt; 10 h</text>
+   </svg>
+   <div class="leg"><span><i style="background:#f5b941"></i>Saison 2026</span><span id="durleg" style="opacity:0"><i style="background:#ff6b6b"></i>nach 2000 kJ</span><span><i style="background:#3ddc97"></i>Ziel</span></div>
+  </div>
+  <div class="card" id="durtx" style="font-size:13px;color:#c9d6e4;line-height:1.45;display:none">Nach 2000 kJ verlierst du bei 20 min <b>−7 %</b>. Für den Ötztaler (ca. 9000 kJ) ist das der wichtigste Hebel: lange Einheiten mit Schwelle am Ende.</div>
+  <div class="card" style="padding:6px 16px"><table><tr><th>Bestwerte</th><th>Watt</th><th>W/kg</th><th>Datum</th></tr><tr><td>5 s</td><td><b>727</b></td><td>9,3</td><td>19.6.</td></tr><tr><td>1 min</td><td><b>465</b></td><td>6,0</td><td>25.5.</td></tr><tr><td>5 min</td><td><b>288</b></td><td>3,7</td><td>17.5.</td></tr><tr><td>20 min</td><td><b>262</b></td><td>3,4</td><td>17.5.</td></tr><tr><td>1 h</td><td><b>229</b></td><td>2,9</td><td>28.4.</td></tr></table></div>
+ </div></div>
+
+ <!-- ZONEN -->
+ <div class="scrn" id="zon"><div class="in">
+  <div class="nav"><div class="bk">‹</div><b>Zonen &amp; Umfang</b></div>
+  <div class="seg" id="zseg"><div class="on">Zonen</div><div>Stunden</div><div>TSS</div></div>
+  <div class="card" style="padding:12px 10px"><svg width="100%" viewBox="0 0 340 170" id="zsvg"></svg>
+   <div class="leg"><span><i style="background:#3d7bb8"></i>Zone 1–2</span><span><i style="background:#f5b941"></i>Tempo</span><span><i style="background:#f5734a"></i>Schwelle</span><span><i style="background:#c44569"></i>Darüber</span></div></div>
+  <div class="card"><div class="lab" style="margin-bottom:10px">Letzte 4 Wochen gegen Soll · Grundlage 1</div>
+   <div id="zcmp"></div>
+   <div style="font-size:13px;color:var(--y);margin-top:8px;font-weight:600">→ Mehr wirklich locker fahren, Tempo-Anteil halbieren.</div></div>
+ </div></div>
+
+ <!-- GEWICHT -->
+ <div class="scrn" id="gew"><div class="in">
+  <div class="nav"><div class="bk">‹</div><b>Gewicht &amp; Körper</b></div>
+  <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px">
+   <div class="card" style="margin:0;padding:10px"><div class="lab">Gewicht</div><b style="font-size:19px">78,0</b> <span class="mu" style="font-size:11px">kg</span></div>
+   <div class="card" style="margin:0;padding:10px"><div class="lab">Körperfett</div><b style="font-size:19px">18,4</b> <span class="mu" style="font-size:11px">%</span></div>
+   <div class="card" style="margin:0;padding:10px"><div class="lab">W/kg</div><b style="font-size:19px">3,2</b> <span class="mu" style="font-size:11px">→ 3,6</span></div></div>
+  <div class="card" style="padding:12px 10px"><svg width="100%" viewBox="0 0 340 160">
+   <line x1="0" y1="130" x2="340" y2="130" stroke="#3ddc97" stroke-dasharray="4 4" opacity=".6"/><text x="338" y="124" text-anchor="end" font-size="9" fill="#3ddc97" font-family="Inter">Ziel 74 kg</text>
+   <g id="wdots" fill="#5f7590"></g>
+   <path id="wl" pathLength="1" stroke-dasharray="1 1" d="M0,30 C40,34 80,36 120,44 C160,50 180,52 200,54" stroke="#5aa9ff" stroke-width="3" fill="none"/>
+   <path d="M200,54 C240,70 290,100 340,130" stroke="#5aa9ff" stroke-width="2" stroke-dasharray="3 4" fill="none" opacity=".7"/>
+  </svg><div class="leg"><span><i style="background:#5aa9ff"></i>7-Tage-Schnitt</span><span><i style="background:#5f7590"></i>Messungen (Renpho)</span><span>--- Tempo bis Ziel</span></div></div>
+  <div class="card" style="font-size:13px;color:#c9d6e4;line-height:1.5"><b style="color:var(--tx)">Tempo:</b> −0,2 kg pro Woche. Bei −0,3 kg erreichst du 74 kg Ende April, rechtzeitig vor Mondsee.<br><span class="mu">Wiegen: freitags 7:00, Erinnerung aktiv</span></div>
+ </div></div>
+
+ <!-- ARCHIV -->
+ <div class="scrn" id="arc"><div class="in">
+  <div class="nav"><div class="bk">‹</div><b>Alle Einheiten</b></div>
+  <div style="margin-bottom:6px" id="afil"><span class="chip" id="fa">Alle</span><span class="chip" id="fr">🚴 Rad</span><span class="chip">🏃 Lauf</span><span class="chip">🏋 Kraft</span><span class="chip">⛷ Ski</span></div>
+  <div id="alist"></div>
+ </div></div>
+
+ <!-- DETAIL -->
+ <div class="scrn" id="det"><div class="in">
+  <div class="nav"><div class="bk">‹</div><b>GLA 105 min</b><span class="mu" style="margin-left:auto;font-size:12px">Do 12.11. · Zwift</span></div>
+  <div class="card" style="padding:12px 10px"><div class="row" style="justify-content:space-between"><div class="lab">Plan gegen Ist</div><span class="st">94 % im Ziel</span></div>
+   <svg width="100%" viewBox="0 0 340 110" style="margin-top:8px"><path d="M0,80 L50,80 L50,50 L290,50 L290,85 L340,85" stroke="#3a5d86" stroke-width="10" fill="none" opacity=".6"/>
+   <path id="act" pathLength="1" stroke-dasharray="1 1" d="M0,84 C20,76 35,82 50,60 C60,48 80,54 100,52 C130,49 160,55 190,51 C220,47 250,53 280,49 C288,60 300,86 340,88" stroke="#f5b941" stroke-width="2.5" fill="none"/>
+   <path id="hr" pathLength="1" stroke-dasharray="1 1" d="M0,96 C40,80 60,62 100,58 C160,54 220,48 290,44 C305,60 320,72 340,74" stroke="#ff6b6b" stroke-width="2" fill="none" opacity=".8"/></svg>
+   <div class="leg"><span><i style="background:#3a5d86"></i>Plan</span><span><i style="background:#f5b941"></i>Watt</span><span><i style="background:#ff6b6b"></i>Puls</span></div></div>
+  <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:12px">
+   <div class="card" style="margin:0;padding:8px"><div class="lab">Ø W</div><b>178</b></div><div class="card" style="margin:0;padding:8px"><div class="lab">Ø Puls</div><b>131</b></div><div class="card" style="margin:0;padding:8px"><div class="lab">TSS</div><b>96</b></div><div class="card" style="margin:0;padding:8px"><div class="lab">kJ</div><b>1120</b></div></div>
+  <div class="card" style="font-size:13px;line-height:1.55;color:#c9d6e4">❤ <b>Puls-Drift 3 %</b>: gute Grundlagenausdauer.<br>⏱ Trittfrequenz Ø 91, Blöcke mit 100+ erledigt.<br>💬 RPE 4 · „Beine schwer zu Beginn“</div>
+  <div class="card" style="padding:6px 16px"><table><tr><th>Block</th><th>Ziel</th><th>Ø W</th><th>Puls</th></tr><tr><td>Einfahren</td><td>120–160</td><td>148</td><td>112</td></tr><tr><td>Zone 2 · 75′</td><td>165–190</td><td>182</td><td>134</td></tr><tr><td>Ausfahren</td><td>&lt; 150</td><td>131</td><td>121</td></tr></table></div>
+  <div class="row" style="gap:8px;flex-wrap:wrap"><span class="chip">↗ In Strava</span><span class="chip">⬇ Zwift-Datei</span><span class="chip">✎ Bewertung ändern</span></div>
+ </div></div>
+
+ <!-- SAISON -->
+ <div class="scrn" id="sai"><div class="in">
+  <div class="nav"><div class="bk">‹</div><b>Saison im Detail</b></div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px">
+   <div class="card" style="margin:0;padding:12px"><div class="lab">Vorbereitung</div><b style="font-size:16px">Mondsee</b><div class="mu" style="font-size:12px">20.6.2027 · in 30 Wo.<br>Fitness-Ziel 85</div></div>
+   <div class="card" style="margin:0;padding:12px;border:1px solid #2b6e52"><div class="lab" style="color:var(--g)">Hauptziel</div><b style="font-size:16px">Ötztaler</b><div class="mu" style="font-size:12px">29.8.2027 · &lt; 10:00 h<br>Fitness-Ziel 95</div></div></div>
+  <div class="lab" style="margin:4px 0 8px">Phasen</div>
+  <div id="phs"></div>
+  <div class="card"><div class="lab" style="margin-bottom:6px">Renntag Ötztaler</div><div style="font-size:13px;line-height:1.55;color:#c9d6e4">⏱ 9:44 h Fahrzeit + 10 Stopps = 10:00 h<br>🍌 90 g KH/h · 750 ml/h · 1 g Salz/h<br>⚡ Kühtai 230 W · Brenner 180 W · Jaufen 220 W · Timmelsjoch 205 W</div></div>
+  <div class="card"><div class="lab" style="margin-bottom:6px">Phasenbericht · Erholung</div><div style="font-size:13px;line-height:1.5;color:#c9d6e4">1.11.–15.11. · 9 Einheiten · 13,5 h<br>Erholung gut genutzt, FTP stabil. Start Grundlage 1 mit 6 h/Woche.</div></div>
+ </div></div>
+
+ <!-- WOCHE (für Planung) -->
+ <div class="scrn" id="woc"><div class="in">
+  <div class="top"><b>Woche 48</b><span>23.–29. Nov.</span><div class="gear" id="gearW">⚙</div></div>
+  <div class="card" style="padding:12px 16px"><div class="row" style="justify-content:space-between;font-size:13px"><span class="mu" id="wst">Grundplan, noch nicht angepasst</span></div>
+   <div class="btn" id="bPlan" style="margin-top:10px;background:#1a3050;color:var(--tx)">✨ Mit Claude planen</div></div>
+  <div class="day"><div class="dl">Mo<b>23</b></div><div class="ses"><h4>Lauf locker 8 km</h4></div></div>
+  <div class="day"><div class="dl">Di<b>24</b></div><div class="ses"><h4>SIT-Sprints</h4><div class="mu" style="font-size:12px">Zwift · 60 min</div></div></div>
+  <div class="day"><div class="dl">Mi<b>25</b></div><div class="thin">frei</div></div>
+  <div class="day"><div class="dl">Do<b>26</b></div><div class="ses"><h4 id="wDo">GLA 105 min + Kraft</h4><div class="mu" style="font-size:12px">Zwift</div></div></div>
+  <div class="day"><div class="dl">Fr<b>27</b></div><div class="thin">frei</div></div>
+  <div class="day"><div class="dl">Sa<b>28</b></div><div class="ses"><h4 id="wSa">Ausfahrt lang</h4><div class="mu" style="font-size:12px" id="wSa2">draußen · 2,5–3 h</div></div></div>
+  <div class="day"><div class="dl">So<b>29</b></div><div class="thin">frei</div></div>
+ </div></div>
+
+ <!-- EINSTELLUNGEN -->
+ <div class="scrn" id="set"><div class="in">
+  <div class="nav"><div class="bk">‹</div><b>Einstellungen</b></div>
+  <div class="grp">Training</div>
+  <div class="card" style="padding:2px 16px"><div class="li"><b>Schwellen &amp; Zonen</b><span>FTP 250 · LTHR 166 · HFmax 186 ›</span></div><div class="li"><b>Ziele &amp; Rennen</b><span>Mondsee · Ötztaler ›</span></div><div class="li"><b>Wochenrhythmus</b><span>max. 4 · 19:00 · Mo fix ›</span></div></div>
+  <div class="grp">Verbindungen</div>
+  <div class="card" style="padding:2px 16px"><div class="li"><b>Strava</b><span class="st">verbunden</span></div><div class="li"><b>Uhr &amp; Waage (Health Connect)</b><span class="st">5 Werte</span></div><div class="li"><b>Zwift über intervals.icu</b><span class="st">aktiv</span></div><div class="li"><b>Google Kalender</b><span class="st">verbunden</span></div><div class="li"><b>Karoo Coach</b><span class="st w">Test</span></div></div>
+  <div class="grp">App</div>
+  <div class="card" style="padding:2px 16px"><div class="li"><b>Benachrichtigungen</b><span>Morgen · Fahrt · Sonntag · Waage ›</span></div><div class="li"><b>Claude &amp; Kosten</b><span>0,41 $ diesen Monat ›</span></div><div class="li"><b>Daten &amp; Version</b><span>1.15 · Fehlerprotokoll ›</span></div></div>
+ </div></div>
+
+ <!-- Planungs-Sheet -->
+ <div class="sheet" id="S_plan" style="transform:translateY(110%)">
+  <div class="grab"></div>
+  <div style="font-size:19px;font-weight:800;margin-bottom:4px">Woche 48 planen</div>
+  <div class="mu" style="font-size:12px;margin-bottom:10px">Claude kennt Ziele, Phase, Tagesform, Kalender und Wetter</div>
+  <div class="lab" style="margin-bottom:6px">Wünsche für diese Woche</div>
+  <div class="inp" id="wish"></div>
+  <div id="pbtn" class="btn" style="margin-top:12px">Planen · ca. 2 Cent</div>
+  <div id="pres" style="display:none">
+   <div class="chg"><div class="ck">✓</div><div><b>Sa → Skitour Gaisberg</b><div class="mu">Schnee ab Freitag, Lawinenstufe 1. 1200 Hm, ersetzt Ausfahrt.</div></div></div>
+   <div class="chg"><div class="ck">✓</div><div><b>Do: GLA auf 120 min</b><div class="mu">Fitness unter Soll, Form +20: Umfang erhöhen.</div></div></div>
+   <div class="chg"><div class="ck" style="background:#1f3450;color:var(--mu)">–</div><div><b>Di: SIT → 3 × 12′ Sweetspot</b><div class="mu">Abwechslung, 2 Wochen SIT am Stück.</div></div></div>
+   <div class="btn" style="margin-top:12px" id="pok">2 Änderungen übernehmen</div>
+  </div>
+ </div>
+ </div>
+ <div class="toast" id="T"></div>
+ <div class="tab"><div id="t1"><i>◉</i>Heute</div><div id="t2"><i>▤</i>Woche</div><div id="t3"><i>⛰</i>Weg</div></div>
+ <div class="tap" id="tap"></div>
+ <div class="end" id="E"><div style="font-size:26px;font-weight:800">Nichts geht verloren</div><div class="mu" style="font-size:15px;line-height:1.6">Oben: was du täglich brauchst<br>Eine Ebene tiefer: alles zum Nachschauen<br>⚙ Einstellungen nach Themen</div></div>
+</div>
+<div style="position:absolute;right:16px;bottom:8px;font-size:11px;color:#4b5e74">Entwurf · Beispielwerte</div>
+<script>
+const $=id=>document.getElementById(id);
+const cl=(x,a=0,b=1)=>Math.max(a,Math.min(b,x));
+const Ez=x=>x<.5?2*x*x:1-Math.pow(-2*x+2,2)/2;
+const P=(t,a,b)=>Ez(cl((t-a)/(b-a)));
+// Form-Diagramm Daten
+(function(){let f=[],a=[],n=90,ff=30,aa=30;for(let i=0;i<n;i++){const load=i<60?(i%3?55:15):(i<75?12:4);ff+=(load-ff)/42;aa+=(load-aa)/7;f.push(ff);a.push(aa)}
+const X=i=>i/(n-1)*340,Y=v=>170-v*2.6;const pf=f.map((v,i)=>(i?'L':'M')+X(i).toFixed(1)+','+Y(v).toFixed(1)).join(' ');
+const pa=a.map((v,i)=>(i?'L':'M')+X(i).toFixed(1)+','+Y(v).toFixed(1)).join(' ');const pt=f.map((v,i)=>(i?'L':'M')+X(i).toFixed(1)+','+(110-(f[i]-a[i])*2.6).toFixed(1)).join(' ');
+$('fl1').setAttribute('d',pf);$('fl2').setAttribute('d',pa);$('fl3').setAttribute('d',pt);
+let up=[],lo=[];for(let i=60;i<n;i++){up.push(X(i).toFixed(1)+','+Y(29+i*.02).toFixed(1));lo.unshift(X(i).toFixed(1)+','+Y(23+i*.02).toFixed(1))}
+$('corr').setAttribute('d','M'+up.join(' L')+' L'+lo.join(' L')+'Z');window.FD={f,a,X,Y}})();
+// Zonen
+(function(){const w=[[3.2,.9,.5,.2],[2.4,1.4,.6,.1],[1.8,2.1,.9,.2],[2.6,1.2,.5,.3],[1.1,2.4,.8,.1],[2.9,1.0,.4,.2],[1.5,1.8,.6,.2],[2.2,1.1,.5,.1],[.6,2.2,1.0,.1],[1.0,1.8,.7,0],[.4,.9,.4,0],[.1,.2,.1,0]];const col=['#3d7bb8','#f5b941','#f5734a','#c44569'];let h='';
+w.forEach((z,i)=>{let y=160;z.forEach((v,k)=>{const hh=v*28;y-=hh;h+=`<rect class="zb" x="${i*28+4}" y="${y}" width="20" height="${hh}" fill="${col[k]}" rx="2"/>`})});$('zsvg').innerHTML=h;
+const cmp=[['Zone 1–2',13,80,'#3d7bb8'],['Tempo',60,8,'#f5b941'],['Schwelle',27,7,'#f5734a'],['Darüber',0,5,'#c44569']];
+$('zcmp').innerHTML=cmp.map(c=>`<div style="display:flex;align-items:center;gap:8px;font-size:12px;margin-bottom:6px"><span style="width:70px">${c[0]}</span><div style="flex:1;position:relative;height:12px;background:#1f3450;border-radius:6px"><i class="zi" data-w="${c[1]}" style="position:absolute;left:0;top:0;bottom:0;width:0;background:${c[3]};border-radius:6px"></i><i style="position:absolute;left:${c[2]}%;top:-3px;bottom:-3px;width:2px;background:#fff"></i></div><b style="width:64px;text-align:right">${c[1]} % <span class="mu" style="font-weight:500">/ ${c[2]}</span></b></div>`).join('')})();
+// Gewicht Punkte
+(function(){let h='';for(let i=0;i<40;i++){const x=i*5,y=30+i*.6+Math.sin(i*1.7)*7;h+=`<circle cx="${x}" cy="${y.toFixed(1)}" r="2"/>`}$('wdots').innerHTML=h})();
+// Archiv
+(function(){const W=[['KW 46 · 9.–15.11.','4,5 h · 186 TSS',[['🚴','GLA 105 min','Do 12.11. · Zwift','96 TSS',1],['🏃','Lauf locker 8 km','Di 10.11.','48 TSS',0],['🏋','Kraft A','Do 12.11.','25 min',0],['🚴','SIT-Sprints','Mo 9.11. · Zwift','62 TSS',1]]],['KW 45 · 2.–8.11.','5,2 h · 214 TSS',[['🚴','Ausfahrt Mondsee','Sa 7.11. · draußen','128 TSS',1],['🏃','Lauf 10 km','Mi 4.11.','56 TSS',0],['🚴','Sweetspot 3×12′','Di 3.11. · Zwift','70 TSS',1]]],['KW 44 · 26.10.–1.11.','6,8 h · 251 TSS',[['🚴','Gardaseeumrundung','Sa 31.10. · draußen','210 TSS',1],['🏃','Lauf locker','Di 27.10.','41 TSS',0]]]];
+$('alist').innerHTML=W.map(w=>`<div class="grp" style="display:flex;justify-content:space-between"><span>${w[0]}</span><span>${w[1]}</span></div><div class="card" style="padding:2px 14px">`+w[2].map((e,i)=>`<div class="li ${e[4]?'rad':'nr'}" ${w[0].startsWith('KW 46')&&i===0?'id="aGLA"':''}><div class="row"><span style="font-size:18px">${e[0]}</span><div><b style="font-size:14px">${e[1]}</b><div class="mu" style="font-size:11px">${e[2]}</div></div></div><span>${e[3]} ›</span></div>`).join('')+'</div>').join('')})();
+// Phasen
+(function(){const ph=[['#2e5f8f','Grundlage 1','16.11.–4.1.','Lange Zone-2-Einheiten, 1× SIT, 2× Kraft. ⚡ Krämpfe: Trittfrequenz 100+ und Kraft für Waden. 🍌 Ab 90 min 60 g KH/h üben.',1],['#2e5f8f','Grundlage 2','5.1.–14.2.','FTP-Test Anfang Jänner. Sweetspot 2× pro Woche, lange Einheiten bis 3 h.',0],['#3d7bb8','Aufbau 1','15.2.–11.4.','Schwelle 2×20′ und VO2max 5×4′. ⚡ Krämpfe: Kraftausdauer am Berg, 4×8′ bei 60 rpm. 🍌 Verpflegung im Training wie im Rennen, 80 g KH/h.',0],['#8a6dd8','Kurzes Tapering','12.4.–19.6.','…',0],['#3ddc97','Mondsee','20.6.','Rennen, Generalprobe für Verpflegung.',0],['#e0a53a','Spezifisch','21.6.–15.8.','Lange Bergintervalle, 4–6 h-Fahrten mit Höhenmetern.',0],['#8a6dd8','Tapering','16.8.–28.8.','Umfang −40 %, Intensität halten.',0]];
+$('phs').innerHTML=ph.map((p,i)=>`<div class="acc"><div class="h"><i class="dot" style="background:${p[0]}"></i>${p[1]}${p[4]?' <span class="st" style="margin-left:6px">jetzt</span>':''}<span>${p[2]}</span></div><div class="b" id="pb${i}" style="height:${p[4]?'auto':'0'}"><div style="padding-top:6px">${p[3]}</div></div></div>`).join('')})();
+
+// Zeitleiste
+const NAV=[[0,'weg'],[6.3,'ana',1],[11.3,'form',2],[22.6,'ana',1],[23.8,'lei',2],[33,'ana',1],[34.2,'zon',2],[42,'ana',1],[43.2,'gew',2],[50.2,'weg',0],[51.6,'arc',1],[57.6,'det',2],[67,'weg',0],[68.4,'sai',1],[79,'woc',0],[93,'set',1]];
+const DEPTH={};
+const SCROLL={weg:[[0,0],[2,0],[4.6,330]],det:[[61,0],[64.5,330]],sai:[[71,0],[74,0],[76.5,420]],arc:[[51.6,0]],form:[[19,0],[21,170]],lei:[[29.5,0],[31.5,250]],zon:[[38,0],[40,160]],set:[[94,0]]};
+const TAPS=[[5.7,200,132],[10.8,105,135],[16,318,108],[18.5,290,200],[22.2,35,62],[23.3,300,135],[26.5,270,108],[32.6,35,62],[33.7,105,265],[41.6,35,62],[42.7,300,265],[49.7,35,62],[51.1,200,178],[54,98,95],[57.1,200,180],[66.6,35,62],[67.9,200,225],[73,200,392],[78.6,200,790],[80.3,200,150],[82,200,647],[85.4,200,702],[89.9,200,702],[92.5,355,60]];
+const CAP=[[0,'Eine Ebene tiefer','Alles, was heute im Reiter Analyse und Saison steckt, bleibt erhalten'],[6,'Analysen: vier Themen statt elf Karten','Jede Kachel zeigt den Kernwert, darunter ein konkreter Hinweis'],[11.2,'Form & Belastung mit Soll-Korridor','Zeitraum wählen, antippen für Tageswerte, Erklärung in Klartext'],[23.7,'Leistung: Kurve, Bestwerte, Durability','Ein Umschalter zeigt, wie viel nach 2000 kJ übrig bleibt'],[34.1,'Zonen & Umfang','Wochen im Verlauf und der Vergleich mit dem Soll der Phase'],[43.1,'Gewicht & Körper','Werte von der Renpho-Waage, Trend und Tempo bis zum Ziel'],[50.1,'Alle Einheiten','Nach Woche gruppiert, Filter nach Sportart'],[57.5,'Einheit im Detail','Plan gegen Ist, Puls-Drift, Blöcke, Bewertung, Links'],[67,'Saison im Detail','Rennen, alle Phasen aufklappbar, Renntag-Plan, Phasenbericht'],[79,'Woche mit Claude planen','Wünsche eintippen, Vorschläge einzeln annehmen'],[92.9,'Einstellungen nach Themen','Training, Verbindungen, App. Mit Status auf einen Blick'],[99,'Zusammengefasst','']];
+function at(list,t){let c=list[0];for(const x of list)if(t>=x[0])c=x;return c}
+function scrollOf(id,t){const k=SCROLL[id];if(!k)return 0;let y=k[0][1];for(let i=1;i<k.length;i++){if(t>=k[i-1][0])y=k[i-1][1]+(k[i][1]-k[i-1][1])*P(t,k[i-1][0],k[i][0])}return y}
+window.render=function(t){
+ const c=at(CAP,t);$('ch').textContent=c[1];$('cp').textContent=c[2];
+ const d=CAP.slice(1).reduce((m,x)=>Math.min(m,Math.abs(t-x[0])),9);document.querySelector('.cap').style.opacity=t<.4?t/.4:(d<.25?d/.25:1);
+ // Navigation
+ let ci=0;NAV.forEach((n,i)=>{if(t>=n[0])ci=i});const cur=NAV[ci],prev=NAV[ci-1];
+ document.querySelectorAll('.scrn').forEach(s=>{s.style.display='none'});
+ const k=P(t,cur[0],cur[0]+.45);const dCur=cur[2]||0,dPrev=prev?(prev[2]||0):0;
+ const show=(id,x,z)=>{const e=$(id);e.style.display='block';e.style.transform=`translateX(${x}%)`;e.style.zIndex=z;e.firstElementChild.style.transform=`translateY(${-scrollOf(id,t)}px)`};
+ if(prev&&k<1&&prev[1]!==cur[1]){if(dCur>=dPrev&&!(dCur===0&&dPrev===0)){show(prev[1],-30*k,1);show(cur[1],100-100*k,2)}else if(dCur<dPrev){show(cur[1],-30+30*k,1);show(prev[1],100*k,2)}else{show(prev[1],0,1);const e=$(cur[1]);show(cur[1],0,2);e.style.opacity=k}}else{show(cur[1],0,2);$(cur[1]).style.opacity=1}
+ if(!(prev&&k<1&&dCur===0&&dPrev===0))$(cur[1]).style.opacity=1;
+ const tabOn=cur[1]==='woc'||cur[1]==='set'?1:2;['t1','t2','t3'].forEach((id,i)=>$(id).className=i===tabOn?'on':'');
+ // Taps
+ const tp=$('tap');tp.style.opacity=0;for(const x of TAPS){const q=t-x[0];if(q>=0&&q<.5){tp.style.left=x[1]+'px';tp.style.top=x[2]+'px';tp.style.opacity=(1-q/.5)*.9;tp.style.transform=`translate(-50%,-50%) scale(${.6+q})`}}
+ // Form
+ const fd=P(t,11.8,14);['fl1','fl2','fl3'].forEach(id=>$(id).setAttribute('stroke-dashoffset',1-fd));
+ const fs=t>=16?2:1;[...$('fseg').children].forEach((e,i)=>e.className=i===fs?'on':'');
+ const tipOn=t>=18.6&&t<22.5;$('ftip').style.opacity=tipOn?P(t,18.6,19):0;$('fx').setAttribute('opacity',tipOn?.6:0);
+ if(tipOn){const i=70,x=FD.X(i);$('fx').setAttribute('x1',x);$('fx').setAttribute('x2',x);$('ftip').innerHTML='<b>Mi 4.11.</b><br>Fitness 31 · Ermüdung 22<br>Form +9 · Sweetspot 70 TSS'}
+ // Leistung
+ const du=t>=26.6;[...$('lseg').children].forEach((e,i)=>e.className=i===(du?1:0)?'on':'');$('dur').setAttribute('opacity',du?P(t,26.6,27.2):0);$('durleg').style.opacity=du?1:0;$('durtx').style.display=du?'block':'none';
+ // Zonen
+ const zb=P(t,34.6,36.2);document.querySelectorAll('.zb').forEach((r,i)=>{r.style.transform=`scaleY(${zb})`;r.style.transformOrigin='0 160px'});
+ const zi=P(t,36,37.5);document.querySelectorAll('.zi').forEach(e=>e.style.width=(e.dataset.w*zi)+'%');
+ // Gewicht
+ $('wl').setAttribute('stroke-dashoffset',1-P(t,43.6,45.6));
+ // Archiv Filter
+ const fr=t>=54.1;$('fa').style.background=fr?'':'#2b4f2f';$('fr').style.background=fr?'#2b4f2f':'';document.querySelectorAll('#alist .nr').forEach(e=>e.style.display=fr?'none':'flex');
+ // Detail
+ const dd=P(t,58,60.5);$('act').setAttribute('stroke-dashoffset',1-dd);$('hr').setAttribute('stroke-dashoffset',1-dd);
+ // Saison Phasen
+ const ph=P(t,73.1,73.6);$('pb2').style.height=(ph*86)+'px';
+ // Planung
+ const so=t>=80.6&&t<91?Math.min(P(t,80.6,81.2),1-P(t,90.3,90.9)):0;$('S_plan').style.transform=`translateY(${110-110*so}%)`;
+ const W='Sa Skitour, falls Schnee. Do habe ich mehr Zeit.';const n=Math.floor(cl((t-82.3)/2.6)*W.length);$('wish').innerHTML=t<82.2?'<span class="mu">z. B. Termine, Lust, Zeit …</span>':W.slice(0,n)+(t<85.2&&Math.floor(t*3)%2?'|':'');
+ const pr=t>=85.5;$('pbtn').textContent=t>=85.5&&t<86.4?'Claude plant …':'Planen · ca. 2 Cent';$('pbtn').style.display=t>=86.4?'none':'block';$('pres').style.display=t>=86.4?'block':'none';$('pres').style.opacity=P(t,86.4,86.9);
+ const ts=t>=86.6;document.querySelectorAll('#pres .ck')[0].style.opacity=1;
+ $('T').style.opacity=t>=90.6&&t<93?Math.min(P(t,90.6,90.9),1-P(t,92.6,93)):0;$('T').textContent='✓ Woche 48 aktualisiert, Zwift und Kalender mitgezogen';
+ const ac=t>=90.4;$('wst').textContent=ac?'Plan von Claude · gerade eben':'Grundplan, noch nicht angepasst';$('wDo').textContent=ac?'GLA 120 min + Kraft':'GLA 105 min + Kraft';$('wSa').textContent=ac?'Skitour Gaisberg':'Ausfahrt lang';$('wSa2').textContent=ac?'⛷ 1200 Hm · Lawinenstufe 1':'draußen · 2,5–3 h';
+ $('E').style.opacity=P(t,99,99.8);
+};
+render(0);
+</script></body></html>

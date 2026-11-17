@@ -1,0 +1,242 @@
+<!doctype html><html lang="de"><head><meta charset="utf-8"><style>
+:root{--bg:#0b1624;--card:#13233a;--card2:#1a2e4a;--line:#25405f;--tx:#eef3f8;--mu:#8ea3ba;--g:#3ddc97;--y:#f5b941;--r:#ff6b6b;--b:#5aa9ff}
+*{box-sizing:border-box;margin:0}
+html,body{width:540px;height:960px;overflow:hidden;background:#070e18;font-family:Inter,sans-serif;color:var(--tx);-webkit-font-smoothing:antialiased}
+.cap{position:absolute;left:0;right:0;top:22px;text-align:center;padding:0 30px}
+.cap h1{font-size:25px;font-weight:800;letter-spacing:-.02em}
+.cap p{font-size:14px;color:var(--mu);margin-top:6px;line-height:1.35;min-height:38px}
+.ph{position:absolute;left:70px;top:118px;width:400px;height:820px;border-radius:44px;background:var(--bg);overflow:hidden;box-shadow:0 0 0 7px #1c2633,0 0 0 9px #2c394a,0 30px 80px rgba(0,0,0,.6)}
+.sb{position:absolute;top:0;left:0;right:0;height:34px;display:flex;justify-content:space-between;align-items:center;padding:6px 26px 0;font-size:13px;font-weight:600;z-index:30}
+.scr{position:absolute;inset:34px 0 74px 0;overflow:hidden}
+.lay{position:absolute;inset:0;padding:6px 18px}
+.top{display:flex;align-items:center;gap:10px;margin:6px 0 14px}
+.top b{font-size:22px;font-weight:800;letter-spacing:-.02em}
+.top span{color:var(--mu);font-size:13px;margin-left:auto}
+.gear{width:30px;height:30px;border-radius:50%;background:var(--card);display:grid;place-items:center;color:var(--mu);font-size:16px}
+.logo{width:30px;height:30px;border-radius:9px;background:linear-gradient(135deg,#123257,#0c2038);display:grid;place-items:center}
+.tab{position:absolute;left:0;right:0;bottom:0;height:74px;background:#0e1b2c;border-top:1px solid #1b2c44;display:flex;justify-content:space-around;padding:10px 24px 18px;z-index:20}
+.tab div{display:flex;flex-direction:column;align-items:center;gap:3px;font-size:12px;font-weight:600;color:var(--mu);width:80px;border-radius:14px;padding:5px 0}
+.tab div.on{color:var(--tx);background:#1a3050}
+.tab i{font-style:normal;font-size:18px;line-height:1}
+.card{background:var(--card);border-radius:20px;padding:14px 16px;margin-bottom:12px}
+.lab{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--mu)}
+.big{font-size:34px;font-weight:800;letter-spacing:-.03em}
+.mu{color:var(--mu)}
+.chip{display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:600;padding:5px 10px;border-radius:99px;background:var(--card2);margin:0 5px 6px 0}
+.btn{background:var(--g);color:#06231a;font-weight:800;border-radius:14px;padding:12px;text-align:center;font-size:15px}
+.prof{display:flex;align-items:flex-end;gap:2px;height:42px;margin:10px 0 2px}
+.prof i{display:block;border-radius:3px 3px 0 0;background:#3a5d86}
+.prof i.h{background:var(--y)}.prof i.m{background:#5aa9ff}
+.row{display:flex;align-items:center;gap:10px}
+.sheet{position:absolute;left:0;right:0;bottom:0;background:#122238;border-radius:26px 26px 0 0;padding:16px 18px 22px;z-index:25;box-shadow:0 -20px 60px rgba(0,0,0,.5)}
+.grab{width:40px;height:5px;border-radius:3px;background:#2f4a6c;margin:0 auto 12px}
+.notif{position:absolute;left:12px;right:12px;top:40px;background:rgba(32,48,72,.97);border-radius:20px;padding:12px 14px;z-index:40;display:flex;gap:10px;box-shadow:0 12px 40px rgba(0,0,0,.5)}
+.notif b{font-size:13px}.notif p{font-size:13px;color:#c9d6e4;margin-top:2px}
+.tap{position:absolute;width:46px;height:46px;border-radius:50%;background:rgba(255,255,255,.35);border:2px solid rgba(255,255,255,.8);z-index:60;pointer-events:none;opacity:0;transform:translate(-50%,-50%)}
+.toast{position:absolute;left:50%;bottom:90px;transform:translateX(-50%);background:#e9f7f0;color:#0b2a1d;font-weight:700;font-size:13px;padding:10px 16px;border-radius:99px;z-index:45;white-space:nowrap;opacity:0}
+.face{width:52px;height:52px;border-radius:16px;background:var(--card2);display:grid;place-items:center;font-size:26px}
+.face.on{background:#2b4f2f;box-shadow:0 0 0 2px var(--g)}
+.day{display:flex;gap:12px;align-items:flex-start;margin-bottom:8px}
+.dl{width:38px;text-align:center;font-size:12px;color:var(--mu);font-weight:600;padding-top:3px}
+.dl b{display:block;font-size:17px;color:var(--tx)}
+.thin{height:22px;display:flex;align-items:center;font-size:12px;color:#5f7590;border-bottom:1px dashed #22374f;flex:1}
+.ses{flex:1;background:var(--card);border-radius:16px;padding:10px 12px}
+.ses h4{font-size:15px;font-weight:700}
+.tag{font-size:10px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;padding:3px 7px;border-radius:6px;background:#1f3a5c;color:#9cc8ff}
+.bar{height:8px;border-radius:5px;background:#1f3450;overflow:hidden}.bar i{display:block;height:100%;border-radius:5px;background:var(--g)}
+.goal{margin-bottom:12px}.goal .row{justify-content:space-between;font-size:13px;margin-bottom:5px}
+.end{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;background:#070e18;z-index:80;opacity:0;text-align:center}
+</style></head><body>
+<div class="cap"><h1 id="ch"></h1><p id="cp"></p></div>
+<div class="ph">
+ <div class="sb"><span>07:12</span><span>▂▄▆ ▮</span></div>
+ <div class="scr">
+  <!-- HEUTE -->
+  <div class="lay" id="L_heute">
+   <div class="top"><div class="logo"><svg width="20" height="20" viewBox="0 0 48 48"><path fill="#fff" d="M4,40L17,20L23,29L30,16L44,40Z"/><path stroke="#3ddc97" stroke-width="4" fill="none" stroke-linecap="round" d="M8,31L19,24L27,27L40,11"/></svg></div><b>Heute</b><span>Di, 17. Nov.</span><div class="gear">⚙</div></div>
+   <div class="card" style="display:flex;gap:16px;align-items:center">
+     <svg width="112" height="112" viewBox="0 0 112 112"><circle cx="56" cy="56" r="48" stroke="#1f3450" stroke-width="12" fill="none"/><circle id="ring" cx="56" cy="56" r="48" stroke="#f5b941" stroke-width="12" fill="none" stroke-linecap="round" transform="rotate(-90 56 56)" stroke-dasharray="301.6" stroke-dashoffset="301.6"/><text id="ringv" x="56" y="62" text-anchor="middle" font-size="30" font-weight="800" fill="#eef3f8" font-family="Inter">–</text><text x="56" y="80" text-anchor="middle" font-size="10" fill="#8ea3ba" font-family="Inter" font-weight="600">BEREIT</text></svg>
+     <div style="flex:1"><div class="lab" style="color:var(--y)">Eher locker</div><div style="font-size:19px;font-weight:800;line-height:1.2;margin:4px 0 6px">Sprints heute 5 % sanfter</div><div class="mu" style="font-size:13px" id="why0">Warum? ›</div></div>
+   </div>
+   <div id="why" style="overflow:hidden;height:0">
+     <span class="chip">☾ Schlaf 6:10 h</span><span class="chip">♡ HRV −12 %</span><span class="chip">↑ Ruhepuls +3</span><span class="chip">☺ Gefühl 3/5</span><span class="chip">⚡ Form +20</span>
+   </div>
+   <div class="card">
+     <div class="row"><div class="lab">19:00 · Zwift · 60 min</div><span id="zb" class="tag" style="margin-left:auto;background:#183d2f;color:var(--g);opacity:0">✓ in Zwift · −5 %</span></div>
+     <div style="font-size:21px;font-weight:800;margin-top:4px">SIT-Sprints</div>
+     <div class="prof" id="p1"></div>
+     <div class="mu" style="font-size:12px">15′ einfahren · 6 × 30″ all-out · 4′ Pause · 15′ aus</div>
+   </div>
+   <div class="card" style="padding:12px 16px">
+     <div class="row" style="justify-content:space-between"><div class="lab">Woche</div><div style="font-size:13px"><b id="wk">0</b> <span class="mu">/ 286 TSS · 0 von 4</span></div></div>
+     <div class="bar" style="margin-top:8px"><i id="wkb" style="width:0%"></i></div>
+   </div>
+   <div class="card" style="padding:12px 16px">
+     <div class="row" style="justify-content:space-between"><div class="lab">Weg · Ötztaler</div><div style="font-size:13px"><b>10:12 h</b> <span class="mu">Prognose · Ziel &lt; 10:00</span></div></div>
+   </div>
+  </div>
+
+  <!-- WOCHE -->
+  <div class="lay" id="L_woche">
+   <div class="top"><b>Woche 47</b><span>16.–22. Nov.</span><div class="gear">⚙</div></div>
+   <div class="card" style="padding:12px 16px">
+     <div class="row" style="justify-content:space-between;font-size:13px"><span><b id="wk2">62</b> <span class="mu">/ 286 TSS</span></span><span class="mu">Plan von Claude · So 19:30</span></div>
+     <div class="bar" style="margin-top:8px"><i id="wkb2" style="width:22%"></i></div>
+   </div>
+   <div class="day"><div class="dl">Mo<b>16</b></div><div class="ses" style="opacity:.5"><h4 style="text-decoration:line-through">Lauf locker 8 km</h4><div class="mu" style="font-size:12px">ausgelassen · nicht nachholen</div></div></div>
+   <div class="day"><div class="dl" style="color:var(--g)">Di<b>17</b></div><div class="ses" style="box-shadow:0 0 0 2px #2b6e52"><div class="row"><h4>SIT-Sprints</h4><span class="tag" id="diTag" style="margin-left:auto">heute 19:00</span></div><div class="mu" style="font-size:12px" id="diTx">Zwift · 60 min · −5 % angepasst</div></div></div>
+   <div class="day"><div class="dl">Mi<b>18</b></div><div class="thin">frei</div></div>
+   <div class="day" id="dDo"><div class="dl">Do<b>19</b></div><div class="thin" id="tDo" style="display:none">frei</div><div class="ses" id="sDo"><div class="row"><h4>GLA 105 min + Kraft</h4><span class="tag" style="margin-left:auto">Zwift</span></div><div class="prof" id="p2" style="height:26px;margin:6px 0 0"></div></div></div>
+   <div id="mv" style="overflow:hidden;height:0;margin:-2px 0 6px 50px"><span class="mu" style="font-size:12px;margin-right:6px">Verschieben auf</span><span class="chip">Mi</span><span class="chip" id="cFr">Fr</span><span class="chip">So</span></div>
+   <div class="day"><div class="dl">Fr<b>20</b></div><div class="thin" id="tFr">frei</div><div class="ses" id="sFr" style="display:none"><div class="row"><h4>GLA 105 min + Kraft</h4><span class="tag" style="margin-left:auto">Zwift</span></div><div class="prof" id="p2b" style="height:26px;margin:6px 0 0"></div></div></div>
+   <div class="day"><div class="dl">Sa<b>21</b></div><div class="ses"><div class="row"><h4>Ausfahrt lang</h4><span class="tag" style="margin-left:auto;background:#3a2f17;color:var(--y)">draußen</span></div><div style="font-size:12px;color:var(--y);margin-top:3px">🌧 8° · Regen 70 % → Plan B Zwift 2 h</div></div></div>
+   <div class="day"><div class="dl">So<b>22</b></div><div class="thin">frei · 19:00 Wochenplanung</div></div>
+  </div>
+
+  <!-- WEG -->
+  <div class="lay" id="L_weg"><div id="wegin">
+   <div class="top"><b>Weg</b><span>bis Ötztaler · 40 Wochen</span><div class="gear">⚙</div></div>
+   <div class="card">
+     <div class="lab">Ötztaler-Prognose</div>
+     <div class="row" style="align-items:flex-end;gap:12px"><div class="big" id="prog">10:24 h</div><div style="font-size:13px;color:var(--g);font-weight:700;padding-bottom:7px">↓ 12 min in 4 Wo.</div></div>
+     <div class="mu" style="font-size:12px">Ziel unter 10:00 h · fehlen ca. 0,3 W/kg</div>
+     <svg width="100%" height="54" viewBox="0 0 330 54" style="margin-top:6px"><line x1="0" y1="14" x2="330" y2="14" stroke="#3ddc97" stroke-dasharray="4 4" opacity=".6"/><text x="330" y="10" text-anchor="end" font-size="9" fill="#3ddc97" font-family="Inter">10:00</text><path id="spark" d="M0,46 C40,44 70,40 110,38 C150,36 170,33 200,30" stroke="#5aa9ff" stroke-width="3" fill="none"/><path d="M200,30 C240,26 280,18 330,12" stroke="#5aa9ff" stroke-width="2" fill="none" stroke-dasharray="3 4" opacity=".7"/></svg>
+   </div>
+   <div class="card">
+     <div class="lab" style="margin-bottom:10px">Saison</div>
+     <div style="position:relative;height:58px">
+       <div style="position:absolute;left:0;right:0;top:20px;height:10px;border-radius:5px;display:flex;overflow:hidden;gap:2px">
+        <i style="flex:7;background:#2e5f8f"></i><i style="flex:6;background:#2e5f8f"></i><i style="flex:8;background:#3d7bb8"></i><i style="flex:2;background:#8a6dd8"></i><i style="flex:1;background:#3ddc97"></i><i style="flex:8;background:#3d7bb8"></i><i style="flex:5;background:#e0a53a"></i><i style="flex:2;background:#8a6dd8"></i><i style="flex:1;background:#3ddc97"></i></div>
+       <div id="nowd" style="position:absolute;top:14px;left:0;width:22px;height:22px;border-radius:50%;background:#fff;border:5px solid var(--b);transform:translateX(-50%)"></div>
+       <div style="position:absolute;left:0;top:38px;font-size:11px;color:var(--mu)">heute</div>
+       <div style="position:absolute;left:58%;top:0;font-size:11px;font-weight:700;transform:translateX(-50%)">🏁 Mondsee</div>
+       <div style="position:absolute;right:0;top:0;font-size:11px;font-weight:700">🏔 Ötztaler</div>
+       <div style="position:absolute;left:58%;top:38px;font-size:11px;color:var(--mu);transform:translateX(-50%)">20.6.</div>
+       <div style="position:absolute;right:0;top:38px;font-size:11px;color:var(--mu)">29.8.</div>
+     </div>
+   </div>
+   <div class="card">
+     <div class="lab" style="margin-bottom:10px">Ziele</div>
+     <div class="goal"><div class="row"><b>FTP</b><span><b>250 W</b> <span class="mu">→ 265 W</span></span></div><div class="bar"><i id="g1" style="width:0"></i></div></div>
+     <div class="goal"><div class="row"><b>Gewicht</b><span><b>78,0 kg</b> <span class="mu">→ 74 kg</span></span></div><div class="bar"><i id="g2" style="width:0;background:var(--b)"></i></div></div>
+     <div class="goal" style="margin:0"><div class="row"><b>Fitness</b><span><b>22</b> <span class="mu">Soll 23–29 · Ötztaler 95</span></span></div><div class="bar"><i id="g3" style="width:0;background:var(--y)"></i></div></div>
+   </div>
+   <div class="card" style="border:1px solid #2e5f8f">
+     <div class="row"><div class="lab" style="color:#9cc8ff">Jetzt · Grundlage 1</div><span class="mu" style="margin-left:auto;font-size:12px">bis 4. Jan.</span></div>
+     <div style="font-size:15px;font-weight:700;margin:6px 0 8px">Lange Zone-2-Einheiten, 1× SIT pro Woche, 2× Kraft</div>
+     <div style="font-size:13px;line-height:1.45;color:#c9d6e4">⚡ <b>Krämpfe:</b> Trittfrequenz-Blöcke 100+ in Zone 2, Kraft für Waden und Oberschenkel.<br>🍌 <b>Verpflegung:</b> ab 90 min 60 g KH pro Stunde üben.<br>🎯 <b>Nächster Meilenstein:</b> FTP-Test Anfang Januar</div>
+   </div>
+   <div class="card mu" style="font-size:13px;display:flex;justify-content:space-between"><span>Analysen: Form, Leistung, Zonen</span><span>›</span></div>
+  </div></div>
+
+  <!-- Sheets -->
+  <div class="sheet" id="S_mood" style="transform:translateY(110%)">
+   <div class="grab"></div>
+   <div style="font-size:20px;font-weight:800">Guten Morgen, Christoph</div>
+   <div class="mu" style="font-size:13px;margin:4px 0 12px">Von Uhr und Waage übernommen</div>
+   <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px">
+    <div class="card" style="margin:0;padding:10px 12px"><div class="lab">Schlaf</div><b style="font-size:18px">6:10 h</b> <span class="mu" style="font-size:12px">−50 min</span></div>
+    <div class="card" style="margin:0;padding:10px 12px"><div class="lab">HRV</div><b style="font-size:18px">41 ms</b> <span style="font-size:12px;color:var(--y)">−12 %</span></div>
+    <div class="card" style="margin:0;padding:10px 12px"><div class="lab">Ruhepuls</div><b style="font-size:18px">53</b> <span class="mu" style="font-size:12px">+3</span></div>
+    <div class="card" style="margin:0;padding:10px 12px"><div class="lab">Gewicht</div><b style="font-size:18px">77,8 kg</b> <span style="font-size:12px;color:var(--g)">−0,2</span></div>
+   </div>
+   <div style="font-weight:700;margin-bottom:8px">Wie fühlst du dich?</div>
+   <div class="row" style="justify-content:space-between;margin-bottom:16px"><div class="face">😫</div><div class="face">😕</div><div class="face" id="f3">😐</div><div class="face">🙂</div><div class="face">😄</div></div>
+   <div class="btn" id="bMood">Fertig</div>
+  </div>
+  <div class="sheet" id="S_rate" style="transform:translateY(110%)">
+   <div class="grab"></div>
+   <div class="row"><div><div class="lab">Gerade eben · Zwift</div><div style="font-size:20px;font-weight:800">SIT-Sprints · 58 min</div></div></div>
+   <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin:12px 0">
+    <div class="card" style="margin:0;padding:8px"><div class="lab">Ø W</div><b>168</b></div>
+    <div class="card" style="margin:0;padding:8px"><div class="lab">NP</div><b>205</b></div>
+    <div class="card" style="margin:0;padding:8px"><div class="lab">Ø Puls</div><b>142</b></div>
+    <div class="card" style="margin:0;padding:8px"><div class="lab">TSS</div><b>62</b></div>
+   </div>
+   <div class="row" style="justify-content:space-between"><b style="font-size:14px">Intervalle</b><span style="font-size:13px;color:var(--g);font-weight:700">6 von 6 im Ziel</span></div>
+   <div class="prof" id="p3" style="height:50px"></div>
+   <div class="mu" style="font-size:12px;margin-bottom:12px">Ø 612 W · letzte Wdh. nur −4 %: gut dosiert</div>
+   <div style="font-weight:700;margin-bottom:8px">Wie hart war es?</div>
+   <div class="row" style="gap:4px;margin-bottom:16px" id="rpe"></div>
+   <div class="btn" id="bRate">Speichern</div>
+  </div>
+ </div>
+ <div class="notif" id="N" style="transform:translateY(-160%)"><div class="logo" style="flex:none"><svg width="20" height="20" viewBox="0 0 48 48"><path fill="#fff" d="M4,40L17,20L23,29L30,16L44,40Z"/><path stroke="#3ddc97" stroke-width="4" fill="none" stroke-linecap="round" d="M8,31L19,24L27,27L40,11"/></svg></div><div><b id="nt"></b><p id="np"></p></div></div>
+ <div class="toast" id="T"></div>
+ <div class="tab"><div id="t1"><i>◉</i>Heute</div><div id="t2"><i>▤</i>Woche</div><div id="t3"><i>⛰</i>Weg</div></div>
+ <div class="tap" id="tap"></div>
+ <div class="end" id="E"><svg width="84" height="84" viewBox="0 0 48 48"><rect width="48" height="48" rx="12" fill="#0f2236"/><path fill="#fff" d="M4,40L17,20L23,29L30,16L44,40Z"/><path stroke="#3ddc97" stroke-width="4" fill="none" stroke-linecap="round" d="M8,31L19,24L27,27L40,11"/></svg><div style="font-size:28px;font-weight:800">WattsUp</div><div class="mu" style="font-size:15px;line-height:1.5">Heute · Woche · Weg<br>Alles andere eine Ebene tiefer</div></div>
+</div>
+<div style="position:absolute;right:16px;bottom:8px;font-size:11px;color:#4b5e74">Entwurf · Beispielwerte</div>
+<script>
+const $=id=>document.getElementById(id);
+const cl=(x,a=0,b=1)=>Math.max(a,Math.min(b,x));
+const E=x=>x<.5?2*x*x:1-Math.pow(-2*x+2,2)/2;
+const P=(t,a,b)=>E(cl((t-a)/(b-a)));
+// Profile
+function prof(el,segs,h){el.innerHTML=segs.map(s=>`<i class="${s[2]||''}" style="flex:${s[0]};height:${s[1]*100}%"></i>`).join('')}
+prof($('p1'),[[15,.45],[1,1,'h'],[4,.3],[1,1,'h'],[4,.3],[1,1,'h'],[4,.3],[1,1,'h'],[4,.3],[1,1,'h'],[4,.3],[1,1,'h'],[15,.4]]);
+prof($('p2'),[[15,.45],[75,.62,'m'],[15,.4]]);prof($('p2b'),[[15,.45],[75,.62,'m'],[15,.4]]);
+prof($('p3'),[[6,.35],[2,.98,'h'],[3,.25],[2,1,'h'],[3,.25],[2,.97,'h'],[3,.25],[2,.99,'h'],[3,.25],[2,.95,'h'],[3,.25],[2,.96,'h'],[6,.3]]);
+$('rpe').innerHTML=[1,2,3,4,5,6,7,8,9,10].map(n=>`<div class="face" data-n="${n}" style="width:30px;height:34px;border-radius:9px;font-size:13px;font-weight:700">${n}</div>`).join('');
+const CAP=[
+ [0,'WattsUp, neu gedacht','Entwurf für einen radikal einfacheren Aufbau'],
+ [3,'Morgens: 10 Sekunden','Schlaf, HRV, Ruhepuls und Gewicht kommen von selbst. Du sagst nur, wie du dich fühlst.'],
+ [10.5,'Heute: eine Antwort statt drei Zahlen','Bereitschaft mit Begründung. Die Einheit ist schon angepasst und wartet in Zwift.'],
+ [19,'Woche: was ansteht, sonst nichts','Ruhetage als schmale Zeile. Verschieben mit zwei Tipps, Zwift zieht automatisch mit.'],
+ [27.5,'Nach der Fahrt','Push von Strava, Intervalle automatisch geprüft, Bewertung mit einem Tipp.'],
+ [35.5,'Weg: bringt mich das ans Ziel?','Prognose, Saison, Ziele und die aktuelle Phase mit Krampf- und Verpflegungstipps.'],
+ [45.5,'3 Reiter statt 4','Heute · Woche · Weg. Analysen und Einstellungen eine Ebene tiefer.']];
+function tapAt(t,t0,x,y){const k=t-t0;const el=$('tap');if(k>=0&&k<.5){el.style.left=x+'px';el.style.top=y+'px';el.style.opacity=(1-k/.5)*.9;el.style.transform=`translate(-50%,-50%) scale(${.6+k})`;return true}return false}
+function toast(t,a,b,txt){const o=Math.min(P(t,a,a+.3),1-P(t,b-.3,b));if(t>=a&&t<b){$('T').textContent=txt;$('T').style.opacity=o}}
+function notif(t,a,b,ti,tx){if(t>=a-.1&&t<b+.5){$('nt').textContent=ti;$('np').textContent=tx;const k=Math.min(P(t,a,a+.45),1-P(t,b,b+.4));$('N').style.transform=`translateY(${-160+160*k}%)`}}
+window.render=function(t){
+ // Kopfzeile
+ let c=CAP[0];for(const x of CAP)if(t>=x[0])c=x;$('ch').textContent=c[1];$('cp').textContent=c[2];
+ const d=CAP.slice(1).reduce((m,x)=>Math.min(m,Math.abs(t-x[0])),9);document.querySelector('.cap').style.opacity=t<.4?t/.4:(d<.25?d/.25:1);
+ $('tap').style.opacity=0;$('T').style.opacity=0;$('N').style.transform='translateY(-160%)';
+ // Reiter-Positionen
+ const L={heute:0,woche:1,weg:2};let pos=0;
+ if(t>=19)pos=P(t,19,19.6);if(t>=35.5)pos=1+P(t,35.5,36.1);if(t>=27.5&&t<35.5)pos=1-P(t,29.2,29.8);
+ for(const k in L)$('L_'+k).style.transform=`translateX(${(L[k]-pos)*105}%)`;
+ const ti=Math.round(pos);['t1','t2','t3'].forEach((id,i)=>$(id).className=i===ti?'on':'');
+ // Szene Start: Uhrzeit
+ document.querySelector('.sb span').textContent=t<27.5?'07:12':'20:14';
+ // Morgen (3-10.5)
+ notif(t,3.4,5.0,'WattsUp · Guten Morgen','Werte von Uhr und Waage sind da. Kurz eintragen?');
+ tapAt(t,4.9,200,70);
+ const mo=t>=5.2&&t<10.6?Math.min(P(t,5.2,5.8),1-P(t,9.6,10.2)):0;$('S_mood').style.transform=`translateY(${110-110*mo}%)`;
+ tapAt(t,7.6,200,640);$('f3').className='face'+(t>=7.7?' on':'');
+ tapAt(t,8.9,200,700);
+ // Heute: Ring
+ const rv=t<10?0:P(t,10,11.6)*62;$('ring').setAttribute('stroke-dashoffset',301.6*(1-rv/100));$('ringv').textContent=t<10?'–':Math.round(rv);
+ tapAt(t,13,300,165);const wh=P(t,13.2,13.7);$('why').style.height=(wh*76)+'px';
+ const zb=P(t,15.2,15.6);$('zb').style.opacity=zb;
+ toast(t,15.4,18.2,'✓ An Zwift übertragen: SIT-Sprints −5 %');
+ const wk=t<34?0:62;$('wk').textContent=wk;$('wkb').style.width=(wk/286*100)+'%';
+ // Woche: Verschieben
+ tapAt(t,21.6,240,365);const mv=Math.min(P(t,21.9,22.3),1-P(t,23.6,24));$('mv').style.height=(mv*38)+'px';
+ tapAt(t,23.2,222,416);
+ const sw=P(t,23.7,24.3),moved=t>=24;
+ $('sDo').style.display=moved?'none':'';$('tDo').style.display=moved?'':'none';$('sFr').style.display=moved?'':'none';$('tFr').style.display=moved?'none':'';
+ $('sDo').style.opacity=1-sw;$('sFr').style.opacity=moved?P(t,24,24.4):1;
+ toast(t,24.3,27,'✓ Verschoben, Zwift ist aktualisiert');
+ // Bewerten 27.5-35.5
+ notif(t,28.2,30,'WattsUp · Neue Fahrt auf Strava','SIT-Sprints, 58 min. Kurz bewerten?');
+ tapAt(t,29.9,200,70);
+ const ro=t>=30.2&&t<35.4?Math.min(P(t,30.2,30.8),1-P(t,34.2,34.8)):0;$('S_rate').style.transform=`translateY(${110-110*ro}%)`;
+ tapAt(t,32.3,236,646);document.querySelectorAll('#rpe .face').forEach(f=>f.className='face'+(t>=32.4&&f.dataset.n==='7'?' on':''));
+ tapAt(t,33.6,200,690);
+ toast(t,34.6,37,'✓ Gespeichert · Woche 62 / 286 TSS');
+ const dn=t>=34;$('diTag').textContent=dn?'✓ erledigt':'heute 19:00';$('diTag').style.background=dn?'#183d2f':'';$('diTag').style.color=dn?'#3ddc97':'';$('diTx').textContent=dn?'Zwift · 58 min · 62 TSS · RPE 7':'Zwift · 60 min · −5 % angepasst';
+ $('wk2').textContent=t<34?0:62;$('wkb2').style.width=(t<34?0:22)+'%';
+ // Weg
+ $('nowd').style.left=(P(t,36.4,37.6)*3)+'%';
+ const g=P(t,37,38.4);$('g1').style.width=(g*12)+'%';$('g2').style.width=(g*0)+'%';$('g3').style.width=(g*23)+'%';
+ $('prog').textContent=t<36.4?'10:24 h':(Math.round(P(t,36.4,37.6)*-12)+24<12?'10:12 h':'10:'+String(24-Math.round(P(t,36.4,37.6)*12)).padStart(2,'0')+' h');
+ const sc=P(t,40,42.5);$('wegin').style.transform=`translateY(${-sc*300}px)`;
+ // Ende
+ $('E').style.opacity=P(t,45.5,46.3);
+};
+render(0);
+</script></body></html>
