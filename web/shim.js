@@ -387,49 +387,112 @@
     '.wu-st{display:inline-block;font-size:.78rem;font-weight:700;padding:3px 9px;border-radius:999px;margin-left:6px}.wu-ok{background:rgba(61,220,151,.18);color:var(--ok,#0b7a4b)}.wu-no{background:rgba(255,107,87,.16);color:var(--bad,#b2361f)}.wu-wa{background:rgba(245,176,74,.2);color:var(--warn,#9a6200)}' +
     '.wu-x{float:right;border:0;background:var(--bg2,#e3ebf5);border-radius:50%;width:34px;height:34px;font-size:18px;cursor:pointer;color:var(--ink,#0f2236)}.wu-cp{font:12px ui-monospace,monospace;background:var(--bg2,#e9eef4);color:var(--ink,#0f2236);padding:6px 8px;border-radius:8px;word-break:break-all;display:block;margin-top:4px}' +
     '.wu-t{position:fixed;left:50%;top:calc(env(safe-area-inset-top,0px) + 14px);transform:translateX(-50%);background:#0f2236;color:#fff;padding:10px 16px;border-radius:12px;font:14px system-ui;z-index:10000;max-width:88vw;box-shadow:0 6px 18px rgba(0,0,0,.3)}' +
-    '.wu-upd{position:fixed;left:12px;right:12px;bottom:calc(env(safe-area-inset-bottom,0px) + 14px);z-index:9998;background:#0f2236;color:#fff;border-radius:16px;padding:12px 12px 12px 16px;display:flex;align-items:center;gap:10px;box-shadow:0 8px 24px rgba(0,0,0,.35);font:14px system-ui}.wu-upd>div{flex:1}.wu-upd b{display:block}.wu-upd span{color:#9fb3c8;font-size:12px}.wu-upd .wu-b{margin:0;background:#3ddc97;color:#0f2236}.wu-upd .wu-x{background:#1d3550;color:#fff;width:30px;height:30px;font-size:16px}.wu-note{background:rgba(245,176,74,.18)!important}.wu-tb{width:100%;border-collapse:collapse;font-size:.86rem}.wu-tb td{padding:4px 0;border-bottom:1px solid var(--ln,#e3e9f0)}.wu-tb td:last-child{text-align:right}';
+    '.wu-upd{position:fixed;left:12px;right:12px;bottom:calc(env(safe-area-inset-bottom,0px) + 14px);z-index:9998;background:#0f2236;color:#fff;border-radius:16px;padding:12px 12px 12px 16px;display:flex;align-items:center;gap:10px;box-shadow:0 8px 24px rgba(0,0,0,.35);font:14px system-ui}.wu-upd>div{flex:1}.wu-upd b{display:block}.wu-upd span{color:#9fb3c8;font-size:12px}.wu-upd .wu-b{margin:0;background:#3ddc97;color:#0f2236}.wu-upd .wu-x{background:#1d3550;color:#fff;width:30px;height:30px;font-size:16px}.wu-note{background:rgba(245,176,74,.18)!important}.wu-top{display:flex;align-items:center;gap:8px;margin-bottom:4px}.wu-top h2{flex:1;margin:0}.wu-bk{border:0;background:var(--bg2,#e3ebf5);color:var(--ink,#0f2236);border-radius:50%;width:34px;height:34px;font-size:22px;line-height:1;cursor:pointer}.wu-top .wu-x{float:none}.wu-gh{margin:18px 4px 6px;font-size:.78rem;text-transform:uppercase;letter-spacing:.06em;color:var(--mu,#5b6b7b)}.wu-grp{background:var(--card,#fff);border-radius:16px;overflow:hidden;box-shadow:0 1px 4px rgba(15,34,54,.08)}.wu-row{display:flex;align-items:center;gap:10px;width:100%;border:0;background:none;color:inherit;font:inherit;text-align:left;padding:13px 14px;cursor:pointer;border-bottom:1px solid var(--ln,#e3e9f0)}.wu-row:last-child{border-bottom:0}.wu-row:active{background:var(--bg2,#eef2f6)}.wu-rt{flex:1;min-width:0}.wu-rt b{display:block;font-weight:600}.wu-rt small{display:block;color:var(--mu,#5b6b7b);font-size:.82rem;margin-top:2px}.wu-chev{color:var(--mu,#5b6b7b);font-size:20px}.wu-sh details>summary{cursor:pointer;font-weight:600;padding:2px 0}.wu-sh details[open]>summary{margin-bottom:6px}.wu-tb{width:100%;border-collapse:collapse;font-size:.86rem}.wu-tb td{padding:4px 0;border-bottom:1px solid var(--ln,#e3e9f0)}.wu-tb td:last-child{text-align:right}';
   function addCss() { if (document.getElementById('wu-css')) return; var s = document.createElement('style'); s.id = 'wu-css'; s.textContent = CSS; document.head.appendChild(s); }
   var tT = null;
   function toast(m) { addCss(); var t = document.querySelector('.wu-t'); if (!t) { t = document.createElement('div'); t.className = 'wu-t'; document.body.appendChild(t); } t.textContent = m; t.hidden = false; clearTimeout(tT); tT = setTimeout(function () { t.hidden = true; }, 4000); }
   function st(ok, txt) { return '<span class="wu-st ' + (ok === true ? 'wu-ok' : ok === 'w' ? 'wu-wa' : 'wu-no') + '">' + txt + '</span>'; }
   function chk(id, lab, on) { return '<label style="display:flex;align-items:center;gap:10px;font-size:.95rem;color:inherit;margin:10px 0"><input type="checkbox" id="' + id + '"' + (on ? ' checked' : '') + ' style="width:22px;height:22px">' + lab + '</label>'; }
   function fld(id, lab, val, type, ph) { return '<label for="' + id + '">' + lab + '</label><input id="' + id + '" type="' + (type || 'text') + '" value="' + E(val || '') + '" placeholder="' + E(ph || '') + '" autocomplete="off" autocapitalize="off" spellcheck="false">'; }
-  function render(note) {
-    var c = cfg(), m = monthKey(now()), lst = costs().filter(function (x) { return monthKey(x.ts) === m; }), sum = monthSum(), lim = Number(c.limit || 0);
-    var sy = SYNC.st === 'ok' ? st(true, 'abgeglichen ' + new Date(SYNC.ts).toLocaleTimeString('de-AT', { hour: '2-digit', minute: '2-digit' })) : SYNC.st === 'err' ? st(false, 'Fehler') : st('w', 'aus');
-    return '<button class="wu-x" data-wu="close" aria-label="Schließen">×</button><h2>Verbindungen und Kosten</h2><p class="wu-mu">Alle Schlüssel bleiben nur auf diesem Gerät. Anleitung: <a href="https://github.com/christophschmid-design/wattsup/blob/main/docs/EINRICHTUNG.md" target="_blank" rel="noopener">Einrichtung Schritt für Schritt</a></p>' +
-      (note ? '<p class="wu-c wu-note">' + E(note) + '</p>' : '') +
-      '<div class="wu-c"><h3 style="margin-top:0">Strava ' + (stOk() ? st(true, 'verbunden') : st(false, 'nicht verbunden')) + '</h3>' +
+  var PG = 'home';
+  function hdr(t, sub) { return '<div class="wu-top">' + (PG !== 'home' ? '<button class="wu-bk" data-wu="pg:home" aria-label="Zurück">‹</button>' : '') + '<h2>' + t + '</h2><button class="wu-x" data-wu="close" aria-label="Schließen">×</button></div>' + (sub ? '<p class="wu-mu">' + sub + '</p>' : ''); }
+  function row(go, title, sub, chip) { return '<button class="wu-row" data-wu="' + go + '"><span class="wu-rt"><b>' + title + '</b>' + (sub ? '<small>' + sub + '</small>' : '') + '</span>' + (chip || '') + '<span class="wu-chev" aria-hidden="true">›</span></button>'; }
+  function grp(t, rows) { return '<h3 class="wu-gh">' + t + '</h3><div class="wu-grp">' + rows.join('') + '</div>'; }
+  function syncChip() { return SYNC.st === 'ok' ? st(true, 'abgeglichen') : SYNC.st === 'err' ? st(false, 'Fehler') : st('w', 'aus'); }
+  function pageHome(note) {
+    var c = cfg(), zs = window.WU_ZSUG ? window.WU_ZSUG() : 0, se = window.WU_SRCERR ? window.WU_SRCERR() : [], lim = Number(c.limit || 0), sum = monthSum();
+    var nOnN = ['nMood', 'nAct', 'nPlan', 'nWeigh'].filter(function (k) { return c[k] !== false; }).length;
+    return hdr('Einstellungen') + (note ? '<p class="wu-c wu-note">' + E(note) + '</p>' : '') +
+      grp('Training', [
+        row('app:cfg', 'Training und Ziele', 'FTP, Puls, Startzeiten, Renndaten, Zielwerte'),
+        row('app:zon', 'Zonen und Schwellenwerte', zs ? zs + (zs > 1 ? ' neue Vorschläge' : ' neuer Vorschlag') : 'Leistungs- und Pulszonen', zs ? st('w', 'neu') : '')
+      ]) +
+      grp('Verbindungen', [
+        row('pg:strava', 'Strava', stOk() ? 'Aktivitäten und Leistungsdaten' : 'Noch nicht verbunden', stOk() ? st(true, 'verbunden') : st(false, 'aus')),
+        row('pg:google', 'Google Kalender und Abgleich', gOk() ? 'Kalender „Training“, Abgleich über Google Drive' : 'Noch nicht verbunden', gOk() ? syncChip() : st(false, 'aus'))
+      ].concat(CAPN ? [row('pg:health', 'Gesundheitsdaten', 'Waage, Schlaf, Ruhepuls und HRV über Health Connect', c.hcOk && c.hcOn !== false ? st(true, 'verbunden') : st('w', 'aus'))] : [])) +
+      grp('Planung', [
+        row('pg:claude', 'Claude und Kosten', c.aKey ? (MODELS[c.model || 'claude-sonnet-5-5'] || {}).n + ', diesen Monat ' + usd(sum) + (lim > 0 ? ' von ' + usd(lim) : '') : 'Noch kein Schlüssel', c.aKey ? (lim > 0 && sum >= lim ? st(false, 'Grenze') : lim > 0 && sum >= lim * .8 ? st('w', '80 %') : st(true, 'bereit')) : st(false, 'aus'))
+      ]) +
+      grp('App', (CAPN ? [
+        row('pg:notif', 'Benachrichtigungen', nOnN + ' von 4 aktiv' + (c.pushOk ? ', Push aktiv' : ''), c.pushOk ? '' : st('w', 'Push aus')),
+        row('pg:app', 'App-Version', UPD ? '1.' + UPD.cur + (UPD.newer ? ', neu: 1.' + UPD.latest : ', aktuell') : 'Version und Updates', UPD && UPD.newer ? st('w', 'Update') : '')
+      ] : []).concat([
+        row('pg:data', 'Daten sichern und übernehmen', 'Sicherung, Import aus der Claude-Version'),
+        row('app:src', 'Datenquellen und Fehlerprotokoll', se.length ? 'Problem bei ' + se.join(', ') : 'Status aller Dienste', se.length ? st(false, 'Fehler') : '')
+      ])) +
+      '<p class="wu-mu" style="margin-top:16px">Alle Schlüssel bleiben nur auf diesem Gerät. <a href="https://github.com/christophschmid-design/wattsup/blob/main/docs/EINRICHTUNG.md" target="_blank" rel="noopener">Anleitung zur Einrichtung</a><br>WattsUp ' + VER + (CAPN ? ', Android' : ', Browser') + '</p>';
+  }
+  function pageStrava() {
+    var c = cfg();
+    return hdr('Strava', 'Liefert Aktivitäten, Leistung und Puls.') + '<div class="wu-c">' + '<p style="margin:0 0 4px">' + (stOk() ? st(true, 'verbunden') + ((stTok() || {}).who ? ' als ' + E(stTok().who) : '') : st(false, 'nicht verbunden')) + '</p>' +
       fld('wu-stId', 'Client-ID', c.stId) + fld('wu-stSec', 'Client-Secret', c.stSec, 'password') +
-      '<p class="wu-mu">Bei Strava als „Authorization Callback Domain“ eintragen:<code class="wu-cp">' + E(location.host) + '</code></p>' +
       '<button class="wu-b" data-wu="st">' + (stOk() ? 'Neu verbinden' : 'Mit Strava verbinden') + '</button>' + (stOk() ? '<button class="wu-b alt" data-wu="stx">Trennen</button>' : '') + '</div>' +
-      '<div class="wu-c"><h3 style="margin-top:0">Google Kalender und Abgleich ' + (gOk() ? st(true, 'verbunden') : st(false, 'nicht verbunden')) + '</h3>' +
-      fld('wu-gId', 'Client-ID', c.gId) + fld('wu-gSec', 'Client-Secret', c.gSec, 'password') + fld('wu-cal', 'Kalender-ID', c.cal || CAL0) +
-      '<p class="wu-mu">Bei Google als „Autorisierte Weiterleitungs-URI“ eintragen:<code class="wu-cp">' + E(HOME) + '</code></p>' +
-      '<p class="wu-mu">Abgleich zwischen Geräten über einen versteckten Ordner in deinem Google Drive: ' + sy + (SYNC.st === 'err' ? '<br>' + E(SYNC.msg) : '') + '</p>' +
+      '<details class="wu-c"><summary>Einstellungen bei Strava</summary><p class="wu-mu">Als „Authorization Callback Domain“ eintragen:<code class="wu-cp">' + E(location.host) + '</code></p></details>' + saveBtn();
+  }
+  function pageGoogle() {
+    var c = cfg();
+    return hdr('Google Kalender und Abgleich', 'Trägt Einheiten in den Kalender ein und gleicht Einträge zwischen deinen Geräten über einen versteckten Ordner in Google Drive ab.') +
+      '<div class="wu-c"><p style="margin:0 0 4px">' + (gOk() ? st(true, 'verbunden') : st(false, 'nicht verbunden')) + (gOk() ? ' Abgleich: ' + syncChip() + (SYNC.st === 'ok' ? ' ' + new Date(SYNC.ts).toLocaleTimeString('de-AT', { hour: '2-digit', minute: '2-digit' }) : '') : '') + '</p>' + (SYNC.st === 'err' ? '<p class="wu-mu">' + E(SYNC.msg) + '</p>' : '') +
+      fld('wu-cal', 'Kalender-ID', c.cal || CAL0) +
       '<button class="wu-b" data-wu="g">' + (gOk() ? 'Neu verbinden' : 'Mit Google verbinden') + '</button>' + (gOk() ? '<button class="wu-b alt" data-wu="sync">Jetzt abgleichen</button><button class="wu-b alt" data-wu="gx">Trennen</button>' : '') + '</div>' +
-      '<div class="wu-c"><h3 style="margin-top:0">Claude für die Planung ' + (c.aKey ? st(true, 'Schlüssel hinterlegt') : st(false, 'kein Schlüssel')) + '</h3>' +
-      fld('wu-aKey', 'API-Schlüssel (beginnt mit sk-ant-)', c.aKey, 'password') +
-      '<label for="wu-model">Modell für die Planung</label><select id="wu-model">' + Object.keys(MODELS).map(function (k) { var M = MODELS[k]; return '<option value="' + k + '"' + ((c.model || 'claude-sonnet-5-5') === k ? ' selected' : '') + '>' + M.n + ' (' + String(M.i).replace('.', ',') + ' $ / ' + String(M.o).replace('.', ',') + ' $ pro Mio. Tokens)</option>'; }).join('') + '</select>' +
-      '<label for="wu-once">Nur die nächste Planung gründlicher</label><select id="wu-once"><option value="">Nein, Standardmodell</option><option value="claude-opus-5-5"' + (c.once === 'claude-opus-5-5' ? ' selected' : '') + '>Ja, mit Opus 5.5</option><option value="claude-fable-5-2"' + (c.once === 'claude-fable-5-2' ? ' selected' : '') + '>Ja, mit Fable 5.2</option></select>' +
-      fld('wu-limit', 'Monatsgrenze in $ (0 = keine)', c.limit != null ? c.limit : 3, 'text', '3') + '</div>' +
-      '<div class="wu-c"><h3 style="margin-top:0">Kosten ' + (m) + '</h3><p style="margin:0"><b>' + usd(sum) + '</b> für ' + lst.length + (lst.length === 1 ? ' Planung' : ' Planungen') + (lim > 0 ? ', Grenze ' + usd(lim) + (sum >= lim ? ' ' + st(false, 'erreicht') : sum >= lim * .8 ? ' ' + st('w', 'über 80 %') : '') : '') + '</p>' +
+      '<details class="wu-c"' + (c.gId ? '' : ' open') + '><summary>Zugangsdaten</summary>' + fld('wu-gId', 'Client-ID', c.gId) + fld('wu-gSec', 'Client-Secret', c.gSec, 'password') +
+      '<p class="wu-mu">Bei Google als „Autorisierte Weiterleitungs-URI“ eintragen:<code class="wu-cp">' + E(HOME) + '</code></p></details>' + saveBtn();
+  }
+  function pageHealth() {
+    var c = cfg();
+    return hdr('Gesundheitsdaten', 'Übernimmt Gewicht und Körperfett der Renpho-Waage sowie Schlaf, Ruhepuls und HRV der Uhr automatisch über Health Connect.') +
+      '<div class="wu-c"><p style="margin:0 0 4px">' + (c.hcOk && c.hcOn !== false ? st(true, 'verbunden') : st('w', 'aus')) + (c.hcLast ? ' zuletzt abgeglichen ' + new Date(c.hcLast).toLocaleString('de-AT', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' }) : '') + '</p>' +
+      (c.hcVal ? '<p class="wu-mu">Letztes Gewicht: ' + String(c.hcVal.kg).replace('.', ',') + ' kg am ' + c.hcVal.d.slice(8, 10) + '.' + c.hcVal.d.slice(5, 7) + '.</p>' : '') +
+      (c.hcOk && c.hcScope !== 2 ? '<p class="wu-c wu-note">Neu: Schlaf, Ruhepuls und HRV. Bitte einmal „Verbinden“ tippen und alles erlauben.</p>' : '') +
+      '<button class="wu-b" data-wu="hc">' + (c.hcOk && c.hcScope === 2 ? 'Jetzt abgleichen' : 'Verbinden') + '</button>' + (c.hcOk ? '<button class="wu-b alt" data-wu="hcx">' + (c.hcOn === false ? 'Einschalten' : 'Ausschalten') + '</button>' : '') + '</div>' +
+      '<details class="wu-c"><summary>Fehlersuche</summary><p class="wu-mu">Zeigt, welche Werte Health Connect gerade liefert.</p><button class="wu-b alt" data-wu="hcd">Prüfen</button><div id="wu-hcd"></div></details>';
+  }
+  function pageClaude() {
+    var c = cfg(), m = monthKey(now()), lst = costs().filter(function (x) { return monthKey(x.ts) === m; }), sum = monthSum(), lim = Number(c.limit || 0);
+    return hdr('Claude und Kosten', 'Claude erstellt die Wochenplanung. Abgerechnet wird pro Planung über dein Anthropic-Konto.') +
+      '<div class="wu-c"><h3 style="margin-top:0">Diesen Monat</h3><p style="margin:0"><b style="font-size:1.4rem">' + usd(sum) + '</b> für ' + lst.length + (lst.length === 1 ? ' Planung' : ' Planungen') + (lim > 0 ? ', Grenze ' + usd(lim) + (sum >= lim ? ' ' + st(false, 'erreicht') : sum >= lim * .8 ? ' ' + st('w', 'über 80 %') : '') : '') + '</p>' +
       (lst.length ? '<table class="wu-tb">' + lst.slice(-6).reverse().map(function (x) { return '<tr><td>' + new Date(x.ts).toLocaleString('de-AT', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' }) + ', ' + (MODELS[x.model] ? MODELS[x.model].n : x.model) + '</td><td>' + usd(x.usd) + '</td></tr>'; }).join('') + '</table>' : '') +
+      fld('wu-limit', 'Monatsgrenze in $ (0 = keine)', c.limit != null ? c.limit : 3, 'text', '3') +
       '<p class="wu-mu">Berechnet aus dem gemeldeten Verbrauch und der Preisliste. Maßgeblich ist die Abrechnung in der Anthropic Console.</p></div>' +
-      (CAPN ? '<div class="wu-c"><h3 style="margin-top:0">Benachrichtigungen</h3>' + chk('wu-nMood', 'Morgengefühl ab ' + ((window.WU_STATE && WU_STATE.mFrom) || 5) + ' Uhr', c.nMood !== false) + chk('wu-nAct', 'Neue Strava-Aktivität bewerten', c.nAct !== false) + chk('wu-nPlan', 'Sonntag 19 Uhr: Wochenplanung', c.nPlan !== false) + chk('wu-nWeigh', 'Freitag 7 Uhr: Waage', c.nWeigh !== false) + '<p class="wu-mu">Widget: Startbildschirm lange drücken → Widgets → WattsUp.</p></div>' : '') + (CAPN ? '<div class="wu-c"><h3 style="margin-top:0">Gewicht aus Google Health ' + (c.hcOk && c.hcOn !== false ? st(true, 'verbunden') : st('w', 'aus')) + '</h3><p class="wu-mu">Übernimmt Gewicht und Körperfett der Renpho-Waage sowie Schlaf, Ruhepuls und HRV der Uhr automatisch über Health Connect.' + (c.hcOk && c.hcScope !== 2 ? ' <b>Neu: Schlaf, Ruhepuls und HRV. Bitte einmal „Verbinden“ tippen und alles erlauben.</b>' : '') + '' + (c.hcVal ? ' Zuletzt: ' + String(c.hcVal.kg).replace('.', ',') + ' kg am ' + c.hcVal.d.slice(8, 10) + '.' + c.hcVal.d.slice(5, 7) + '.' : '') + '</p><button class="wu-b" data-wu="hc">' + (c.hcOk && c.hcScope === 2 ? 'Jetzt abgleichen' : 'Verbinden') + '</button>' + (c.hcOk ? '<button class="wu-b alt" data-wu="hcx">' + (c.hcOn === false ? 'Einschalten' : 'Ausschalten') + '</button>' : '') + '<button class="wu-b alt" data-wu="hcd">Prüfen</button><div id="wu-hcd"></div></div>' : '') + (CAPN ? '<div class="wu-c"><h3 style="margin-top:0">Push für neue Aktivitäten ' + (c.pushOk ? st(true, 'aktiv') : st('w', 'aus')) + '</h3><p class="wu-mu">Sofortige Meldung, sobald eine Aktivität auf Strava landet.</p>' + fld('wu-pushUrl', 'Adresse des Push-Dienstes', c.pushUrl, 'text', 'https://wattsup-push.….workers.dev') + '<button class="wu-b" data-wu="push">' + (c.pushOk ? 'Neu einrichten' : 'Push aktivieren') + '</button>' + (c.pushOk ? '<button class="wu-b alt" data-wu="pusht">Test senden</button>' : '') + '</div>' : '') + (CAPN ? '<div class="wu-c"><h3 style="margin-top:0">App-Version</h3><p style="margin:0" id="wu-ver">' + (UPD ? '1.' + UPD.cur + (UPD.newer ? ', neu verfügbar: 1.' + UPD.latest : ', aktuell') : 'wird geprüft …') + '</p><button class="wu-b alt" data-wu="updchk">Nach Update suchen</button>' + (UPD && UPD.newer ? '<button class="wu-b" data-wu="upd">Jetzt aktualisieren</button>' : '') + '</div>' : '') + '<div class="wu-c"><h3 style="margin-top:0">Daten</h3><p class="wu-mu">Daten aus der Claude-Version übernehmen: dort im Menü „Daten für WattsUp exportieren“ und die Datei hier wählen.</p><input type="file" id="wu-imp" accept=".json,.txt,application/json,text/plain"><button class="wu-b alt" data-wu="exp">Sicherung exportieren</button></div>' +
-      '<button class="wu-b" data-wu="save">Speichern</button><button class="wu-b alt" data-wu="close">Schließen</button><p class="wu-mu">WattsUp ' + VER + (CAPN ? ', Android' : ', Browser') + '</p>';
+      '<div class="wu-c"><h3 style="margin-top:0">Modell</h3><label for="wu-model">Für jede Planung</label><select id="wu-model">' + Object.keys(MODELS).map(function (k) { var M = MODELS[k]; return '<option value="' + k + '"' + ((c.model || 'claude-sonnet-5-5') === k ? ' selected' : '') + '>' + M.n + ' (' + String(M.i).replace('.', ',') + ' $ / ' + String(M.o).replace('.', ',') + ' $ pro Mio. Tokens)</option>'; }).join('') + '</select>' +
+      '<label for="wu-once">Nur die nächste Planung gründlicher</label><select id="wu-once"><option value="">Nein, Standardmodell</option><option value="claude-opus-5-5"' + (c.once === 'claude-opus-5-5' ? ' selected' : '') + '>Ja, mit Opus 5.5</option><option value="claude-fable-5-2"' + (c.once === 'claude-fable-5-2' ? ' selected' : '') + '>Ja, mit Fable 5.2</option></select></div>' +
+      '<details class="wu-c"' + (c.aKey ? '' : ' open') + '><summary>API-Schlüssel ' + (c.aKey ? st(true, 'hinterlegt') : st(false, 'fehlt')) + '</summary>' + fld('wu-aKey', 'Beginnt mit sk-ant-', c.aKey, 'password') + '</details>' + saveBtn();
+  }
+  function pageNotif() {
+    var c = cfg(), mf = (window.WU_STATE && WU_STATE.mFrom) || 5;
+    return hdr('Benachrichtigungen') + '<div class="wu-c"><h3 style="margin-top:0">Erinnerungen</h3>' + chk('wu-nMood', 'Morgengefühl ab ' + mf + ' Uhr', c.nMood !== false) + chk('wu-nWeigh', 'Freitag 7 Uhr: Waage', c.nWeigh !== false) + chk('wu-nPlan', 'Sonntag 19 Uhr: Wochenplanung', c.nPlan !== false) + chk('wu-nAct', 'Neue Strava-Aktivität bewerten', c.nAct !== false) + '</div>' +
+      '<div class="wu-c"><h3 style="margin-top:0">Push für neue Aktivitäten ' + (c.pushOk ? st(true, 'aktiv') : st('w', 'aus')) + '</h3><p class="wu-mu">Sofortige Meldung, sobald eine Aktivität auf Strava landet.</p>' + (c.pushOk ? '<button class="wu-b alt" data-wu="pusht">Test senden</button>' : '') +
+      '<details' + (c.pushOk ? '' : ' open') + '><summary>Einrichtung</summary>' + fld('wu-pushUrl', 'Adresse des Push-Dienstes', c.pushUrl, 'text', 'https://wattsup-push.….workers.dev') + '<button class="wu-b" data-wu="push">' + (c.pushOk ? 'Neu einrichten' : 'Push aktivieren') + '</button></details></div>' +
+      '<p class="wu-mu">Widget: Startbildschirm lange drücken → Widgets → WattsUp.</p>';
+  }
+  function pageApp() {
+    return hdr('App-Version') + '<div class="wu-c"><p style="margin:0" id="wu-ver">' + (UPD ? 'Installiert: 1.' + UPD.cur + (UPD.newer ? '<br>Neu verfügbar: 1.' + UPD.latest : ', aktuell') : 'wird geprüft …') + '</p>' + (UPD && UPD.newer ? '<button class="wu-b" data-wu="upd">Jetzt aktualisieren</button>' : '') + '<button class="wu-b alt" data-wu="updchk">Nach Update suchen</button></div>' +
+      '<p class="wu-mu">Inhalt und Funktionen kommen automatisch beim nächsten Start. Ein Update ist nur für Widget, Benachrichtigungen und Berechtigungen nötig.</p>';
+  }
+  function pageData() {
+    return hdr('Daten sichern und übernehmen') + '<div class="wu-c"><h3 style="margin-top:0">Sicherung</h3><p class="wu-mu">Bewertungen, Pläne, Morgengefühl, Gewicht und Einstellungen als Datei. Schlüssel sind nicht enthalten.</p><button class="wu-b alt" data-wu="exp">Sicherung exportieren</button></div>' +
+      '<div class="wu-c"><h3 style="margin-top:0">Übernehmen</h3><p class="wu-mu">Eine Sicherung oder den Export aus der Claude-Version („Daten für WattsUp exportieren“) wählen.</p><input type="file" id="wu-imp" accept=".json,.txt,application/json,text/plain"></div>';
+  }
+  function saveBtn() { return '<button class="wu-b" data-wu="save">Speichern</button>'; }
+  function render(note) {
+    var f = { home: pageHome, strava: pageStrava, google: pageGoogle, health: pageHealth, claude: pageClaude, notif: pageNotif, app: pageApp, data: pageData }[PG] || pageHome;
+    return f(note);
   }
   function saveForm() {
     function v(id) { var e = document.getElementById(id); return e ? e.value.trim() : undefined; }
-    var lim = parseFloat(String(v('wu-limit') || '0').replace(',', '.'));
     function cb(id) { var e = document.getElementById(id); return e ? e.checked : undefined; }
-    if (CAPN && document.getElementById('wu-nMood')) { var wasAct = cfg().nAct !== false; setCfg({ nMood: cb('wu-nMood'), nAct: cb('wu-nAct'), nPlan: cb('wu-nPlan'), nWeigh: cb('wu-nWeigh') }); if (wasAct !== (cfg().nAct !== false)) pushTopic(cfg().nAct !== false); }
-    if (document.getElementById('wu-pushUrl')) setCfg({ pushUrl: v('wu-pushUrl') });
-    setCfg({ stId: v('wu-stId'), stSec: v('wu-stSec'), gId: v('wu-gId'), gSec: v('wu-gSec'), cal: v('wu-cal') || CAL0, aKey: v('wu-aKey'), model: v('wu-model'), once: v('wu-once') || null, limit: isNaN(lim) ? 0 : lim });
+    var p = {};
+    [['wu-stId', 'stId'], ['wu-stSec', 'stSec'], ['wu-gId', 'gId'], ['wu-gSec', 'gSec'], ['wu-aKey', 'aKey'], ['wu-model', 'model'], ['wu-pushUrl', 'pushUrl']].forEach(function (x) { var val = v(x[0]); if (val !== undefined) p[x[1]] = val; });
+    if (v('wu-cal') !== undefined) p.cal = v('wu-cal') || CAL0;
+    if (v('wu-once') !== undefined) p.once = v('wu-once') || null;
+    if (v('wu-limit') !== undefined) { var lim = parseFloat(String(v('wu-limit') || '0').replace(',', '.')); p.limit = isNaN(lim) ? 0 : lim; }
+    if (document.getElementById('wu-nMood')) { var wasAct = cfg().nAct !== false; p.nMood = cb('wu-nMood'); p.nAct = cb('wu-nAct'); p.nPlan = cb('wu-nPlan'); p.nWeigh = cb('wu-nWeigh'); setCfg(p); if (wasAct !== (cfg().nAct !== false)) pushTopic(cfg().nAct !== false); }
+    else setCfg(p);
     lastSig = ''; if (window.WU_STATE && window.WU_SYNC) window.WU_SYNC(window.WU_STATE);
   }
   var WU = {
-    open: function (note) { var sh = document.getElementById('sh'), sx = document.getElementById('shx'); if (sh && !sh.hidden && sx) sx.click(); addCss(); var o = document.getElementById('wu-ov'); if (!o) { o = document.createElement('div'); o.id = 'wu-ov'; o.className = 'wu-ov'; document.body.appendChild(o); o.addEventListener('click', onClick); o.addEventListener('change', onChange); } o.innerHTML = '<div class="wu-sh" role="dialog" aria-modal="true">' + render(note) + '</div>'; o.hidden = false; },
+    open: function (note, page) { if (page) PG = page; else if (note || !document.getElementById('wu-ov') || document.getElementById('wu-ov').hidden) PG = PG && document.getElementById('wu-ov') && !document.getElementById('wu-ov').hidden ? PG : 'home'; var sh = document.getElementById('sh'), sx = document.getElementById('shx'); if (sh && !sh.hidden && sx) sx.click(); addCss(); var o = document.getElementById('wu-ov'); if (!o) { o = document.createElement('div'); o.id = 'wu-ov'; o.className = 'wu-ov'; document.body.appendChild(o); o.addEventListener('click', onClick); o.addEventListener('change', onChange); } o.innerHTML = '<div class="wu-sh" role="dialog" aria-modal="true">' + render(note) + '</div>'; o.hidden = false; },
     close: function () { var o = document.getElementById('wu-ov'); if (o) o.hidden = true; },
     toast: toast, exportData: exportData
   };
@@ -438,6 +501,8 @@
     if (e.target.id === 'wu-ov') { WU.close(); return; }
     var b = e.target.closest('[data-wu]'); if (!b) return; var k = b.getAttribute('data-wu');
     if (k === 'close') { saveForm(); WU.close(); return; }
+    if (k.indexOf('pg:') === 0) { saveForm(); PG = k.slice(3); WU.open(null, PG); var sh0 = document.querySelector('.wu-sh'); if (sh0) sh0.scrollTop = 0; return; }
+    if (k.indexOf('app:') === 0) { saveForm(); WU.close(); PG = 'home'; if (window.WU_OPEN) window.WU_OPEN(k.slice(4)); return; }
     saveForm();
     if (k === 'save') { toast('Gespeichert. WattsUp lädt neu …'); setTimeout(function () { location.reload(); }, 900); return; }
     if (k === 'st') stConnect();

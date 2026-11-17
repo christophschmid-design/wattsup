@@ -68,7 +68,7 @@ Beim ersten Verbinden zeigt Google „Google hat diese App nicht überprüft“.
 ## 5. WattsUp verbinden
 
 1. Öffne die Web-Version: **https://christophschmid-design.github.io/wattsup/**
-2. Es erscheint **Verbindungen und Kosten** (später: Menü → Verbindungen und Kosten).
+2. Es erscheint **Einstellungen** (später: Menü → Einstellungen).
 3. Strava: Client-ID und Client-Secret eintragen → **Mit Strava verbinden** → bei Strava bestätigen.
 4. Google: Client-ID und Clientschlüssel eintragen → **Mit Google verbinden** → bestätigen (siehe Hinweis oben).
 5. Claude: API-Schlüssel eintragen, Modell wählen (Standard Sonnet 5.5), Monatsgrenze festlegen → **Speichern**.
@@ -76,7 +76,7 @@ Beim ersten Verbinden zeigt Google „Google hat diese App nicht überprüft“.
 ## 6. Daten aus der Claude-Version übernehmen
 
 1. In der bisherigen WattsUp-Version in Claude: Menü → **Daten für WattsUp exportieren** → Datei speichern.
-2. In der neuen Version: Menü → **Verbindungen und Kosten** → bei **Daten** die Datei auswählen.
+2. In der neuen Version: Menü → **Einstellungen** → bei **Daten** die Datei auswählen.
 
 Bewertungen, Morgengefühl, Gewicht, Pläne, Einstellungen und die bereits berechneten Belastungswerte sind dann übernommen. Über Google Drive landen sie automatisch auch auf deinen anderen Geräten.
 
@@ -94,7 +94,7 @@ Web-Version in Edge öffnen → Menü (…) → **Apps** → **Diese Website als
 
 ## Benachrichtigungen, Widget und Updates (Android)
 
-- **Benachrichtigungen:** Beim ersten Start fragt Android, ob WattsUp Mitteilungen senden darf → **Zulassen**. Einstellbar im Menü unter Verbindungen und Kosten:
+- **Benachrichtigungen:** Beim ersten Start fragt Android, ob WattsUp Mitteilungen senden darf → **Zulassen**. Einstellbar im Menü unter Einstellungen:
   - Morgengefühl ab 5 Uhr (entfällt, sobald es eingetragen ist)
   - Neue Strava-Aktivität bewerten (per Push, siehe Schritt 8)
   - Sonntag 19 Uhr: Wochenplanung
@@ -131,11 +131,11 @@ Dann **Actions** → **Push-Dienst veröffentlichen** → **Run workflow**. Die 
 
 **D. In WattsUp**
 1. Sobald die google-services.json im Projekt ist, kommt eine neue App-Version → in der App aktualisieren.
-2. Menü → **Verbindungen und Kosten** → **Push für neue Aktivitäten** → Adresse eintragen → **Push aktivieren**.
+2. Menü → **Einstellungen** → **Push für neue Aktivitäten** → Adresse eintragen → **Push aktivieren**.
 3. Eine Test-Nachricht erscheint. Ab dann meldet WattsUp neue Aktivitäten sofort.
 
 ## 9. Gewicht automatisch von der Waage (Health Connect)
 
 1. In der Renpho-App die Verbindung zu **Google Health / Health Connect** einschalten (Gewicht freigeben).
-2. In WattsUp: Menü → **Verbindungen und Kosten** → **Gewicht aus Google Health** → **Verbinden** → bei Android den Zugriff auf **Gewicht** erlauben.
+2. In WattsUp: Menü → **Einstellungen** → **Gewicht aus Google Health** → **Verbinden** → bei Android den Zugriff auf **Gewicht** erlauben.
 3. Ab dann übernimmt WattsUp beim Öffnen automatisch neue Werte (die erste Messung des Tages) in den Gewichtsverlauf und rechnet damit Watt pro Kilo und die Zeitprognose.

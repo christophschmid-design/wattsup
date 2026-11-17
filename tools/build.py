@@ -24,10 +24,13 @@ def web():
     head = ('<meta http-equiv="Cache-Control" content="no-cache">\n<link rel="manifest" href="manifest.webmanifest">\n'
             f'<script src="shim.js?v={hv}"></script>\n')
     s = rep(s, '<title>WattsUp</title>', '<title>WattsUp</title>\n' + head)
-    s = rep(s, MENU_ANCHOR, '<li data-k="wu" role="button" tabindex="0"><b>Verbindungen und Kosten</b>'
-            '<span>Strava, Google, Claude-Schlüssel und Kosten der Planung</span></li>' + MENU_ANCHOR)
-    s = s.replace('in den claude.ai-Einstellungen unter Connectors', 'im Menü unter Verbindungen und Kosten')
-    s = s.replace('in claude.ai unter Connectors', 'im Menü unter Verbindungen und Kosten')
+    # Menü: Morgengefühl, Gewicht, Einstellungen (alles Weitere im Einstellungs-Hub)
+    i0 = s.index('<li data-k="zon" role="button" tabindex="0">')
+    i1 = s.index('</ul><p class="mu" style="margin-top:14px">WattsUp, Version', i0)
+    s = s[:i0] + ('<li data-k="wt" role="button" tabindex="0"><b>Gewicht eintragen</b><span>Kommt sonst automatisch von der Waage</span></li>'
+                  '<li data-k="wu" role="button" tabindex="0"><b>Einstellungen</b><span>Training, Verbindungen, Kosten, Benachrichtigungen</span></li>') + s[i1:]
+    s = s.replace('in den claude.ai-Einstellungen unter Connectors', 'im Menü unter Einstellungen')
+    s = s.replace('in claude.ai unter Connectors', 'im Menü unter Einstellungen')
     s = s.replace('AccuWeather für Salzburg, Stand ', 'Open-Meteo für Salzburg, Stand ')
     s = s.replace('AccuWeather, Stand ', 'Open-Meteo, Stand ')
     s = re.sub(r'WattsUp, Version (\d+)\.', r'WattsUp, Version \1, eigenständig.', s)
