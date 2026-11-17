@@ -405,6 +405,7 @@
     return hdr('Einstellungen') + (note ? '<p class="wu-c wu-note">' + E(note) + '</p>' : '') +
       grp('Training', [
         row('app:cfg', 'Training und Ziele', 'FTP, Puls, Startzeiten, Renndaten, Zielwerte'),
+        row('app:ftp', 'FTP-Test', 'Ablauf, Zwift-Datei und Auswertung'),
         row('app:zon', 'Zonen und Schwellenwerte', zs ? zs + (zs > 1 ? ' neue Vorschläge' : ' neuer Vorschlag') : 'Leistungs- und Pulszonen', zs ? st('w', 'neu') : '')
       ]) +
       grp('Verbindungen', [
