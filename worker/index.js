@@ -76,6 +76,31 @@ export default {
       return Response.json({ 'hub.challenge': url.searchParams.get('hub.challenge') });
     }
 
+    // Machbarkeitstest Karoo-Coach (nur für die Testphase)
+    if (url.pathname === '/coach-test') {
+      if (url.searchParams.get('k') !== 'wu-karoo-test-7f3a') return new Response('forbidden', { status: 403 });
+      if (req.method === 'GET') {
+        return Response.json({
+          name: 'Test: 5 × 8 min Sweetspot',
+          stand: new Date().toISOString(),
+          steps: [
+            { t: 'Einfahren', s: 900, lo: 150, hi: 170 },
+            { t: 'Intervall', s: 480, lo: 235, hi: 245, n: 5, pause: 240 },
+            { t: 'Ausfahren', s: 600, lo: 120, hi: 150 }
+          ]
+        });
+      }
+      if (req.method === 'POST') {
+        const j = await req.json().catch(() => ({}));
+        const sum = String(j.sum || '').slice(0, 400);
+        try {
+          await push(env, env.ATHLETE, 'Karoo-Test ' + String(j.v || '').slice(0, 12), sum || 'leer', { k: 'test' });
+          return Response.json({ ok: true });
+        } catch (e) { return Response.json({ ok: false, error: e.message }, { status: 500 }); }
+      }
+      return new Response('method', { status: 405 });
+    }
+
     // Meldung von Strava
     if (req.method === 'POST') {
       const ev = await req.json().catch(() => null);

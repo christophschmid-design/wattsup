@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">WattsUp Coach Test</string>
+    <string name="field_name">WattsUp Test</string>
+    <string name="field_desc">Testfeld des WattsUp Coach: Puls, Watt und Uhrzeit</string>
+    <string name="act_yes">WattsUp: Annehmen</string>
+    <string name="act_no">WattsUp: Ablehnen</string>
+</resources>

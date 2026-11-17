@@ -2,6 +2,7 @@ name: Web-Version veröffentlichen
 on:
   push:
     branches: [main]
+    paths-ignore: ['karoo/**', '.github/workflows/karoo.yml']
   workflow_dispatch:
 permissions:
   contents: read

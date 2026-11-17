@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ExtensionInfo
+    id="wattsupcoach"
+    displayName="@string/app_name"
+    icon="@drawable/ic_wu"
+    scansDevices="false">
+    <DataType
+        typeId="wutest"
+        displayName="@string/field_name"
+        description="@string/field_desc"
+        graphical="true"
+        icon="@drawable/ic_wu" />
+    <BonusAction
+        actionId="annehmen"
+        displayName="@string/act_yes" />
+    <BonusAction
+        actionId="ablehnen"
+        displayName="@string/act_no" />
+</ExtensionInfo>

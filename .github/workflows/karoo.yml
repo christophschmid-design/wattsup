@@ -1,0 +1,63 @@
+name: Karoo-Coach bauen
+on:
+  push:
+    branches: [main]
+    paths: ['karoo/**', '.github/workflows/karoo.yml']
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  apk:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+      - uses: android-actions/setup-android@v3
+      - name: Karoo-Bibliothek holen und Coach einsetzen
+        run: |
+          git clone --quiet https://github.com/hammerheadnav/karoo-ext.git ext
+          git -C ext checkout --quiet f79f103
+          rm -rf ext/app
+          cp -r karoo/coach ext/app
+          cp android-shell/wattsup.jks ext/app/wattsup.jks
+      - name: Adresse des Push-Dienstes ermitteln
+        env:
+          T: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          A: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          SUB=$(curl -s -H "Authorization: Bearer $T" "https://api.cloudflare.com/client/v4/accounts/$A/workers/subdomain" | jq -r '.result.subdomain // empty' || true)
+          if [ -n "$SUB" ]; then echo "WORKER_URL=https://wattsup-push.$SUB.workers.dev" >> "$GITHUB_ENV"; echo "Push-Dienst gefunden"; else echo "::warning::Adresse des Push-Dienstes nicht ermittelt, muss am Karoo eingetragen werden"; fi
+      - name: Coach bauen
+        working-directory: ext
+        env:
+          KS_PASS: ${{ secrets.ANDROID_KEYSTORE_PASS }}
+          VCODE: ${{ github.run_number }}
+          USERNAME: github-actions
+          TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: ./gradlew --no-daemon -q :app:assembleRelease
+      - name: Veröffentlichen
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          N: ${{ github.run_number }}
+        run: |
+          cp ext/app/build/outputs/apk/release/app-release.apk wattsup-coach.apk
+          cp web/icon-192.png wattsup-coach.png
+          REL="https://github.com/${GITHUB_REPOSITORY}/releases/download/karoo"
+          jq -n --arg v "0.1.$N" --argjson c "$N" --arg rel "$REL" '{
+            label: "WattsUp Coach Test",
+            packageName: "at.christophschmid.wattsup.coach",
+            iconUrl: ($rel + "/wattsup-coach.png"),
+            latestApkUrl: ($rel + "/wattsup-coach.apk"),
+            latestVersion: $v,
+            latestVersionCode: $c,
+            developer: "WattsUp",
+            description: "Machbarkeitstest für den WattsUp Coach",
+            releaseNotes: ("Version " + $v),
+            tags: ["training"]
+          }' > manifest.json
+          gh release view karoo >/dev/null 2>&1 || gh release create karoo --prerelease --title "WattsUp Coach (Karoo)" --notes "Machbarkeitstest"
+          gh release upload karoo wattsup-coach.apk wattsup-coach.png manifest.json --clobber
+          gh release edit karoo --notes "Neueste Version 0.1.$N"
