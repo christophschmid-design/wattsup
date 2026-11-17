@@ -23,7 +23,19 @@ Datei: **https://github.com/christophschmid-design/wattsup/releases/download/kar
 5. In Bugjaeger: Reiter mit dem Paket-Symbol (**Packages / Install**) → **wattsup-coach.apk** auswählen → installieren.
 6. Kabel ab, **Karoo aus- und wieder einschalten**.
 
-Ausweichwege: Android-Tablet mit derselben App, oder PC mit den Google „Platform-Tools“ und dem Befehl `adb install wattsup-coach.apk`.
+Hinweis aus dem ersten Versuch: Der Karoo setzt sich am Kabel gerne als steuerndes Gerät durch („Wechsel nicht möglich“ am Handy). Dann klappt der Handy-Weg nur mit OTG-Adapter (USB-C-Stecker auf USB-A-Buchse plus Karoo-Ladekabel). In den Karoo-Entwickleroptionen die USB-Konfiguration auf **MTP** stellen. Der WLAN-Weg in Bugjaeger geht beim Karoo 2 nicht ohne vorheriges Kabel.
+
+**Empfohlen: MacBook (oder PC)**
+1. Datei und die Google **Platform-Tools für Mac** (developer.android.com/tools/releases/platform-tools) herunterladen und entpacken.
+2. Karoo per USB-C anstecken (USB-Debugging an).
+3. Terminal:
+   ```
+   cd ~/Downloads/platform-tools
+   ./adb devices
+   ```
+   Am Karoo „USB-Debugging zulassen?“ → immer → Zulassen. Erneut `./adb devices`, es muss „device“ stehen.
+4. `./adb install ~/Downloads/wattsup-coach.apk` → „Success“ → Kabel ab, Karoo neu starten.
+5. Blockiert macOS adb: Systemeinstellungen → Datenschutz & Sicherheit → „Dennoch erlauben“.
 
 ## 3. Test-Bildschirm
 
