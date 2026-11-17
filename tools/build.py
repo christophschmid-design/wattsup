@@ -17,6 +17,31 @@ def rep(s, old, new, count=1):
     return s.replace(old, new)
 
 
+SW = r"""/* WattsUp Offline: Netz zuerst, bei Funkloch die zuletzt geladene Fassung */
+const C = 'wattsup-__BID__';
+const CORE = ['./', 'index.html', 'shim.js', 'manifest.webmanifest', 'icon.svg', 'icon-192.png', 'icon-512.png'];
+self.addEventListener('install', e => { self.skipWaiting(); e.waitUntil(caches.open(C).then(c => c.addAll(CORE).catch(() => {}))); });
+self.addEventListener('activate', e => e.waitUntil(caches.keys().then(ks => Promise.all(ks.filter(k => k.startsWith('wattsup-') && k !== C).map(k => caches.delete(k)))).then(() => self.clients.claim())));
+self.addEventListener('fetch', e => {
+  const r = e.request, u = new URL(r.url);
+  if (r.method !== 'GET' || u.origin !== location.origin || u.pathname.endsWith('build.json')) return;
+  e.respondWith((async () => {
+    try {
+      const ctl = new AbortController(), tm = setTimeout(() => ctl.abort(), 6000);
+      const res = await fetch(r, { signal: ctl.signal, cache: 'no-cache' }); clearTimeout(tm);
+      if (res.ok) { const c = await caches.open(C); c.put(r.mode === 'navigate' ? 'index.html' : r, res.clone()); }
+      return res;
+    } catch (err) {
+      const c = await caches.open(C);
+      const hit = r.mode === 'navigate' ? (await c.match('index.html')) || (await c.match('./')) : await c.match(r, { ignoreSearch: true });
+      if (hit) return hit;
+      throw err;
+    }
+  })());
+});
+"""
+
+
 def web():
     s = SRC
     import hashlib
@@ -51,9 +76,7 @@ def web():
         'icons': [{'src': 'icon-192.png', 'sizes': '192x192', 'type': 'image/png'},
                   {'src': 'icon-512.png', 'sizes': '512x512', 'type': 'image/png'},
                   {'src': 'icon.svg', 'sizes': 'any', 'type': 'image/svg+xml'}]}, ensure_ascii=False, indent=1), encoding='utf-8')
-    (d / 'sw.js').write_text("self.addEventListener('install',e=>self.skipWaiting());"
-                             "self.addEventListener('activate',e=>e.waitUntil(self.clients.claim()));"
-                             "self.addEventListener('fetch',()=>{});\n", encoding='utf-8')
+    (d / 'sw.js').write_text(SW.replace('__BID__', bid), encoding='utf-8')
     (d / '.nojekyll').write_text('')
     print('dist/ fertig', len(s))
 
