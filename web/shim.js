@@ -453,7 +453,7 @@
     var c = cfg(), m = monthKey(now()), lst = costs().filter(function (x) { return monthKey(x.ts) === m; }), sum = monthSum(), lim = Number(c.limit || 0);
     return hdr('Claude und Kosten', 'Claude erstellt die Wochenplanung. Abgerechnet wird pro Planung über dein Anthropic-Konto.') +
       '<div class="wu-c"><h3 style="margin-top:0">Diesen Monat</h3><p style="margin:0"><b style="font-size:1.4rem">' + usd(sum) + '</b> für ' + lst.length + (lst.length === 1 ? ' Planung' : ' Planungen') + (lim > 0 ? ', Grenze ' + usd(lim) + (sum >= lim ? ' ' + st(false, 'erreicht') : sum >= lim * .8 ? ' ' + st('w', 'über 80 %') : '') : '') + '</p>' +
-      (lst.length ? '<table class="wu-tb">' + lst.slice(-6).reverse().map(function (x) { return '<tr><td>' + new Date(x.ts).toLocaleString('de-AT', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' }) + ', ' + (MODELS[x.model] ? MODELS[x.model].n : x.model) + '</td><td>' + usd(x.usd) + '</td></tr>'; }).join('') + '</table>' : '') +
+      (lst.length ? '<table class="wu-tb">' + lst.slice(-6).reverse().map(function (x) { return '<tr><td>' + new Date(x.ts).toLocaleString('de-AT', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' }) + ', ' + (MODELS[x.model] ? MODELS[x.model].n : x.model) + '<br><small class="wu-mu">Anfrage ' + (x.i || 0).toLocaleString('de-AT') + ', Antwort ' + (x.o || 0).toLocaleString('de-AT') + ' Tokens</small></td><td>' + usd(x.usd) + '<br><small class="wu-mu">' + usd(((x.i || 0) * (MODELS[x.model] || MODELS['claude-sonnet-5-5']).i) / 1e6) + ' + ' + usd(((x.o || 0) * (MODELS[x.model] || MODELS['claude-sonnet-5-5']).o) / 1e6) + '</small></td></tr>'; }).join('') + '</table>' : '') +
       fld('wu-limit', 'Monatsgrenze in $ (0 = keine)', c.limit != null ? c.limit : 3, 'text', '3') +
       '<p class="wu-mu">Berechnet aus dem gemeldeten Verbrauch und der Preisliste. Maßgeblich ist die Abrechnung in der Anthropic Console.</p></div>' +
       '<div class="wu-c"><h3 style="margin-top:0">Modell</h3><label for="wu-model">Für jede Planung</label><select id="wu-model">' + Object.keys(MODELS).map(function (k) { var M = MODELS[k]; return '<option value="' + k + '"' + ((c.model || 'claude-sonnet-5-5') === k ? ' selected' : '') + '>' + M.n + ' (' + String(M.i).replace('.', ',') + ' $ / ' + String(M.o).replace('.', ',') + ' $ pro Mio. Tokens)</option>'; }).join('') + '</select>' +
@@ -743,10 +743,20 @@
     document.addEventListener('visibilitychange', function () { if (document.visibilityState === 'visible') hcSync(false); });
   }
 
+  /* Skitour-Vorschlag vom Push-Dienst holen (Do bis So, höchstens alle 30 Minuten) */
+  async function skiSync(force) {
+    var c = cfg(), base = pushBase(), wd = new Date().getDay();
+    if (!base || (!force && !(wd >= 4 || wd === 0))) return;
+    if (!force && now() - (c.skiLast || 0) < 30 * 60000) return;
+    try { var r = await http(base + '/ski'); setCfg({ skiLast: now() }); for (var i = 0; i < 50 && !window.WU_SKISET; i++) await new Promise(function (ok) { setTimeout(ok, 300); }); if (window.WU_SKISET && r && r.alle) window.WU_SKISET(r); } catch (e) { }
+  }
+  WU.skiSync = skiSync;
+  setTimeout(function () { skiSync(false); }, 2500);
+
   /* Sprung aus einer Benachrichtigung direkt in den passenden Dialog */
   var T0 = now();
   function goFrom(o) {
-    if (!o || (o.k !== 'mood' && o.k !== 'act' && o.k !== 'plan')) { if (now() - T0 > 8000) location.reload(); return; }
+    if (!o || (o.k !== 'mood' && o.k !== 'act' && o.k !== 'plan' && o.k !== 'ski')) { if (now() - T0 > 8000) location.reload(); return; }
     try { sessionStorage.setItem('wu_go', JSON.stringify({ k: o.k, id: o.id || null, t: now() })); } catch (e) { }
     if (now() - T0 > 8000) location.reload(); else goRun();
   }
@@ -758,6 +768,7 @@
     (function tick() {
       if (now() - t0 > 25000) { done(); return; }
       if (!window.WU_OPEN || !window.WU_STATE) { setTimeout(tick, 400); return; }
+      if (o.k === 'ski') { done(); WU.close(); skiSync(true).then(function () { location.hash = '#plan'; setTimeout(function () { var e = document.getElementById('p-ski'); if (e) e.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 400); }); return; }
       if (o.k === 'plan') { done(); WU.close(); var nm = new Date(); nm.setDate(nm.getDate() + ((8 - nm.getDay()) % 7 || 7)); window.WU_OPEN('w:' + nm.getFullYear() + '-' + ('0' + (nm.getMonth() + 1)).slice(-2) + '-' + ('0' + nm.getDate()).slice(-2)); return; }
       if (o.k === 'mood') { done(); WU.close(); var go = function () { window.WU_OPEN('mood'); }; if (typeof hcSync === 'function' && cfg().hcOk) { Promise.race([hcSync(false), new Promise(function (r) { setTimeout(r, 6000); })]).then(go, go); } else go(); return; }
       var L = window.WU_ACTS ? window.WU_ACTS() : [], a = o.id ? L.filter(function (x) { return x.id === String(o.id); })[0] : null;

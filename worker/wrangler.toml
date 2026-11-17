@@ -2,3 +2,10 @@ name = "wattsup-push"
 main = "index.js"
 compatibility_date = "2025-06-01"
 workers_dev = true
+
+[vars]
+ATHLETE = "34760016"
+
+[triggers]
+# Freitag 17:00 UTC = 18:00 Wiener Winterzeit
+crons = ["0 17 * * 5"]

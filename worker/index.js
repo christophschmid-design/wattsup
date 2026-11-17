@@ -1,3 +1,4 @@
+import { skiCheck, skiText } from './ski.js';
 // WattsUp Push: empfängt Meldungen von Strava und schickt eine Push-Nachricht ans Handy.
 // Keine Speicherung: Das Handy hört auf das Thema "wattsup_<Strava-Athleten-ID>".
 
@@ -55,6 +56,16 @@ async function push(env, athlete, title, body, data) {
 }
 
 export default {
+  // Freitags: Skitour-Vorschlag fürs Wochenende (nur Dezember bis April)
+  async scheduled(event, env, ctx) {
+    const m = new Date().getUTCMonth() + 1;
+    if (!env.ATHLETE) return;
+    ctx.waitUntil((async () => {
+      const r = await skiCheck();
+      if (!r.lagebericht && m > 4 && m < 12) return; // außerhalb der Saison ohne Lagebericht keine Nachricht
+      const t = skiText(r); await push(env, env.ATHLETE, t.title, t.body, { k: 'ski' });
+    })().catch(e => console.log(e.message)));
+  },
   async fetch(req, env, ctx) {
     const url = new URL(req.url);
     const cors = { 'Access-Control-Allow-Origin': '*' };
@@ -72,6 +83,12 @@ export default {
         ctx.waitUntil(push(env, ev.owner_id, 'Neue Aktivität auf Strava', 'Kurz in WattsUp bewerten?', { k: 'act', id: String(ev.object_id) }).catch(e => console.log(e.message)));
       }
       return new Response('ok');
+    }
+
+    // Skitour-Vorschlag für die App
+    if (url.pathname === '/ski') {
+      try { return Response.json(await skiCheck(), { headers: Object.assign({ 'Cache-Control': 'max-age=1800' }, cors) }); }
+      catch (e) { return Response.json({ error: e.message }, { status: 500, headers: cors }); }
     }
 
     // Test aus der App
