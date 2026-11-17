@@ -583,7 +583,7 @@
     }
     if (nOn('nPlan')) {
       var s = new Date(); s.setDate(s.getDate() + ((7 - s.getDay()) % 7)); s.setHours(19, 0, 0, 0); if (s.getTime() <= nowT) s.setDate(s.getDate() + 7);
-      list.push({ id: 200, title: 'Wochenplanung', body: 'Zeit, die nächste Woche mit WattsUp zu planen.', schedule: { at: s, allowWhileIdle: true }, extra: { k: 'plan' }, smallIcon: 'ic_stat_wattsup' });
+      list.push({ id: 200, title: 'Wochenplanung', body: 'Tippen, um die nächste Woche mit Claude zu planen.', schedule: { at: s, allowWhileIdle: true }, extra: { k: 'plan' }, smallIcon: 'ic_stat_wattsup' });
     }
     if (nOn('nWeigh')) {
       var f = new Date(); f.setDate(f.getDate() + ((5 - f.getDay() + 7) % 7)); f.setHours(7, 0, 0, 0);
@@ -729,7 +729,7 @@
   /* Sprung aus einer Benachrichtigung direkt in den passenden Dialog */
   var T0 = now();
   function goFrom(o) {
-    if (!o || (o.k !== 'mood' && o.k !== 'act')) { if (now() - T0 > 8000) location.reload(); return; }
+    if (!o || (o.k !== 'mood' && o.k !== 'act' && o.k !== 'plan')) { if (now() - T0 > 8000) location.reload(); return; }
     try { sessionStorage.setItem('wu_go', JSON.stringify({ k: o.k, id: o.id || null, t: now() })); } catch (e) { }
     if (now() - T0 > 8000) location.reload(); else goRun();
   }
@@ -741,6 +741,7 @@
     (function tick() {
       if (now() - t0 > 25000) { done(); return; }
       if (!window.WU_OPEN || !window.WU_STATE) { setTimeout(tick, 400); return; }
+      if (o.k === 'plan') { done(); WU.close(); var nm = new Date(); nm.setDate(nm.getDate() + ((8 - nm.getDay()) % 7 || 7)); window.WU_OPEN('w:' + nm.getFullYear() + '-' + ('0' + (nm.getMonth() + 1)).slice(-2) + '-' + ('0' + nm.getDate()).slice(-2)); return; }
       if (o.k === 'mood') { done(); WU.close(); var go = function () { window.WU_OPEN('mood'); }; if (typeof hcSync === 'function' && cfg().hcOk) { Promise.race([hcSync(false), new Promise(function (r) { setTimeout(r, 6000); })]).then(go, go); } else go(); return; }
       var L = window.WU_ACTS ? window.WU_ACTS() : [], a = o.id ? L.filter(function (x) { return x.id === String(o.id); })[0] : null;
       if (!a && o.id && now() - t0 < 20000) { setTimeout(tick, 600); return; }
