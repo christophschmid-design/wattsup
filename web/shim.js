@@ -395,7 +395,7 @@
   function chk(id, lab, on) { return '<label style="display:flex;align-items:center;gap:10px;font-size:.95rem;color:inherit;margin:10px 0"><input type="checkbox" id="' + id + '"' + (on ? ' checked' : '') + ' style="width:22px;height:22px">' + lab + '</label>'; }
   function fld(id, lab, val, type, ph) { return '<label for="' + id + '">' + lab + '</label><input id="' + id + '" type="' + (type || 'text') + '" value="' + E(val || '') + '" placeholder="' + E(ph || '') + '" autocomplete="off" autocapitalize="off" spellcheck="false">'; }
   var PG = 'home';
-  function hdr(t, sub) { return '<div class="wu-top">' + (PG !== 'home' ? '<button class="wu-bk" data-wu="pg:home" aria-label="Zurück">‹</button>' : '') + '<h2>' + t + '</h2><button class="wu-x" data-wu="close" aria-label="Schließen">×</button></div>' + (sub ? '<p class="wu-mu">' + sub + '</p>' : ''); }
+  function hdr(t, sub) { return '<div class="wu-top">' + (PG !== 'home' ? '<button class="wu-bk" data-wu="pg:home" aria-label="Zurück">‹</button>' : '') + '<h2>' + t + '</h2>' + (PG === 'home' ? '<button class="wu-x" data-wu="close" aria-label="Schließen">×</button>' : '') + '</div>' + (sub ? '<p class="wu-mu">' + sub + '</p>' : ''); }
   function row(go, title, sub, chip) { return '<button class="wu-row" data-wu="' + go + '"><span class="wu-rt"><b>' + title + '</b>' + (sub ? '<small>' + sub + '</small>' : '') + '</span>' + (chip || '') + '<span class="wu-chev" aria-hidden="true">›</span></button>'; }
   function grp(t, rows) { return '<h3 class="wu-gh">' + t + '</h3><div class="wu-grp">' + rows.join('') + '</div>'; }
   function syncChip() { return SYNC.st === 'ok' ? st(true, 'abgeglichen') : SYNC.st === 'err' ? st(false, 'Fehler') : st('w', 'aus'); }
@@ -497,12 +497,28 @@
     toast: toast, exportData: exportData
   };
   window.WU = WU;
+  /* Aus Einstellungen geöffnete App-Dialoge kehren beim Schließen in die Einstellungen zurück */
+  var RET_HUB = false;
+  function watchSheet() {
+    var sh = document.getElementById('sh'); if (!sh || sh.__wuw) return; sh.__wuw = true;
+    new MutationObserver(function () { if (RET_HUB && sh.hidden) { RET_HUB = false; setTimeout(function () { WU.open(null, 'home'); }, 60); } }).observe(sh, { attributes: true, attributeFilter: ['hidden'] });
+  }
+  document.addEventListener('DOMContentLoaded', watchSheet); setTimeout(watchSheet, 1500);
+  /* Android: Zurück-Taste bzw. -Geste */
+  if (CAPN && PL.App) {
+    PL.App.addListener('backButton', function (ev) {
+      var o = document.getElementById('wu-ov'), sh = document.getElementById('sh'), sx = document.getElementById('shx');
+      if (o && !o.hidden) { saveForm(); if (PG !== 'home') WU.open(null, 'home'); else WU.close(); return; }
+      if (sh && !sh.hidden && sx) { sx.click(); return; }
+      if (ev && ev.canGoBack) history.back(); else if (PL.App.minimizeApp) PL.App.minimizeApp(); else PL.App.exitApp();
+    });
+  }
   async function onClick(e) {
-    if (e.target.id === 'wu-ov') { WU.close(); return; }
+    if (e.target.id === 'wu-ov') { if (PG !== 'home') { saveForm(); WU.open(null, 'home'); } else { saveForm(); WU.close(); } return; }
     var b = e.target.closest('[data-wu]'); if (!b) return; var k = b.getAttribute('data-wu');
     if (k === 'close') { saveForm(); WU.close(); return; }
     if (k.indexOf('pg:') === 0) { saveForm(); PG = k.slice(3); WU.open(null, PG); var sh0 = document.querySelector('.wu-sh'); if (sh0) sh0.scrollTop = 0; return; }
-    if (k.indexOf('app:') === 0) { saveForm(); WU.close(); PG = 'home'; if (window.WU_OPEN) window.WU_OPEN(k.slice(4)); return; }
+    if (k.indexOf('app:') === 0) { saveForm(); WU.close(); PG = 'home'; RET_HUB = true; if (window.WU_OPEN) window.WU_OPEN(k.slice(4)); return; }
     saveForm();
     if (k === 'save') { toast('Gespeichert. WattsUp lädt neu …'); setTimeout(function () { location.reload(); }, 900); return; }
     if (k === 'st') stConnect();
