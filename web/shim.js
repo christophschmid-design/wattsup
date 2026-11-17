@@ -275,7 +275,7 @@
     if (!c.aKey) throw fail('not_granted', 'Kein Schlüssel für die Claude-Schnittstelle eingetragen');
     var model = c.once || c.model || 'claude-sonnet-5-5', M = MODELS[model] || MODELS['claude-sonnet-5-5'];
     var lim = Number(c.limit || 0), ms = monthSum();
-    if (lim > 0 && ms >= lim && !c.over) throw fail('rate_limited', 'Monatsgrenze von ' + usd(lim) + ' erreicht. Im Menü unter Verbindungen und Kosten anpassen.');
+    if (lim > 0 && ms >= lim && !c.over) throw fail('rate_limited', 'Monatsgrenze von ' + usd(lim) + ' erreicht. Unter Einstellungen → Claude und Kosten anpassen.');
     var msgs = typeof input === 'string' ? [{ role: 'user', content: input }] : input;
     var body = { model: model, max_tokens: opts.maxTokens || 16000, messages: msgs };
     if (opts.json) body.system = 'Antworte ausschließlich mit einem einzigen gültigen JSON-Objekt. Kein Markdown, keine Codeblöcke, kein Text davor oder danach.';
@@ -375,7 +375,7 @@
     });
   }
 
-  /* ---------- Oberfläche: Verbindungen und Kosten ---------- */
+  /* ---------- Oberfläche: Einstellungen ---------- */
   function E(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
   var CSS = '.wu-ov[hidden],.wu-t[hidden]{display:none!important}.wu-ov{position:fixed;inset:0;z-index:9999;background:rgba(8,18,30,.55);display:flex;align-items:flex-end;justify-content:center}' +
     '.wu-sh{background:var(--bg,#f3f5f8);color:var(--ink,#0f2236);width:100%;max-width:640px;max-height:92vh;overflow:auto;border-radius:22px 22px 0 0;padding:18px 16px 28px;box-sizing:border-box;font:15px/1.45 system-ui,-apple-system,Segoe UI,Roboto,sans-serif}' +
