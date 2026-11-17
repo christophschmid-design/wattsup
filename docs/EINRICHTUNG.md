@@ -150,4 +150,4 @@ WattsUp überträgt die geplanten Zwift-Einheiten der nächsten 7 Tage an interv
 4. In WattsUp: Menü → **Einstellungen** → **Zwift über intervals.icu** → Schlüssel eintragen → **Speichern**.
 5. In Zwift: Die Einheit von heute steht auf dem Startbildschirm, alle weiteren unter **Workouts → Eigene → Intervals.icu**.
 
-Die FTP muss in Zwift und intervals.icu gleich sein. Nach dem Morgengefühl wird die Einheit des Tages bei gelber Ampel um 5 %, bei roter um 10 % reduziert, mit Begründung in der Beschreibung (abschaltbar).
+WattsUp überträgt FTP, Schwellenpuls und Maximalpuls automatisch an intervals.icu. Die FTP in Zwift selbst bitte von Hand gleich halten, Zwift lässt sich von außen nicht ändern. Nach dem Morgengefühl wird die Einheit des Tages bei gelber Ampel um 5 %, bei roter um 10 % reduziert, mit Begründung in der Beschreibung (abschaltbar).

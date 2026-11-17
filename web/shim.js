@@ -489,9 +489,10 @@
       '<div class="wu-c"><p style="margin:0 0 4px">' + (c.ivKey && c.ivOn !== false ? (c.ivErr ? st(false, 'Fehler') : st(true, 'aktiv')) : st('w', 'aus')) + (c.ivLast ? ' zuletzt übertragen ' + new Date(c.ivLast).toLocaleString('de-AT', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' }) + ', ' + (c.ivN || 0) + (c.ivN === 1 ? ' Einheit' : ' Einheiten') : '') + '</p>' +
       (c.ivErr ? '<p class="wu-mu">' + E(c.ivErr) + '</p>' : '') + (c.ivAdjNow ? '<p class="wu-mu">Heute angepasst: ' + E(c.ivAdjNow) + '</p>' : '') +
       chk('wu-ivOn', 'Automatisch übertragen', c.ivOn !== false) +
+      chk('wu-ivSetOn', 'FTP, Schwellenpuls und Maximalpuls aus WattsUp in intervals.icu übernehmen' + (c.ivSetMsg ? ' <small class="wu-mu">(zuletzt: ' + E(c.ivSetMsg) + ')</small>' : ''), c.ivSetOn !== false) +
       chk('wu-ivAdj', 'Einheit von heute nach dem Morgengefühl an die Tagesform anpassen (gelb −5 %, rot −10 %)', c.ivAdj !== false) +
       (c.ivKey ? '<button class="wu-b alt" data-wu="ivs">Jetzt übertragen</button>' : '') + '</div>' +
-      '<div class="wu-c"><p class="wu-mu" style="margin-top:0">Wichtig: Die FTP muss in Zwift und intervals.icu gleich sein' + (ftp ? ', in WattsUp aktuell ' + ftp + ' W' : '') + '. Die Leistung wird in Prozent der FTP übertragen.</p>' +
+      '<div class="wu-c"><p class="wu-mu" style="margin-top:0">Wichtig: Die FTP in Zwift muss mit WattsUp übereinstimmen' + (ftp ? ', aktuell ' + ftp + ' W' : '') + '. Zwift lässt sich von außen nicht ändern, das bitte nach jeder FTP-Änderung in Zwift selbst nachziehen. intervals.icu übernimmt WattsUp automatisch.</p>' +
       '<p class="wu-mu">Nur Workouts gehen hin, nichts kommt zurück. Damit dort keine Fahrten landen: Strava bei intervals.icu nicht verbinden und bei Zwift den Download von Aktivitäten abschalten.</p></div>' +
       '<details class="wu-c"' + (c.ivKey ? '' : ' open') + '><summary>API-Schlüssel ' + (c.ivKey ? st(true, 'hinterlegt') : st(false, 'fehlt')) + '</summary>' + fld('wu-ivKey', 'intervals.icu → Settings → ganz unten „Developer Settings“ → API Key', c.ivKey, 'password') + '</details>' + saveBtn();
   }
@@ -508,7 +509,7 @@
     if (v('wu-cal') !== undefined) p.cal = v('wu-cal') || CAL0;
     if (v('wu-once') !== undefined) p.once = v('wu-once') || null;
     if (document.getElementById('wu-skiOn')) { var was = cfg().skiOn !== false, now2 = cb('wu-skiOn'); p.skiOn = now2; if (was !== now2 && FM && cfg().pushTopic) { try { if (now2) FM.subscribeToTopic({ topic: cfg().pushTopic + '_ski' }); else FM.unsubscribeFromTopic({ topic: cfg().pushTopic + '_ski' }); } catch (e) { } } }
-    if (document.getElementById('wu-ivOn')) { p.ivOn = cb('wu-ivOn'); p.ivAdj = cb('wu-ivAdj'); if (p.ivAdj !== (cfg().ivAdj !== false) || p.ivOn !== (cfg().ivOn !== false)) p.ivSig = ''; }
+    if (document.getElementById('wu-ivOn')) { p.ivOn = cb('wu-ivOn'); p.ivAdj = cb('wu-ivAdj'); p.ivSetOn = cb('wu-ivSetOn'); if (p.ivSetOn !== (cfg().ivSetOn !== false)) p.ivSetSig = ''; if (p.ivAdj !== (cfg().ivAdj !== false) || p.ivOn !== (cfg().ivOn !== false)) p.ivSig = ''; }
     if (v('wu-ivKey') !== undefined && v('wu-ivKey') !== (cfg().ivKey || '')) p.ivSig = '';
     if (v('wu-limit') !== undefined) { var lim = parseFloat(String(v('wu-limit') || '0').replace(',', '.')); p.limit = isNaN(lim) ? 0 : lim; }
     if (document.getElementById('wu-nMood')) { var wasAct = cfg().nAct !== false; p.nMood = cb('wu-nMood'); p.nAct = cb('wu-nAct'); p.nPlan = cb('wu-nPlan'); p.nWeigh = cb('wu-nWeigh'); setCfg(p); if (wasAct !== (cfg().nAct !== false)) pushTopic(cfg().nAct !== false); }
@@ -790,7 +791,7 @@
       return { category: 'WORKOUT', start_date_local: x.start, type: 'VirtualRide', name: x.name, description: x.desc, filename: x.date + '.zwo', file_contents: x.xml, external_id: 'wu-' + x.date };
     });
     var t0 = new Date(), today = t0.getFullYear() + '-' + ('0' + (t0.getMonth() + 1)).slice(-2) + '-' + ('0' + t0.getDate()).slice(-2);
-    var sig = JSON.stringify([today, ev]);
+    var sig = JSON.stringify([today, ev, d.ftp, d.lthr, d.hrmax, c.ivSetOn]);
     if (!force && sig === c.ivSig) return;
     ivBusy = true;
     try {
@@ -798,6 +799,7 @@
       var ids = ev.map(function (e) { return e.external_id; });
       var stale = (c.ivIds || []).filter(function (id) { return id.slice(3) >= today && ids.indexOf(id) < 0; });
       if (stale.length) await http(IVB + '/events/bulk-delete', { method: 'PUT', headers: ivHdr(), body: JSON.stringify(stale.map(function (id) { return { external_id: id }; })) });
+      try { await ivSettings(d, force); } catch (e2) { setCfg({ ivSetMsg: 'Fehler: ' + ((e2 && e2.message) || e2) }); }
       setCfg({ ivSig: sig, ivIds: ids, ivLast: now(), ivN: ev.length, ivAdjNow: (d.list[0] && d.list[0].date === today && d.list[0].adj) || '', ivErr: '' });
       if (force) toast(ev.length ? ev.length + (ev.length === 1 ? ' Zwift-Einheit' : ' Zwift-Einheiten') + ' an intervals.icu übertragen.' : 'Keine Zwift-Einheiten in den nächsten 7 Tagen.' + (stale.length ? ' Alte Einträge entfernt.' : ''));
     } catch (e) {
@@ -805,6 +807,25 @@
       setCfg({ ivErr: m });
       if (force) toast('intervals.icu: ' + m);
     } finally { ivBusy = false; }
+  }
+  /* FTP, Schwellenpuls und Maximalpuls aus WattsUp in die Rad-Einstellungen von intervals.icu schreiben */
+  async function ivSettings(d, force) {
+    var c = cfg(), want = { ftp: Number(d.ftp) || 0, lthr: Number(d.lthr) || 0, max_hr: Number(d.hrmax) || 0 };
+    if (c.ivSetOn === false || !want.ftp) return '';
+    var sig = JSON.stringify(want);
+    if (!force && sig === c.ivSetSig) return '';
+    var list = await http(IVB + '/sport-settings', { headers: ivHdr() }) || [];
+    var ss = list.filter(function (x) { return (x.types || []).indexOf('Ride') >= 0 || (x.types || []).indexOf('VirtualRide') >= 0; })[0];
+    if (!ss) return '';
+    var body = {}, ch = [];
+    if (ss.ftp !== want.ftp) { body.ftp = want.ftp; ch.push('FTP ' + want.ftp + ' W'); }
+    if (ss.indoor_ftp && ss.indoor_ftp !== want.ftp) { body.indoor_ftp = want.ftp; }
+    if (want.lthr && ss.lthr !== want.lthr) { body.lthr = want.lthr; ch.push('Schwellenpuls ' + want.lthr); }
+    if (want.max_hr && ss.max_hr !== want.max_hr) { body.max_hr = want.max_hr; ch.push('HFmax ' + want.max_hr); }
+    if (Object.keys(body).length) await http(IVB + '/sport-settings/' + ss.id + '?recalcHrZones=true', { method: 'PUT', headers: ivHdr(), body: JSON.stringify(body) });
+    setCfg({ ivSetSig: sig, ivSetLast: now(), ivSetMsg: ch.length ? ch.join(', ') : 'unverändert' });
+    if (ch.length) toast('intervals.icu aktualisiert: ' + ch.join(', ') + '. In Zwift die FTP bitte selbst anpassen.');
+    return ch.join(', ');
   }
   WU.ivSync = ivSync;
   setTimeout(function () { ivSync(false); }, 6000);
