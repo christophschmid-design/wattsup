@@ -53,6 +53,7 @@ def web():
     i0 = s.index('<li data-k="zon" role="button" tabindex="0">')
     i1 = s.index('</ul><p class="mu" style="margin-top:14px">WattsUp, Version', i0)
     s = s[:i0] + ('<li data-k="wt" role="button" tabindex="0"><b>Gewicht eintragen</b><span>Kommt sonst automatisch von der Waage</span></li>'
+                  '<li data-k="ski" role="button" tabindex="0"><b>Skitouren</b><span>Vorschläge fürs Wochenende</span></li>'
                   '<li data-k="wu" role="button" tabindex="0"><b>Einstellungen</b><span>Training, Verbindungen, Kosten, Benachrichtigungen</span></li>') + s[i1:]
     s = s.replace('in den claude.ai-Einstellungen unter Connectors', 'im Menü unter Einstellungen')
     s = s.replace('in claude.ai unter Connectors', 'im Menü unter Einstellungen')

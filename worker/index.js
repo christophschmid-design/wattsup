@@ -63,7 +63,7 @@ export default {
     ctx.waitUntil((async () => {
       const r = await skiCheck();
       if (!r.lagebericht && m > 4 && m < 12) return; // außerhalb der Saison ohne Lagebericht keine Nachricht
-      const t = skiText(r); await push(env, env.ATHLETE, t.title, t.body, { k: 'ski' });
+      const t = skiText(r); await push(env, env.ATHLETE + '_ski', t.title, t.body, { k: 'ski' });
     })().catch(e => console.log(e.message)));
   },
   async fetch(req, env, ctx) {
