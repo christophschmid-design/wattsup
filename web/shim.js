@@ -390,7 +390,7 @@
     '.wu-upd{position:fixed;left:12px;right:12px;bottom:calc(env(safe-area-inset-bottom,0px) + 14px);z-index:9998;background:#0f2236;color:#fff;border-radius:16px;padding:12px 12px 12px 16px;display:flex;align-items:center;gap:10px;box-shadow:0 8px 24px rgba(0,0,0,.35);font:14px system-ui}.wu-upd>div{flex:1}.wu-upd b{display:block}.wu-upd span{color:#9fb3c8;font-size:12px}.wu-upd .wu-b{margin:0;background:#3ddc97;color:#0f2236}.wu-upd .wu-x{background:#1d3550;color:#fff;width:30px;height:30px;font-size:16px}.wu-note{background:rgba(245,176,74,.18)!important}.wu-top{display:flex;align-items:center;gap:8px;margin-bottom:4px}.wu-top h2{flex:1;margin:0}.wu-bk{border:0;background:var(--bg2,#e3ebf5);color:var(--ink,#0f2236);border-radius:50%;width:34px;height:34px;font-size:22px;line-height:1;cursor:pointer}.wu-top .wu-x{float:none}.wu-gh{margin:18px 4px 6px;font-size:.78rem;text-transform:uppercase;letter-spacing:.06em;color:var(--mu,#5b6b7b)}.wu-grp{background:var(--card,#fff);border-radius:16px;overflow:hidden;box-shadow:0 1px 4px rgba(15,34,54,.08)}.wu-row{display:flex;align-items:center;gap:10px;width:100%;border:0;background:none;color:inherit;font:inherit;text-align:left;padding:13px 14px;cursor:pointer;border-bottom:1px solid var(--ln,#e3e9f0)}.wu-row:last-child{border-bottom:0}.wu-row:active{background:var(--bg2,#eef2f6)}.wu-rt{flex:1;min-width:0}.wu-rt b{display:block;font-weight:600}.wu-rt small{display:block;color:var(--mu,#5b6b7b);font-size:.82rem;margin-top:2px}.wu-chev{color:var(--mu,#5b6b7b);font-size:20px}.wu-sh details>summary{cursor:pointer;font-weight:600;padding:2px 0}.wu-sh details[open]>summary{margin-bottom:6px}.wu-tb{width:100%;border-collapse:collapse;font-size:.86rem}.wu-tb td{padding:4px 0;border-bottom:1px solid var(--ln,#e3e9f0)}.wu-tb td:last-child{text-align:right}';
   function addCss() { if (document.getElementById('wu-css')) return; var s = document.createElement('style'); s.id = 'wu-css'; s.textContent = CSS; document.head.appendChild(s); }
   var tT = null;
-  function toast(m) { addCss(); var t = document.querySelector('.wu-t'); if (!t) { t = document.createElement('div'); t.className = 'wu-t'; document.body.appendChild(t); } t.textContent = m; t.hidden = false; clearTimeout(tT); tT = setTimeout(function () { t.hidden = true; }, 4000); }
+  function toast(m) { addCss(); var t = document.querySelector('.wu-t'); if (!t) { t = document.createElement('div'); t.className = 'wu-t'; document.body.appendChild(t); } if (!t.onclick) t.onclick = function () { t.hidden = true; }; t.textContent = m; t.hidden = false; clearTimeout(tT); tT = setTimeout(function () { t.hidden = true; }, Math.max(8000, String(m).length * 90)); }
   function st(ok, txt) { return '<span class="wu-st ' + (ok === true ? 'wu-ok' : ok === 'w' ? 'wu-wa' : 'wu-no') + '">' + txt + '</span>'; }
   function chk(id, lab, on) { return '<label style="display:flex;align-items:center;gap:10px;font-size:.95rem;color:inherit;margin:10px 0"><input type="checkbox" id="' + id + '"' + (on ? ' checked' : '') + ' style="width:22px;height:22px;flex:none">' + lab + '</label>'; }
   function fld(id, lab, val, type, ph) { return '<label for="' + id + '">' + lab + '</label><input id="' + id + '" type="' + (type || 'text') + '" value="' + E(val || '') + '" placeholder="' + E(ph || '') + '" autocomplete="off" autocapitalize="off" spellcheck="false">'; }
@@ -487,7 +487,7 @@
     var c = cfg(), ftp = window.WU_IV ? (window.WU_IV(false) || {}).ftp : null;
     return hdr('Zwift über intervals.icu', 'Überträgt die geplanten Zwift-Einheiten der nächsten 7 Tage an intervals.icu. Von dort erscheinen sie in Zwift unter Workouts → Eigene → Intervals.icu, die Einheit von heute direkt auf dem Startbildschirm.') +
       '<div class="wu-c"><p style="margin:0 0 4px">' + (c.ivKey && c.ivOn !== false ? (c.ivErr ? st(false, 'Fehler') : st(true, 'aktiv')) : st('w', 'aus')) + (c.ivLast ? ' zuletzt übertragen ' + new Date(c.ivLast).toLocaleString('de-AT', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' }) + ', ' + (c.ivN || 0) + (c.ivN === 1 ? ' Einheit' : ' Einheiten') : '') + '</p>' +
-      (c.ivErr ? '<p class="wu-mu">' + E(c.ivErr) + '</p>' : '') + (c.ivAdjNow ? '<p class="wu-mu">Heute angepasst: ' + E(c.ivAdjNow) + '</p>' : '') +
+      (c.ivErr ? '<p class="wu-mu">' + E(c.ivErr) + '</p>' : '') + (c.ivAdjNow ? '<p class="wu-mu">Heute angepasst: ' + E(c.ivAdjNow) + '</p>' : '') + (c.zwFtp ? '<p class="wu-c wu-note">Offen: FTP ' + c.zwFtp + ' W in Zwift eintragen und unten am Bildschirm bestätigen.</p>' : '') +
       chk('wu-ivOn', 'Automatisch übertragen', c.ivOn !== false) +
       chk('wu-ivSetOn', 'FTP, Schwellenpuls und Maximalpuls aus WattsUp in intervals.icu übernehmen' + (c.ivSetMsg ? ' <small class="wu-mu">(zuletzt: ' + E(c.ivSetMsg) + ')</small>' : ''), c.ivSetOn !== false) +
       chk('wu-ivAdj', 'Einheit von heute nach dem Morgengefühl an die Tagesform anpassen (gelb −5 %, rot −10 %)', c.ivAdj !== false) +
@@ -824,9 +824,23 @@
     if (want.max_hr && ss.max_hr !== want.max_hr) { body.max_hr = want.max_hr; ch.push('HFmax ' + want.max_hr); }
     if (Object.keys(body).length) await http(IVB + '/sport-settings/' + ss.id + '?recalcHrZones=true', { method: 'PUT', headers: ivHdr(), body: JSON.stringify(body) });
     setCfg({ ivSetSig: sig, ivSetLast: now(), ivSetMsg: ch.length ? ch.join(', ') : 'unverändert' });
-    if (ch.length) toast('intervals.icu aktualisiert: ' + ch.join(', ') + '. In Zwift die FTP bitte selbst anpassen.');
+    if (body.ftp) { setCfg({ zwFtp: want.ftp }); zwFtpBanner(); }
+    if (ch.length) toast('intervals.icu aktualisiert: ' + ch.join(', ') + '.');
     return ch.join(', ');
   }
+  /* Neue FTP: bleibt sichtbar, bis bestätigt ist, dass sie in Zwift eingetragen wurde */
+  function zwFtpBanner() {
+    var f = cfg().zwFtp, old = document.getElementById('wu-zftp');
+    if (!f) { if (old) old.remove(); return; }
+    if (old) return;
+    addCss();
+    var b = document.createElement('div'); b.id = 'wu-zftp'; b.className = 'wu-upd';
+    if (document.getElementById('wu-upd')) b.style.bottom = 'calc(env(safe-area-inset-bottom,0px) + 96px)';
+    b.innerHTML = '<div><b>Neue FTP ' + f + ' W auch in Zwift eintragen</b><span>intervals.icu ist schon aktualisiert. Zwift lässt sich nur von Hand ändern: im Profil bei FTP.</span></div><button class="wu-b" data-wu="zftp">In Zwift erledigt</button>';
+    b.addEventListener('click', function (e) { if (!e.target.closest('[data-wu="zftp"]')) return; setCfg({ zwFtp: null, zwFtpOk: f }); b.remove(); toast('Danke, FTP ' + f + ' W in Zwift bestätigt.'); });
+    document.body.appendChild(b);
+  }
+  setTimeout(zwFtpBanner, 3000);
   WU.ivSync = ivSync;
   setTimeout(function () { ivSync(false); }, 6000);
   setInterval(function () { if (document.visibilityState === 'visible') ivSync(false); }, 60000);
