@@ -1,14 +1,35 @@
 // Skitour-Vorschlag fürs Wochenende: Lawinenlage (Lawinenwarndienst Salzburg) und Wetter (Open-Meteo).
 // Die Liste enthält bekannte Touren im Raum Salzburg; Verhältnisse vor Ort immer selbst prüfen.
 export const TOUREN = [
-  { n: 'Gaisberg', g: 'Osterhorn', top: 1287, start: 700, hm: 600, lat: 47.805, lon: 13.110, max: 4, art: 'Pistentour, auch bei wenig Schnee und hoher Lawinengefahr' },
-  { n: 'Zwölferhorn', g: 'Osterhorn', top: 1522, start: 560, hm: 950, lat: 47.743, lon: 13.355, max: 4, art: 'Pistentour, sicher bei jeder Lawinenlage' },
-  { n: 'Trattberg', g: 'Osterhorn', top: 1757, start: 1000, hm: 750, lat: 47.640, lon: 13.280, max: 2, art: 'Klassiker, mäßig steil' },
-  { n: 'Gerzkopf', g: 'Dachstein', top: 1728, start: 900, hm: 830, lat: 47.520, lon: 13.380, max: 2, art: 'einfache Almtour' },
+  // Flachgau, Tennengau, Osterhorngruppe
+  { n: 'Gaisberg', g: 'Osterhorn', top: 1287, start: 700, hm: 600, lat: 47.805, lon: 13.110, max: 4, art: 'Pistentour, auch bei wenig Schnee' },
+  { n: 'Zwölferhorn', g: 'Osterhorn', top: 1522, start: 560, hm: 950, lat: 47.743, lon: 13.355, max: 4, art: 'Pistentour' },
+  { n: 'Schmittenstein', g: 'Osterhorn', top: 1695, start: 900, hm: 800, lat: 47.690, lon: 13.230, max: 3, art: 'einfach, Wald und Almgelände' },
+  { n: 'Trattberg', g: 'Osterhorn', top: 1757, start: 1000, hm: 750, lat: 47.640, lon: 13.280, max: 3, art: 'Klassiker, mäßig steil' },
+  { n: 'Postalm, Pitscherberg', g: 'Osterhorn', top: 1745, start: 1270, hm: 500, lat: 47.620, lon: 13.400, max: 3, art: 'kurz und einfach, viele Varianten' },
+  // Lammertal, Dachstein West
+  { n: 'Gerzkopf', g: 'Dachstein', top: 1728, start: 900, hm: 830, lat: 47.520, lon: 13.380, max: 3, art: 'einfache Almtour' },
+  // Hochkönig
   { n: 'Hochkeil', g: 'Hochkönig', top: 1782, start: 1100, hm: 680, lat: 47.390, lon: 13.110, max: 3, art: 'einfach, viel begangen' },
+  { n: 'Hochkönig', g: 'Hochkönig', top: 2941, start: 1500, hm: 1450, lat: 47.420, lon: 13.060, max: 2, art: 'hochalpin, lang, nur bei stabilen Verhältnissen' },
+  // Pinzgau, Kitzbüheler Alpen
+  { n: 'Schwalbenwand', g: 'Kitzbühel', top: 2011, start: 1050, hm: 960, lat: 47.400, lon: 12.860, max: 3, art: 'sanfte Grasbergtour' },
   { n: 'Hundstein', g: 'Kitzbühel', top: 2117, start: 1000, hm: 1100, lat: 47.360, lon: 12.920, max: 2, art: 'lange Grasbergtour' },
+  { n: 'Gaisstein', g: 'Kitzbühel', top: 2363, start: 1300, hm: 1060, lat: 47.330, lon: 12.530, max: 2, art: 'Klassiker im Oberpinzgau' },
+  { n: 'Schmittenhöhe', g: 'Kitzbühel', top: 1965, start: 760, hm: 1200, lat: 47.330, lon: 12.740, max: 4, art: 'Pistentour, viele Höhenmeter' },
+  // Gastein, Großarl
+  { n: 'Draugstein', g: 'Großarl', top: 2356, start: 1050, hm: 1300, lat: 47.240, lon: 13.300, max: 2, art: 'Klassiker im Großarltal' },
+  { n: 'Gamskarkogel', g: 'Gastein', top: 2467, start: 1100, hm: 1360, lat: 47.140, lon: 13.110, max: 2, art: 'lang, viele Höhenmeter' },
+  { n: 'Graukogel', g: 'Gastein', top: 2492, start: 1250, hm: 1240, lat: 47.110, lon: 13.150, max: 2, art: 'Gasteiner Klassiker' },
+  { n: 'Stubnerkogel', g: 'Gastein', top: 2246, start: 1100, hm: 1150, lat: 47.110, lon: 13.100, max: 4, art: 'Pistentour' },
+  // Radstädter Tauern, Obertauern
   { n: 'Seekarspitze', g: 'Radstädter', top: 2350, start: 1740, hm: 610, lat: 47.250, lon: 13.540, max: 2, art: 'kurz, hochalpin, schneesicher' },
-  { n: 'Gamskarkogel', g: 'Gastein', top: 2467, start: 1100, hm: 1360, lat: 47.140, lon: 13.110, max: 2, art: 'lang, viele Höhenmeter' }
+  { n: 'Gamsleitenspitze', g: 'Radstädter', top: 2359, start: 1740, hm: 620, lat: 47.240, lon: 13.560, max: 2, art: 'kurz, schneesicher' },
+  { n: 'Hochfeind', g: 'Radstädter', top: 2687, start: 1200, hm: 1490, lat: 47.270, lon: 13.480, max: 2, art: 'lang und anspruchsvoll' },
+  // Lungau
+  { n: 'Speiereck', g: 'Lungau', top: 2411, start: 1100, hm: 1300, lat: 47.150, lon: 13.700, max: 2, art: 'sonnig, oft gute Verhältnisse' },
+  { n: 'Preber', g: 'Lungau', top: 2740, start: 1500, hm: 1240, lat: 47.210, lon: 13.860, max: 2, art: 'Lungauer Paradetour' },
+  { n: 'Aineck', g: 'Lungau', top: 2210, start: 1640, hm: 570, lat: 47.060, lon: 13.620, max: 4, art: 'Pistentour am Katschberg' }
 ];
 const LV = { low: 1, moderate: 2, considerable: 3, high: 4, very_high: 5 };
 const LN = ['', 'gering (1)', 'mäßig (2)', 'erheblich (3)', 'groß (4)', 'sehr groß (5)'];
@@ -51,13 +72,13 @@ export async function skiCheck(now = Date.now()) {
     const lv = dangerFor(b, t), w = await weather(t, sat).catch(() => null);
     (w || []).forEach(x => {
       const snowOk = x.snow != null && x.snow >= 0.2, dryOk = x.pr < 2 && x.code < 61, windOk = x.wind < 50, avOk = lv == null ? t.max >= 4 : lv <= t.max;
-      let sc = (snowOk ? 40 : -100) + (avOk ? 30 : -100) + (dryOk ? 20 : 0) + (windOk ? 5 : -10) + (x.code <= 2 ? 10 : 0) + Math.min(10, t.hm / 120);
+      let sc = (snowOk ? 40 : -100) + (avOk ? 30 : -100) + (dryOk ? 20 : 0) + (windOk ? 5 : -10) + (x.code <= 2 ? 10 : 0) + (lv ? (t.max - lv) * 6 : 0) + (t.hm >= 800 && t.hm <= 1300 ? 10 : Math.max(0, 10 - Math.abs(t.hm - 1050) / 80));
       res.push({ tour: t.n, top: t.top, hm: t.hm, art: t.art, day: x.day, wetter: WMO[x.code] || '', tmax: Math.round(x.tmax), schnee_cm: x.snow == null ? null : Math.round(x.snow * 100), wind: Math.round(x.wind), stufe: lv, stufe_text: lv ? LN[lv] : 'kein Lagebericht', ok: snowOk && avOk && windOk, score: Math.round(sc) });
     });
   }
   res.sort((a, b) => b.score - a.score);
-  const ok = res.filter(r => r.ok);
-  return { erstellt: new Date(now).toISOString(), lagebericht: !!b, wochenende: iso(sat), vorschlaege: ok.slice(0, 5), alle: res.slice(0, 12) };
+  const seen = {}, ok = res.filter(r => r.ok && !seen[r.tour] && (seen[r.tour] = 1));
+  return { erstellt: new Date(now).toISOString(), lagebericht: !!b, wochenende: iso(sat), vorschlaege: ok.slice(0, 8), alle: res.slice(0, 20), touren: TOUREN.length };
 }
 export function skiText(r) {
   const tage = { 6: 'Sa', 0: 'So' }, dn = d => tage[new Date(d + 'T12:00:00Z').getUTCDay()] || d;
