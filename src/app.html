@@ -1809,7 +1809,7 @@ var _srcHtml=srcHtml;srcHtml=function(){var h=_srcHtml();if(!STR.t)return'<div c
 var _rSrc=rSrc;rSrc=function(){_rSrc();var b=$('stb');if(b&&STR.t&&STR.r.some(function(x){return!x.ok})&&b.getAttribute('data-st')!=='run'){b.setAttribute('data-st','err');b.setAttribute('aria-label','Selbsttest: Problem gefunden')}};
 setTimeout(function(){selfTest(false).catch(function(e){logErr('App','Selbsttest',e)})},9000);
 /* Einbindung */
-var _dAct=dAct;dAct=function(k){var o=_dAct(k),a=(window.ACT||[]).filter(function(x){return String(x.id)===k.slice(2)})[0];if(a&&k.charAt(0)==='a')o.h+=fuHtml(a);return o};
+var _dAct=dAct;dAct=function(k){var o=_dAct(k),a=(window.ACT||[]).filter(function(x){return String(x.id)===k.slice(2)})[0];return o};
 var _rall5=rall;rall=function(){_rall5();[rWt,rFuel,rPdc,rZw,rDur,rRep].forEach(function(f){try{f()}catch(e){logErr('App','Darstellung '+f.name,e)}})};
 document.addEventListener('click',function(e){var t=e.target.closest&&e.target.closest('#wt-sv,[data-fu],[data-pr],#st-run');if(!t||t.disabled)return;
 if(t.id==='wt-sv'){wtSave();return}
