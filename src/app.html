@@ -2155,7 +2155,7 @@ if(mi>=90||zw)L.push('🧂 '+(mi>=150?'1 Salztablette pro Stunde':'Salz ins Getr
 if(zw)L.push('🌀 Ventilator an, Handtuch bereit, eher mehr trinken');
 if(hard||mi>=120)L.push('🍝 Letzte größere Mahlzeit 2–3 h vorher');
 L.push('🥛 Danach 20–30 g Eiweiß und Kohlenhydrate');
-return'<ul class="hl">'+L.map(function(x){return'<li>'+E(x)+'</li>'}).join('')+'</ul>'}
+return'<ul class="hl hfuel">'+L.map(function(x){return'<li>'+E(x)+'</li>'}).join('')+'</ul>'}
 function fuelAuto(d){var k=phaseOf(d).k;return['auf','mt','ren','au2','spe','tap','ra2'].indexOf(k)>=0}
 function clothes(t,rain,wind){var c=t<=0?'Winterjacke, Winterhose, Überschuhe, dicke Handschuhe, Mütze':t<=5?'Thermojacke, Winterhose, Überschuhe, dicke Handschuhe':t<=10?'Langarmtrikot mit Windweste oder Windjacke, lange Hose oder Knielinge, leichte Handschuhe':t<=15?'Langarm oder Armlinge, Knielinge, Weste dabei':t<=20?'Kurz mit Armlingen oder Weste':'Kurz, Sonnencreme, genug trinken';return c+(rain>=40?'. Regenjacke einpacken':'')+(wind>=25?'. Starker Wind, Windjacke':'')}
 function compass(g){return['Nord','Nordost','Ost','Südost','Süd','Südwest','West','Nordwest'][Math.round(((g||0)%360)/45)%8]}
@@ -2199,7 +2199,7 @@ if(isT){var wd=wkOf(0),pt=0,at=0;wd.forEach(function(x){if(PM[x])pt+=PM[x][1];X.
 h+='<div class="card hc" data-go="plan" role="button" tabindex="0"><div class="hrow3"><span class="hcl">Woche</span><small>'+Math.round(at)+' von '+Math.round(pt)+' TSS</small></div><div class="bar wb"><i style="width:'+Math.min(100,Math.round(at/Math.max(pt,1)*100))+'%"></i></div><p class="hsm"><b>'+E(ph.n)+':</b> '+E(ph.d)+'</p><p class="hsm mu">Noch '+dm+' Tage bis Mondsee'+(t<'2027-01-04'?' · FTP-Test in '+Math.round((new Date('2027-01-04T12:00:00')-new Date(t+'T12:00:00'))/864e5/7)+' Wochen':'')+'</p></div>'}
 c.innerHTML=h}
 document.addEventListener('click',function(e){var b=e.target.closest&&e.target.closest('[data-do],[data-hx],[data-go]');if(!b||b.disabled)return;e.stopPropagation();e.preventDefault();
-if(b.hasAttribute('data-hx')){var q=b.getAttribute('data-hx').split('|');if(q[0]==='why')HX.why=!HX.why;else{var d=q[1];HX.fuel[d]=!(HX.fuel[d]!=null?HX.fuel[d]:fuelAuto(d))}rH();return}
+if(b.hasAttribute('data-hx')){var q=b.getAttribute('data-hx').split('|');if(q[0]==='why')HX.why=!HX.why;else{var d=q[1],on=!(HX.fuel[d]!=null?HX.fuel[d]:fuelAuto(d));HX.fuel[d]=on;var cd=b.closest('.hses'),st=cd&&cd.querySelector('.hst');if(st){var fx=cd.querySelector('.hfuel');if(fx)fx.remove();if(on&&PM[d])st.insertAdjacentHTML('afterend',fuelHtml(PM[d],d));b.classList.toggle('on',on);return}}rH();return}
 if(b.hasAttribute('data-go')){go(b.getAttribute('data-go'));return}
 var v=Number(b.getAttribute('data-do'));DOFF=b.hasAttribute('data-dabs')||v===0?v:Math.max(-60,Math.min(13,DOFF+v));rH();window.scrollTo(0,0)},true);
 function go(t){try{history.replaceState(null,'','#'+t)}catch(x){location.hash=t}H.show();window.scrollTo(0,0);try{tabRefresh(t)}catch(x){}}
