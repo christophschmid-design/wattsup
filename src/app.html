@@ -578,6 +578,9 @@ body:not([data-tab="analyse"]) .hero .kp{display:none}
 .dsheet .card{margin-bottom:12px}.dsheet .hsub{margin:0 2px 10px}
 .pgx{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}.pgx>div{min-width:0}.amore{margin:6px 0 4px}.amore b{font-size:1rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block}.pgx div{background:var(--bg2);border-radius:12px;padding:8px 10px}.pgx small{display:block;color:var(--mu);font-size:.72rem}.pgx b{font-size:1.15rem}
 .hmv .mvg{margin-top:8px}.hzw summary{cursor:pointer;list-style:none}
+
+.hextra{display:flex;align-items:center;gap:8px;margin:4px 4px 14px;flex-wrap:wrap}.hextra>.mu{font-size:.8rem;margin-right:2px}
+.xbtn{border:1px solid var(--ln);background:var(--bg2);color:var(--ink);border-radius:12px;padding:7px 12px;font:600 .82rem/1 inherit;cursor:pointer;opacity:.85}.xbtn.on{opacity:1;border-color:var(--ok)}
 </style>
 </head>
 <body>
@@ -2185,6 +2188,7 @@ acts.forEach(function(a){L.push([!!LOG[a.id],'Bewerten: '+a.name,LOG[a.id]?'erle
 if(new Date().getDay()===5)L.push([!!WT[d],'Wiegen',WT[d]?WT[d]+' kg':'offen','wt']);
 if(L.length>1)h+='<div class="card hc"><div class="hcl">Dein Tag</div>'+L.map(function(x){return'<div class="ck" data-k="'+x[3]+'" role="button" tabindex="0"><i class="'+(x[0]?'d':'')+'">'+(x[0]?'✓':'')+'</i><span>'+E(x[1])+'</span><small>'+E(x[2])+'</small></div>'}).join('')+'</div>'}
 h+=dayCore(d);
+if(isT){var rk=KR[d]||{},kp=p&&/Kraft/i.test(p[2]);h+='<div class="hextra"><span class="mu">Zusätzlich</span>'+(kp?'':'<button type="button" class="xbtn'+(rk.fin?' on':'')+'" data-k="kr:'+d+'">🏋 Kraft'+(rk.fin?' ✓':'')+'</button>')+'<button type="button" class="xbtn'+(HX.mob?' on':'')+'" data-hx="mob">🧘 Mobilität</button></div>'+(HX.mob?'<div class="card hc hmob"><div class="hcl">10 min Mobilität</div><ul class="hl">'+MOB.map(function(x){return'<li>'+E(x[0])+' <span class="mu">'+x[1]+'</span></li>'}).join('')+'</ul></div>':'')}
 /* Schlaf am Abend */
 if(isT&&new Date().getHours()>=17){var tm=PM[addD(t,1)];if(tm&&(intense(tm[2])||minsOf(tm)>=90)){var sl=[],i;for(i=1;i<=7;i++){var q=(window.REC||{})[addD(t,-i)];if(q&&q.sl)sl.push(q.sl)}var av=sl.length?sl.reduce(function(a,b){return a+b},0)/sl.length:null;h+='<div class="card hc"><div class="hrow2"><span class="hico">🌙</span><div><b>Heute vor 23:00 ins Bett</b><p class="hsm">Morgen '+E(tm[2])+'.'+(av?' Letzte 7 Nächte Ø '+Math.floor(av/60)+':'+String(Math.round(av%60)).padStart(2,'0')+' h Schlaf.':'')+'</p></div></div></div>'}}
 /* Wiegen am Freitag */
@@ -2199,7 +2203,7 @@ if(isT){var wd=wkOf(0),pt=0,at=0;wd.forEach(function(x){if(PM[x])pt+=PM[x][1];X.
 h+='<div class="card hc" data-go="plan" role="button" tabindex="0"><div class="hrow3"><span class="hcl">Woche</span><small>'+Math.round(at)+' von '+Math.round(pt)+' TSS</small></div><div class="bar wb"><i style="width:'+Math.min(100,Math.round(at/Math.max(pt,1)*100))+'%"></i></div><p class="hsm"><b>'+E(ph.n)+':</b> '+E(ph.d)+'</p><p class="hsm mu">Noch '+dm+' Tage bis Mondsee'+(t<'2027-01-04'?' · FTP-Test in '+Math.round((new Date('2027-01-04T12:00:00')-new Date(t+'T12:00:00'))/864e5/7)+' Wochen':'')+'</p></div>'}
 c.innerHTML=h}
 document.addEventListener('click',function(e){var b=e.target.closest&&e.target.closest('[data-do],[data-hx],[data-go]');if(!b||b.disabled)return;e.stopPropagation();e.preventDefault();
-if(b.hasAttribute('data-hx')){var q=b.getAttribute('data-hx').split('|');if(q[0]==='why')HX.why=!HX.why;else{var d=q[1],on=!(HX.fuel[d]!=null?HX.fuel[d]:fuelAuto(d));HX.fuel[d]=on;var cd=b.closest('.hses'),st=cd&&cd.querySelector('.hst');if(st){var fx=cd.querySelector('.hfuel');if(fx)fx.remove();if(on&&PM[d])st.insertAdjacentHTML('afterend',fuelHtml(PM[d],d));b.classList.toggle('on',on);return}}rH();return}
+if(b.hasAttribute('data-hx')){var q=b.getAttribute('data-hx').split('|');if(q[0]==='why')HX.why=!HX.why;else if(q[0]==='mob')HX.mob=!HX.mob;else{var d=q[1],on=!(HX.fuel[d]!=null?HX.fuel[d]:fuelAuto(d));HX.fuel[d]=on;var cd=b.closest('.hses'),st=cd&&cd.querySelector('.hst');if(st){var fx=cd.querySelector('.hfuel');if(fx)fx.remove();if(on&&PM[d])st.insertAdjacentHTML('afterend',fuelHtml(PM[d],d));b.classList.toggle('on',on);return}}rH();return}
 if(b.hasAttribute('data-go')){go(b.getAttribute('data-go'));return}
 var v=Number(b.getAttribute('data-do'));DOFF=b.hasAttribute('data-dabs')||v===0?v:Math.max(-60,Math.min(13,DOFF+v));rH();window.scrollTo(0,0)},true);
 function go(t){try{history.replaceState(null,'','#'+t)}catch(x){location.hash=t}H.show();window.scrollTo(0,0);try{tabRefresh(t)}catch(x){}}
@@ -2289,9 +2293,8 @@ h+='<div class="card hc hses"'+(opt.sh?'':' data-k="p:'+lab(d)+'" role="button" 
 if(/Kraft/i.test(p[2])&&typeof krBtn==='function'){var KL=krList(d)||[];h+='<div class="card hc"><div class="hcl">Kraft · gegen Krämpfe</div><ul class="hl">'+KL.slice(0,6).map(function(x){return'<li>'+E(x[0])+' <span class="mu">'+E(x[1]||'')+'</span></li>'}).join('')+'</ul>'+krBtn(d)+'</div>'}
 if(outd(p[2])&&d>=t&&d<=addD(t,6))h+=wxBox(d,p)}
 else if(p&&acts.length&&/Kraft/i.test(p[2])&&typeof krBtn==='function'&&!(KR[d]&&KR[d].fin)&&d>=addD(t,-1)){var KL2=krList(d)||[];h+='<div class="card hc hnow"><div class="hcl">Jetzt · Kraft</div><ul class="hl">'+KL2.slice(0,6).map(function(x){return'<li>'+E(x[0])+' <span class="mu">'+E(x[1]||'')+'</span></li>'}).join('')+'</ul>'+krBtn(d)+'</div>'}
-if(isT&&!(p&&/Kraft/i.test(p[2]))&&typeof krBtn==='function'){var rk=KR[d]||{};h+='<div class="card hc hmini2"><div class="hrow3"><span class="hcl">Kraft zusätzlich</span><small class="mu">'+(rk.fin?'heute erledigt':'nicht geplant')+'</small></div>'+krBtn(d)+'</div>'}
 /* Ruhetag */
-if(!p&&!acts.length&&d>=t){var nx=PM[addD(d,1)],r2=S&&isT?rdy():null;h+='<div class="card hc"><div class="hcl ok">Ruhetag</div><p>'+(nx?'Erholen für '+E(nx[2])+' '+(addD(d,1)===addD(t,1)?'morgen':'am '+wdLong(addD(d,1)))+'.':'Erholung gehört zum Training.')+(r2&&S?' Form '+sg(S.fm[S.fm.length-1])+'.':'')+'</p><div class="hcl" style="margin-top:10px">10 min Mobilität</div><ul class="hl">'+MOB.slice(0,4).map(function(x){return'<li>'+E(x[0])+' <span class="mu">'+x[1]+'</span></li>'}).join('')+'</ul></div>'}
+if(!p&&!acts.length&&d>=t){var nx=PM[addD(d,1)],r2=S&&isT?rdy():null;h+='<div class="card hc"><div class="hcl ok">Ruhetag</div><p>'+(nx?'Erholen für '+E(nx[2])+' '+(addD(d,1)===addD(t,1)?'morgen':'am '+wdLong(addD(d,1)))+'.':'Erholung gehört zum Training.')+(r2&&S?' Form '+sg(S.fm[S.fm.length-1])+'.':'')+'</p></div>'}
 return h}
 
 /* Woche: Tagesdetail im Stil von Heute */
@@ -2318,6 +2321,7 @@ try{r=await CT(m,'Strava','get_athlete_profile',{});if(r.payload&&r.payload.weig
 try{r=await CT(m,'Strava','get_athlete_zones',{});var z=r.payload;if(z&&z.ftp){ZI.est=!!z.ftp_is_estimated;if(z.power_zones)ZI.pz=z.power_zones.map(function(q){return[q.min,q.max||0]});if(z.heart_rate_zones)ZI.hz=z.heart_rate_zones.map(function(q){return[q.min,q.max||0]});if(z.run_zones&&z.run_zones[1])ZI.rz=[z.run_zones[1].min,z.run_zones[1].max];if(z.sample_race_pace&&z.sample_race_pace.time)ZI.race=z.sample_race_pace.time;if(z.ftp!==FTP&&!CF.ftp){FTP=z.ftp;H.setFTP(FTP);H.live()}}}catch(e){}
 rf();rm();rg()}
 document.addEventListener('click',function(e){var t=e.target.closest&&e.target.closest('[data-k]');if(t&&!e.target.closest('a,button,textarea,input,label,summary,details'))open(t.getAttribute('data-k'))});
+document.addEventListener('click',function(e){var b=e.target.closest&&e.target.closest('button[data-k]');if(b){e.preventDefault();open(b.getAttribute('data-k'))}});
 document.addEventListener('keydown',function(e){if(e.key==='Escape'&&!$('sh').hidden){close();return}var t=e.target;if((e.key==='Enter'||e.key===' ')&&t.getAttribute&&t.getAttribute('data-k')){e.preventDefault();open(t.getAttribute('data-k'))}});
 document.addEventListener('focusin',function(e){if(!$('sh').hidden&&!$('sh').contains(e.target))$('shx').focus()});
 $('bg').addEventListener('click',close);$('shx').addEventListener('click',close);
