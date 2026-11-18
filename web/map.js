@@ -225,6 +225,7 @@
     var tot = r.d[r.n - 1] || 1, X = function (d) { return d / tot * W; }, Y = function (v) { return 8 + (amax - v) / (amax - amin) * (Hh - 26); };
     function prof() {
       if (!svg) return;
+      if (svg.clientWidth > 60) { W = Math.round(svg.clientWidth); Hh = Math.max(70, Math.round(svg.clientHeight || 110)); }
       svg.setAttribute('viewBox', '0 0 ' + W + ' ' + Hh);
       var path = '', i;
       for (i = 0; i < r.n; i++) if (r.alt[i] != null) path += (path ? 'L' : 'M') + X(r.d[i]).toFixed(1) + ' ' + Y(r.alt[i]).toFixed(1);
@@ -242,6 +243,11 @@
         '<line class="wm-cur" x1="-10" x2="-10" y1="0" y2="' + (Hh - 18) + '" stroke="currentColor" stroke-width="1.2"/>';
     }
     prof();
+    if (window.ResizeObserver) {
+      var rw = 0, rh = 0;
+      if (svg) new ResizeObserver(function () { if (Math.abs(svg.clientWidth - rw) > 4 || Math.abs(svg.clientHeight - rh) > 4) { rw = svg.clientWidth; rh = svg.clientHeight; prof(); } }).observe(svg);
+      var bx = root.querySelector('.wm-box'); if (bx) new ResizeObserver(function () { try { map.invalidateSize(); } catch (e) {} }).observe(bx);
+    }
     function show(i) {
       i = Math.max(0, Math.min(r.n - 1, i));
       if (!dot) dot = L.circleMarker(lat[i], { radius: 7, color: '#fff', weight: 3, fillColor: '#1d6fe0', fillOpacity: 1, interactive: false }).addTo(map);
