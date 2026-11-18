@@ -574,6 +574,10 @@ body:not([data-tab="analyse"]) .hero .kp{display:none}
 .tl li.td{background:color-mix(in srgb,var(--ac) 16%,var(--card))!important;border:2px solid var(--ac)!important;border-radius:18px;position:relative;box-shadow:0 6px 18px color-mix(in srgb,var(--ac) 25%,transparent)}.tl li.td::before{content:'HEUTE';position:absolute;top:-9px;left:14px;background:var(--ac);color:var(--onac);font-size:.62rem;font-weight:800;letter-spacing:.08em;padding:2px 8px;border-radius:99px}
 .krdone{margin-top:18px;padding-top:14px;border-top:1px solid var(--ln)}.krdone input{width:110px;font-size:1.05rem;padding:8px 10px;border-radius:10px;border:1px solid var(--ln);background:var(--bg2);color:var(--ink)}
 .hmini2 .row2{margin-top:6px}
+
+.dsheet .card{margin-bottom:12px}.dsheet .hsub{margin:0 2px 10px}
+.pgx{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}.pgx>div{min-width:0}.amore{margin:6px 0 4px}.amore b{font-size:1rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block}.pgx div{background:var(--bg2);border-radius:12px;padding:8px 10px}.pgx small{display:block;color:var(--mu);font-size:.72rem}.pgx b{font-size:1.15rem}
+.hmv .mvg{margin-top:8px}.hzw summary{cursor:pointer;list-style:none}
 </style>
 </head>
 <body>
@@ -2180,18 +2184,7 @@ if(p&&/Kraft/i.test(p[2]))L.push([!!(KR[d]&&KR[d].fin),'Kraft',KR[d]&&KR[d].fin?
 acts.forEach(function(a){L.push([!!LOG[a.id],'Bewerten: '+a.name,LOG[a.id]?'erledigt':'offen','a:'+a.id])});
 if(new Date().getDay()===5)L.push([!!WT[d],'Wiegen',WT[d]?WT[d]+' kg':'offen','wt']);
 if(L.length>1)h+='<div class="card hc"><div class="hcl">Dein Tag</div>'+L.map(function(x){return'<div class="ck" data-k="'+x[3]+'" role="button" tabindex="0"><i class="'+(x[0]?'d':'')+'">'+(x[0]?'✓':'')+'</i><span>'+E(x[1])+'</span><small>'+E(x[2])+'</small></div>'}).join('')+'</div>'}
-/* Einheit */
-if(acts.length)h+='<div class="card hc"><div class="hcl">'+(isT?'Erledigt':'Gefahren')+'</div>'+acts.map(actRow).join('')+(p?'<p class="mu hsm">Plan: '+E(p[2])+'</p>':'')+'</div>';
-if(p&&!acts.length){var zw=isZw(p[2]),sent=window.WU_IVSTAT?window.WU_IVSTAT(d):null,fo=HX.fuel[d]!=null?HX.fuel[d]:fuelAuto(d);
-h+='<div class="card hc hses" data-k="p:'+lab(d)+'" role="button" tabindex="0"><div class="hcl">'+(d<t?'Geplant, nicht gemacht':stT(d)+' · '+(zw?'Zwift':outd(p[2])?'draußen':'Training')+' · ca. '+minsOf(p)+' min')+'</div><div class="htl">'+E(p[2])+'</div>'+(zw?profHtml(p,d):'')+(p[3]?'<p class="hsm">'+E(p[3])+'</p>':'')
-+'<div class="hst">'+(zw&&sent&&sent.ok?'<span class="pill ok">✓ in Zwift'+(sent.adj&&d===t?' · '+E(sent.adj):'')+'</span>':'')+'<button type="button" class="fbtn'+(fo?' on':'')+'" data-hx="fuel|'+d+'" aria-label="Verpflegung" title="Verpflegung">🍌</button></div>'
-+(fo?fuelHtml(p,d):'')+(d>=t?ioHtml(d,p):'')+'</div>';
-if(/Kraft/i.test(p[2])&&typeof krBtn==='function'){var KL=krList(d)||[];h+='<div class="card hc"><div class="hcl">Kraft · gegen Krämpfe</div><ul class="hl">'+KL.slice(0,6).map(function(x){return'<li>'+E(x[0])+' <span class="mu">'+E(x[1]||'')+'</span></li>'}).join('')+'</ul>'+krBtn(d)+'</div>'}
-if(outd(p[2])&&d>=t&&d<=addD(t,6))h+=wxBox(d,p)}
-else if(p&&acts.length&&/Kraft/i.test(p[2])&&typeof krBtn==='function'&&!(KR[d]&&KR[d].fin)&&d>=addD(t,-1)){var KL2=krList(d)||[];h+='<div class="card hc hnow"><div class="hcl">Jetzt · Kraft</div><ul class="hl">'+KL2.slice(0,6).map(function(x){return'<li>'+E(x[0])+' <span class="mu">'+E(x[1]||'')+'</span></li>'}).join('')+'</ul>'+krBtn(d)+'</div>'}
-if(isT&&!(p&&/Kraft/i.test(p[2]))&&typeof krBtn==='function'){var rk=KR[d]||{};h+='<div class="card hc hmini2"><div class="hrow3"><span class="hcl">Kraft zusätzlich</span><small class="mu">'+(rk.fin?'heute erledigt':'nicht geplant')+'</small></div>'+krBtn(d)+'</div>'}
-/* Ruhetag */
-if(!p&&!acts.length&&d>=t){var nx=PM[addD(d,1)],r2=S&&isT?rdy():null;h+='<div class="card hc"><div class="hcl ok">Ruhetag</div><p>'+(nx?'Erholen für '+E(nx[2])+' '+(addD(d,1)===addD(t,1)?'morgen':'am '+wdLong(addD(d,1)))+'.':'Erholung gehört zum Training.')+(r2&&S?' Form '+sg(S.fm[S.fm.length-1])+'.':'')+'</p><div class="hcl" style="margin-top:10px">10 min Mobilität</div><ul class="hl">'+MOB.slice(0,4).map(function(x){return'<li>'+E(x[0])+' <span class="mu">'+x[1]+'</span></li>'}).join('')+'</ul></div>'}
+h+=dayCore(d);
 /* Schlaf am Abend */
 if(isT&&new Date().getHours()>=17){var tm=PM[addD(t,1)];if(tm&&(intense(tm[2])||minsOf(tm)>=90)){var sl=[],i;for(i=1;i<=7;i++){var q=(window.REC||{})[addD(t,-i)];if(q&&q.sl)sl.push(q.sl)}var av=sl.length?sl.reduce(function(a,b){return a+b},0)/sl.length:null;h+='<div class="card hc"><div class="hrow2"><span class="hico">🌙</span><div><b>Heute vor 23:00 ins Bett</b><p class="hsm">Morgen '+E(tm[2])+'.'+(av?' Letzte 7 Nächte Ø '+Math.floor(av/60)+':'+String(Math.round(av%60)).padStart(2,'0')+' h Schlaf.':'')+'</p></div></div></div>'}}
 /* Wiegen am Freitag */
@@ -2284,6 +2277,33 @@ r.sv=res&&res.id?String(res.id):'1';r.sva=lab(dd0)+' '+String(st.getHours()).pad
 if(res&&res.id){try{await saveLog(res.id,{day:dd0,name:nm,sec:mi*60,tss:0},r.rpe,'')}catch(x){}}
 if(msg)msg.textContent='In Strava eingetragen.';hToast('Kraft in Strava eingetragen');setTimeout(function(){try{H.live&&H.live()}catch(x){}},1500)}
 catch(err){t.disabled=false;var m=(err&&err.message)||String(err);if(msg)msg.innerHTML=/scope|403|401|activity:write|Berechtigung/i.test(m)?'Strava erlaubt WattsUp noch keine Einträge. Bitte unter Einstellungen → Strava einmal <b>neu verbinden</b>, dann nochmal senden.':'Senden fehlgeschlagen: '+E(m)}});
+function actMore(a){var mm=Math.round(a.sec/60),c=[['Dauer',mm>=60?Math.floor(mm/60)+':'+String(mm%60).padStart(2,'0')+' h':mm+' min'],['TSS',(a.est?'ca. ':'')+Math.round(a.tss)]];if(a.ah)c.push(['Ø Puls',a.ah+' bpm']);if(a.km>0)c.push(['Strecke',f1(a.km)+' km']);if(a.hm>0)c.push(['Höhenmeter',Math.round(a.hm)+' m']);if(a.np)c.push(['NP',Math.round(a.np)+' W']);
+return'<div class="pgx amore">'+c.map(function(x){return'<div><small>'+x[0]+'</small><b>'+x[1]+'</b></div>'}).join('')+'</div>'+(window.WU_MAP&&a.sp!=='VirtualRide'&&!/zwift/i.test(a.name||'')&&a.km>0?'<div class="wumap-auto" data-aid="'+a.id+'"></div>':'')+'<p class="hsm"><span class="lnk" data-k="a:'+a.id+'" role="button" tabindex="0">Alle Details, Verlauf und Bewertung ›</span></p>'}
+function dayCore(d,opt){opt=opt||{};var t=tod(),p=PM[d],acts=(window.ACT||[]).filter(function(a){return a.day===d}),isT=d===t,h='';
+/* Einheit */
+if(acts.length)h+='<div class="card hc"><div class="hcl">'+(isT?'Erledigt':'Gemacht')+'</div>'+acts.map(function(a){return actRow(a)+(opt.sh?actMore(a):'')}).join('')+(p?'<p class="mu hsm">Plan war: '+E((p._o||p)[2])+'</p>':'')+'</div>';
+if(p&&!acts.length){var zw=isZw(p[2]),sent=window.WU_IVSTAT?window.WU_IVSTAT(d):null,fo=HX.fuel[d]!=null?HX.fuel[d]:fuelAuto(d);
+h+='<div class="card hc hses"'+(opt.sh?'':' data-k="p:'+lab(d)+'" role="button" tabindex="0"')+'><div class="hcl">'+(d<t?'Geplant, nicht gemacht':stT(d)+' · '+(zw?'Zwift':outd(p[2])?'draußen':'Training')+' · ca. '+minsOf(p)+' min')+'</div><div class="htl">'+E(p[2])+'</div>'+(zw?profHtml(p,d):'')+(p[3]?'<p class="hsm">'+E(p[3])+'</p>':'')
++'<div class="hst">'+(zw&&sent&&sent.ok?'<span class="pill ok">✓ in Zwift'+(sent.adj&&d===t?' · '+E(sent.adj):'')+'</span>':'')+'<button type="button" class="fbtn'+(fo?' on':'')+'" data-hx="fuel|'+d+'" aria-label="Verpflegung" title="Verpflegung">🍌</button></div>'
++(fo?fuelHtml(p,d):'')+(d>=t?ioHtml(d,p):'')+'</div>';
+if(/Kraft/i.test(p[2])&&typeof krBtn==='function'){var KL=krList(d)||[];h+='<div class="card hc"><div class="hcl">Kraft · gegen Krämpfe</div><ul class="hl">'+KL.slice(0,6).map(function(x){return'<li>'+E(x[0])+' <span class="mu">'+E(x[1]||'')+'</span></li>'}).join('')+'</ul>'+krBtn(d)+'</div>'}
+if(outd(p[2])&&d>=t&&d<=addD(t,6))h+=wxBox(d,p)}
+else if(p&&acts.length&&/Kraft/i.test(p[2])&&typeof krBtn==='function'&&!(KR[d]&&KR[d].fin)&&d>=addD(t,-1)){var KL2=krList(d)||[];h+='<div class="card hc hnow"><div class="hcl">Jetzt · Kraft</div><ul class="hl">'+KL2.slice(0,6).map(function(x){return'<li>'+E(x[0])+' <span class="mu">'+E(x[1]||'')+'</span></li>'}).join('')+'</ul>'+krBtn(d)+'</div>'}
+if(isT&&!(p&&/Kraft/i.test(p[2]))&&typeof krBtn==='function'){var rk=KR[d]||{};h+='<div class="card hc hmini2"><div class="hrow3"><span class="hcl">Kraft zusätzlich</span><small class="mu">'+(rk.fin?'heute erledigt':'nicht geplant')+'</small></div>'+krBtn(d)+'</div>'}
+/* Ruhetag */
+if(!p&&!acts.length&&d>=t){var nx=PM[addD(d,1)],r2=S&&isT?rdy():null;h+='<div class="card hc"><div class="hcl ok">Ruhetag</div><p>'+(nx?'Erholen für '+E(nx[2])+' '+(addD(d,1)===addD(t,1)?'morgen':'am '+wdLong(addD(d,1)))+'.':'Erholung gehört zum Training.')+(r2&&S?' Form '+sg(S.fm[S.fm.length-1])+'.':'')+'</p><div class="hcl" style="margin-top:10px">10 min Mobilität</div><ul class="hl">'+MOB.slice(0,4).map(function(x){return'<li>'+E(x[0])+' <span class="mu">'+x[1]+'</span></li>'}).join('')+'</ul></div>'}
+return h}
+
+/* Woche: Tagesdetail im Stil von Heute */
+var MON=['Jän.','Feb.','März','Apr.','Mai','Juni','Juli','Aug.','Sep.','Okt.','Nov.','Dez.'];
+var _dPlanV=dPlan;dPlan=function(x){var d=isoOf(x),p=PM[d],acts=(window.ACT||[]).filter(function(a){return a.day===d});if(!p&&!acts.length)return _dPlanV(x);
+var o=p?_dPlanV(x):{h:''},old=o.h||'',t=tod(),h='',m=MOOD[d];
+if(m&&d<=t)h+='<p class="mu hsub">Morgengefühl '+m.g+' von 5'+(m.s?', Schlaf '+m.s:'')+(m.b?', Beine '+m.b:'')+'</p>';
+h+=dayCore(d,{sh:1});
+if(S&&p&&d>=t){var f=fc().filter(function(e){return e.d===d})[0];if(f)h+='<div class="card hc"><div class="hcl">Prognose für diesen Tag</div><div class="pgx"><div><small>Form am Morgen</small><b>'+sg(f.f)+'</b></div><div><small>Fitness danach</small><b>'+Math.round(f.c)+'</b></div><div><small>Ermüdung danach</small><b>'+Math.round(f.a)+'</b></div></div></div>'}
+var i=old.indexOf('<h3>Verschieben oder tauschen</h3>');if(i>=0)h+='<div class="card hc hmv"><div class="hcl">Verschieben oder tauschen</div>'+old.slice(i+'<h3>Verschieben oder tauschen</h3>'.length)+'</div>';
+var j=old.indexOf('<h3>Zwift-Workout</h3>');if(j>=0){var z=old.slice(j+'<h3>Zwift-Workout</h3>'.length,i>j?i:undefined);h+='<details class="card hc hzw"><summary class="hcl">Zwift-Datei zum Speichern</summary>'+z+'</details>'}
+return{t:wdLong(d)+', '+Number(d.slice(8,10))+'. '+MON[Number(d.slice(5,7))-1],h:'<div class="dsheet">'+h+'</div>'}};
 window.WU_OPEN=function(k){open(k);if(k.indexOf('a:')===0)setTimeout(function(){var r=document.querySelector('#shb .rpe');if(r){var box=r.parentElement||r,sh=$('sh'),hd=sh.querySelector('.shh'),br=box.getBoundingClientRect(),sr=sh.getBoundingClientRect(),dn=Math.min(br.bottom-sr.bottom+16,br.top-sr.top-(hd?hd.offsetHeight:56)-8);if(dn>0)sh.scrollTo({top:sh.scrollTop+dn,behavior:'smooth'})}},150)};
 window.WU_ACTS=function(){return(window.ACT||[]).map(function(a){return{id:String(a.id),day:a.day,rated:!!LOG[a.id]}})};
 var _rallW=rall;rall=function(){try{if(window.ACT&&window.ACT.length)rpm()}catch(e){}_rallW();try{rRec()}catch(e){}try{rSki()}catch(e){}try{if(S)swCal()}catch(e){}try{window.WU_STATE=wuState();if(window.WU_SYNC)window.WU_SYNC(window.WU_STATE)}catch(e){}};
