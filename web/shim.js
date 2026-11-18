@@ -49,7 +49,7 @@
   function stConnect() {
     var c = cfg();
     if (!c.stId || !c.stSec) { WU.open('Bitte zuerst Client-ID und Client-Secret von Strava eintragen.'); return; }
-    location.href = SV + '/oauth/authorize?' + qs({ client_id: c.stId, redirect_uri: HOME, response_type: 'code', approval_prompt: 'auto', scope: 'read,activity:read_all,profile:read_all', state: 'strava' });
+    location.href = SV + '/oauth/authorize?' + qs({ client_id: c.stId, redirect_uri: HOME, response_type: 'code', approval_prompt: 'auto', scope: 'read,activity:read_all,activity:write,profile:read_all', state: 'strava' });
   }
   async function stExchange(code) {
     var c = cfg();
@@ -69,6 +69,14 @@
     try { return await http(SV + '/api/v3' + path, { headers: { Authorization: 'Bearer ' + tk } }); }
     catch (e) { if (e.code === 'needs_reauth') { ls('wu_strava', null); } throw e; }
   }
+  /* Manuelle Aktivität anlegen (z. B. Krafttraining); braucht activity:write */
+  window.WU_STRAVA_ADD = async function (o) {
+    var tk = await stToken(), d = o.start, p2 = function (n) { return ('0' + n).slice(-2); };
+    var loc = d.getFullYear() + '-' + p2(d.getMonth() + 1) + '-' + p2(d.getDate()) + 'T' + p2(d.getHours()) + ':' + p2(d.getMinutes()) + ':00';
+    var body = qs({ name: o.name, sport_type: o.sport_type || 'WeightTraining', type: 'Workout', start_date_local: loc, elapsed_time: Math.round(o.sec), description: o.desc || '' });
+    try { return await http(SV + '/api/v3/activities', { method: 'POST', headers: { Authorization: 'Bearer ' + tk, 'Content-Type': 'application/x-www-form-urlencoded' }, body: body }); }
+    catch (e) { if (e && (e.status === 401 || e.status === 403)) throw new Error('Berechtigung activity:write fehlt (' + e.status + ')'); throw e; }
+  };
   var athP = null;
   function athlete() { if (!athP) { athP = sv('/athlete').catch(function (e) { athP = null; throw e; }); } return athP; }
   function locSec(s) { /* lokale Zeit ohne Zone als Unix-Sekunden */ var d = new Date(String(s).replace(/Z$/, '')); return Math.floor(d.getTime() / 1000); }
