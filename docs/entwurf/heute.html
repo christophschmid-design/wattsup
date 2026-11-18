@@ -1,0 +1,156 @@
+<!doctype html><html lang="de"><head><meta charset="utf-8"><link rel="stylesheet" href="base.css"><style>
+.day{position:absolute;inset:0;background:var(--bg);overflow:hidden}
+.in{padding:6px 18px 30px}
+.hn{position:absolute;top:10px;right:12px;font-size:10px;font-weight:800;color:#5f7590;background:#0f1d30;border-radius:6px;padding:2px 6px}
+.card{position:relative}
+.ck{display:flex;align-items:center;gap:10px;font-size:14px;padding:6px 0}
+.ck i{width:20px;height:20px;border-radius:50%;border:2px solid #36557a;display:grid;place-items:center;font-style:normal;font-size:12px;font-weight:900;flex:none}
+.ck i.d{background:var(--g);border-color:var(--g);color:#06231a}
+.ck span{color:var(--mu);font-size:12px;margin-left:auto}
+.mini{display:flex;align-items:center;gap:10px;font-size:13px}
+.mini b{font-size:14px}
+.ring{flex:none}
+.hero{display:flex;gap:14px;align-items:center}
+.k{font-size:13px;line-height:1.5;color:#c9d6e4;padding-right:22px}
+.ex{display:flex;justify-content:space-between;font-size:13px;padding:6px 0;border-bottom:1px solid #1d3049}
+.timer{position:absolute;inset:0;background:#0b1624;z-index:30;padding:6px 18px;transform:translateY(100%)}
+</style></head><body>
+<div class="cap"><h1 id="ch"></h1><p id="cp"></p></div>
+<div class="ph">
+ <div class="sb"><span id="clk">07:12</span><span>▂▄▆ ▮</span></div>
+ <div class="scr">
+
+ <!-- DI: Zwift -->
+ <div class="day" id="d1"><div class="in">
+  <div class="top"><b>Heute</b><span>Di, 17. Nov.</span><div class="gear">⚙</div></div>
+  <div class="card hero"><svg class="ring" width="96" height="96" viewBox="0 0 112 112"><circle cx="56" cy="56" r="48" stroke="#1f3450" stroke-width="12" fill="none"/><circle cx="56" cy="56" r="48" stroke="#f5b941" stroke-width="12" fill="none" stroke-linecap="round" transform="rotate(-90 56 56)" stroke-dasharray="301.6" stroke-dashoffset="114.6"/><text x="56" y="64" text-anchor="middle" font-size="32" font-weight="800" fill="#eef3f8" font-family="Inter">62</text></svg>
+   <div><div class="lab" style="color:var(--y)">Eher locker</div><div style="font-size:18px;font-weight:800;line-height:1.2;margin:3px 0">Sprints heute 5 % sanfter</div><div class="mu" style="font-size:12px">Schlaf 6:10 h · HRV −12 % ›</div></div></div>
+  <div class="card"><span class="hn">H7</span><div class="lab" style="margin-bottom:4px">Heute</div>
+   <div class="ck"><i class="d">✓</i>Morgengefühl<span>07:10</span></div>
+   <div class="ck"><i id="c1b"></i>SIT-Sprints<span>19:00</span></div>
+   <div class="ck"><i></i>Fahrt bewerten<span>danach</span></div></div>
+  <div class="card"><span class="hn">H4</span>
+   <div class="row"><div class="lab">19:00 · Zwift · 60 min</div></div>
+   <div style="font-size:20px;font-weight:800;margin-top:3px">SIT-Sprints</div>
+   <div class="prof" id="p1"></div>
+   <div class="row" style="margin-top:8px"><span class="tag" style="background:#183d2f;color:var(--g)">✓ in Zwift · −5 %</span><span class="mu" style="font-size:12px">6 × 30″ all-out</span></div></div>
+  <div class="card"><span class="hn">H1</span><div class="lab" style="margin-bottom:6px">Verpflegung</div><div class="k">🥤 1 Flasche 750 ml, 30 g Kohlenhydrate<br>🌀 Ventilator auf Stufe 3, Handtuch bereit<br>🍝 Letzte Mahlzeit bis 17:00</div></div>
+  <div class="card"><span class="hn">H5</span><div class="mini"><span class="mu" style="width:56px">Gestern</span><div><b>Lauf locker 8 km</b><div class="mu" style="font-size:12px">ausgelassen · nicht nachholen</div></div></div></div>
+  <div class="card"><span class="hn">H6</span><div class="mini"><span class="mu" style="width:56px">Morgen</span><div><b>Ruhetag</b><div class="mu" style="font-size:12px">Do: GLA 105 min + Kraft</div></div></div></div>
+  <div class="card"><span class="hn">H12</span><div class="k"><b style="color:var(--tx)">Fokus der Woche:</b> mehr wirklich locker fahren.<br><span class="mu">Noch 214 Tage bis Mondsee · FTP-Test in 7 Wochen</span></div></div>
+ </div></div>
+
+ <!-- MI: Ruhetag abends -->
+ <div class="day" id="d2"><div class="in">
+  <div class="top"><b>Heute</b><span>Mi, 18. Nov.</span><div class="gear">⚙</div></div>
+  <div class="card hero"><svg class="ring" width="96" height="96" viewBox="0 0 112 112"><circle cx="56" cy="56" r="48" stroke="#1f3450" stroke-width="12" fill="none"/><circle cx="56" cy="56" r="48" stroke="#3ddc97" stroke-width="12" fill="none" stroke-linecap="round" transform="rotate(-90 56 56)" stroke-dasharray="301.6" stroke-dashoffset="66"/><text x="56" y="64" text-anchor="middle" font-size="32" font-weight="800" fill="#eef3f8" font-family="Inter">78</text></svg>
+   <div><div class="lab" style="color:var(--g)">Ruhetag</div><div style="font-size:18px;font-weight:800;line-height:1.2;margin:3px 0">Erholen für die lange Einheit morgen</div></div></div>
+  <div class="card"><span class="hn">H9</span><div class="row" style="gap:12px"><span style="font-size:28px">🌙</span><div class="k"><b style="color:var(--tx)">Heute vor 23:00 ins Bett</b><br>Morgen 105 min Grundlage. Letzte Woche nur Ø 6:40 h Schlaf.</div></div></div>
+  <div class="card"><span class="hn">H8</span><div class="lab" style="margin-bottom:6px">Aktive Erholung · 10 min</div>
+   <div class="ex"><span>Hüftbeuger dehnen</span><span class="mu">2 × 45″</span></div><div class="ex"><span>Waden an der Wand</span><span class="mu">2 × 45″</span></div><div class="ex" style="border:0"><span>Faszienrolle Oberschenkel</span><span class="mu">3 min</span></div>
+   <div class="btn" style="margin-top:8px;background:#1a3050;color:var(--tx)">▶ Mobilität starten</div></div>
+  <div class="card"><span class="hn">H7</span>
+   <div class="ck"><i class="d">✓</i>Morgengefühl<span>07:05</span></div>
+   <div class="ck"><i class="d">✓</i>SIT-Sprints bewertet<span>gestern</span></div>
+   <div class="ck"><i id="c2"></i>Mobilität<span>optional</span></div></div>
+  <div class="card"><span class="hn">H5</span><div class="mini"><span class="mu" style="width:56px">Gestern</span><div><b>SIT-Sprints · 58 min</b><div class="mu" style="font-size:12px">62 TSS · Ø Puls 142 · 6/6 im Ziel · RPE 7</div></div></div></div>
+  <div class="card"><span class="hn">H6</span><div class="mini"><span class="mu" style="width:56px">Morgen</span><div><b>GLA 105 min + Kraft</b><div class="mu" style="font-size:12px">Zwift · 19:00 · danach 25 min Kraft</div></div></div></div>
+ </div></div>
+
+ <!-- DO: Kraft -->
+ <div class="day" id="d3"><div class="in">
+  <div class="top"><b>Heute</b><span>Do, 19. Nov.</span><div class="gear">⚙</div></div>
+  <div class="card hero"><svg class="ring" width="96" height="96" viewBox="0 0 112 112"><circle cx="56" cy="56" r="48" stroke="#1f3450" stroke-width="12" fill="none"/><circle cx="56" cy="56" r="48" stroke="#3ddc97" stroke-width="12" fill="none" stroke-linecap="round" transform="rotate(-90 56 56)" stroke-dasharray="301.6" stroke-dashoffset="54"/><text x="56" y="64" text-anchor="middle" font-size="32" font-weight="800" fill="#eef3f8" font-family="Inter">82</text></svg>
+   <div><div class="lab" style="color:var(--g)">Bereit</div><div style="font-size:18px;font-weight:800;line-height:1.2;margin:3px 0">Wie geplant fahren</div><div class="mu" style="font-size:12px">Schlaf 7:45 h · HRV +4 % ›</div></div></div>
+  <div class="card"><span class="hn">H7</span>
+   <div class="ck"><i class="d">✓</i>Morgengefühl<span>06:58</span></div>
+   <div class="ck"><i class="d">✓</i>GLA 105 min<span>erledigt 20:52</span></div>
+   <div class="ck"><i id="c3"></i>Kraft 25 min<span>jetzt</span></div>
+   <div class="ck"><i></i>Bewerten<span>danach</span></div></div>
+  <div class="card" style="border:1px solid #2b6e52"><span class="hn">H3</span><div class="lab" style="color:var(--g)">Jetzt · Kraft A · 25 min</div>
+   <div style="font-size:19px;font-weight:800;margin:4px 0 8px">Beine und Rumpf gegen Krämpfe</div>
+   <div class="ex"><span>Ausfallschritte</span><span class="mu">3 × 10 je Seite</span></div><div class="ex"><span>Wadenheben einbeinig</span><span class="mu">3 × 15</span></div><div class="ex"><span>Rumänisches Kreuzheben</span><span class="mu">3 × 10</span></div><div class="ex" style="border:0"><span>Seitstütz</span><span class="mu">3 × 40″</span></div>
+   <div class="btn" id="kbtn" style="margin-top:10px">▶ Kraft starten</div></div>
+  <div class="card"><span class="hn">H1</span><div class="k">🧂 Nach der Fahrt: 500 ml mit Salz, 20 g Eiweiß nach der Kraft</div></div>
+ </div>
+ <div class="timer" id="tim">
+  <div class="nav" style="display:flex;align-items:center;gap:10px;margin:6px 0 10px"><div class="gear">✕</div><b style="font-size:18px">Kraft A</b><span class="mu" style="margin-left:auto;font-size:13px">Übung 1 von 4</span></div>
+  <div style="text-align:center;margin-top:18px"><div style="font-size:24px;font-weight:800">Ausfallschritte</div><div class="mu" style="margin-top:4px">3 × 10 je Seite</div></div>
+  <svg width="220" height="220" viewBox="0 0 112 112" style="display:block;margin:20px auto"><circle cx="56" cy="56" r="48" stroke="#1f3450" stroke-width="8" fill="none"/><circle id="tr" cx="56" cy="56" r="48" stroke="#3ddc97" stroke-width="8" fill="none" stroke-linecap="round" transform="rotate(-90 56 56)" stroke-dasharray="301.6" stroke-dashoffset="0"/><text id="tt" x="56" y="58" text-anchor="middle" font-size="24" font-weight="800" fill="#eef3f8" font-family="Inter">0:45</text><text x="56" y="74" text-anchor="middle" font-size="8" fill="#8ea3ba" font-family="Inter" font-weight="700">PAUSE</text></svg>
+  <div style="display:flex;justify-content:center;gap:10px;margin-bottom:18px"><span class="chip" style="background:#183d2f;color:var(--g)">Satz 1 ✓</span><span class="chip" style="box-shadow:0 0 0 2px var(--g)">Satz 2</span><span class="chip">Satz 3</span></div>
+  <div class="card k">Als Nächstes: <b style="color:var(--tx)">Wadenheben einbeinig</b> · 3 × 15<br><span class="mu">Ton bei Pausenende, auch bei gesperrtem Bildschirm</span></div>
+ </div></div>
+
+ <!-- FR: Ruhetag morgens, Wiegen, Skitour -->
+ <div class="day" id="d4"><div class="in">
+  <div class="top"><b>Heute</b><span>Fr, 20. Nov.</span><div class="gear">⚙</div></div>
+  <div class="card hero"><svg class="ring" width="96" height="96" viewBox="0 0 112 112"><circle cx="56" cy="56" r="48" stroke="#1f3450" stroke-width="12" fill="none"/><circle cx="56" cy="56" r="48" stroke="#3ddc97" stroke-width="12" fill="none" stroke-linecap="round" transform="rotate(-90 56 56)" stroke-dasharray="301.6" stroke-dashoffset="75"/><text x="56" y="64" text-anchor="middle" font-size="32" font-weight="800" fill="#eef3f8" font-family="Inter">75</text></svg>
+   <div><div class="lab" style="color:var(--g)">Ruhetag</div><div style="font-size:18px;font-weight:800;line-height:1.2;margin:3px 0">Kraft von gestern verdauen</div></div></div>
+  <div class="card"><span class="hn">H10</span><div class="lab">Wiegen · Freitag</div>
+   <div class="row" style="align-items:flex-end;gap:10px;margin-top:4px"><div class="big" style="font-size:30px">77,6 kg</div><div style="font-size:13px;color:var(--g);font-weight:700;padding-bottom:6px">−0,4 zur Vorwoche</div></div>
+   <svg width="100%" height="40" viewBox="0 0 330 40"><path d="M0,10 L55,12 L110,15 L165,14 L220,20 L275,24 L330,28" stroke="#5aa9ff" stroke-width="3" fill="none"/><circle cx="330" cy="28" r="4" fill="#5aa9ff"/></svg>
+   <div class="mu" style="font-size:12px">Auf Kurs: 74 kg Ende April · Körperfett 18,2 %</div></div>
+  <div class="card" style="border:1px solid #3d7bb8"><span class="hn">H11</span><div class="lab" style="color:#9cc8ff">Wochenende · Skitour</div>
+   <div style="font-size:18px;font-weight:800;margin:4px 0">Sa: Gaisberg statt Ausfahrt?</div>
+   <div class="k">❄ 15 cm Neuschnee heute Nacht · Lawinenstufe 1<br>⛰ 1200 Hm · ca. 3 h · Skitourenguru: geringes Risiko</div>
+   <div class="row" style="gap:8px;margin-top:10px"><span class="chip" style="background:#183d2f;color:var(--g)">In Plan übernehmen</span><span class="chip">Bei Ausfahrt bleiben</span></div></div>
+  <div class="card"><span class="hn">H6</span><div class="mini"><span class="mu" style="width:56px">Morgen</span><div><b>Ausfahrt lang · 10:00</b><div class="mu" style="font-size:12px">6° · trocken bis 14 Uhr</div></div></div></div>
+  <div class="card"><span class="hn">H12</span><div class="k"><b style="color:var(--tx)">Woche:</b> 158 von 286 TSS, 3 von 4 Einheiten</div><div class="bar" style="margin-top:8px"><i style="width:55%"></i></div></div>
+ </div></div>
+
+ <!-- SA: draußen -->
+ <div class="day" id="d5"><div class="in">
+  <div class="top"><b>Heute</b><span>Sa, 21. Nov.</span><div class="gear">⚙</div></div>
+  <div class="card hero"><svg class="ring" width="96" height="96" viewBox="0 0 112 112"><circle cx="56" cy="56" r="48" stroke="#1f3450" stroke-width="12" fill="none"/><circle cx="56" cy="56" r="48" stroke="#3ddc97" stroke-width="12" fill="none" stroke-linecap="round" transform="rotate(-90 56 56)" stroke-dasharray="301.6" stroke-dashoffset="45"/><text x="56" y="64" text-anchor="middle" font-size="32" font-weight="800" fill="#eef3f8" font-family="Inter">85</text></svg>
+   <div><div class="lab" style="color:var(--g)">Bereit</div><div style="font-size:18px;font-weight:800;line-height:1.2;margin:3px 0">Lange Ausfahrt, ruhig angehen</div></div></div>
+  <div class="card"><span class="hn">H4</span><div class="lab">10:00 · draußen · 2,5–3 h</div><div style="font-size:20px;font-weight:800;margin-top:3px">Ausfahrt lang</div>
+   <div class="k" style="margin-top:4px">Zone 2 · 165–190 W · Puls unter 145<br>Trittfrequenz-Blöcke 5 × 3′ mit 100+</div></div>
+  <div class="card"><span class="hn">H2</span><div class="lab" style="margin-bottom:8px">Wetter und Kleidung</div>
+   <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:6px;text-align:center;font-size:12px;margin-bottom:10px">
+    <div><div class="mu">10:00</div><b style="font-size:15px">4°</b><div>☁</div></div><div><div class="mu">11:00</div><b style="font-size:15px">6°</b><div>⛅</div></div><div><div class="mu">12:00</div><b style="font-size:15px">7°</b><div>⛅</div></div><div><div class="mu">13:00</div><b style="font-size:15px">7°</b><div>☁</div></div></div>
+   <div class="k">🧥 Thermojacke, Winterhose, Überschuhe, dicke Handschuhe<br>💨 Wind 15 km/h aus West: hin gegen den Wind<br>🌧 Regen erst ab 14 Uhr · Plan B Zwift ist bereit</div></div>
+  <div class="card"><span class="hn">H1</span><div class="lab" style="margin-bottom:6px">Verpflegung · 3 h</div><div class="k">🥤 2 Flaschen, eine mit warmem Tee<br>🍌 2 Riegel + 1 Gel = 60 g KH/h<br>🧂 1 Salztablette pro Stunde gegen Krämpfe</div></div>
+  <div class="card"><span class="hn">H7</span>
+   <div class="ck"><i class="d">✓</i>Morgengefühl<span>08:12</span></div>
+   <div class="ck"><i id="c5"></i>Ausfahrt lang<span>10:00</span></div>
+   <div class="ck"><i></i>Bewerten<span>danach</span></div></div>
+ </div></div>
+
+ </div>
+ <div class="tab"><div class="on"><i>◉</i>Heute</div><div><i>▤</i>Woche</div><div><i>⛰</i>Weg</div></div>
+ <div class="tap" id="tap"></div>
+ <div class="end" id="E"><div style="font-size:26px;font-weight:800">Heute passt sich dem Tag an</div><div class="mu" style="font-size:15px;line-height:1.6">Trainingstag · Ruhetag · Kraft · Freitag · draußen<br>immer 4–6 Karten, nie alle auf einmal</div></div>
+</div>
+<div style="position:absolute;right:16px;bottom:8px;font-size:11px;color:#4b5e74">Entwurf · Beispielwerte · H-Nummern = Vorschläge</div>
+<script>
+const $=id=>document.getElementById(id);
+const cl=(x,a=0,b=1)=>Math.max(a,Math.min(b,x));
+const Ez=x=>x<.5?2*x*x:1-Math.pow(-2*x+2,2)/2;
+const P=(t,a,b)=>Ez(cl((t-a)/(b-a)));
+(function(el,segs){el.innerHTML=segs.map(s=>`<i class="${s[2]||''}" style="flex:${s[0]};height:${s[1]*100}%"></i>`).join('')})($('p1'),[[15,.45],[1,1,'h'],[4,.3],[1,1,'h'],[4,.3],[1,1,'h'],[4,.3],[1,1,'h'],[4,.3],[1,1,'h'],[4,.3],[1,1,'h'],[15,.4]]);
+const D=[ // id, start, clock, caption, sub, scroll keys
+ ['d1',0,'07:12','Di · Trainingstag mit Zwift','Checkliste, Einheit schon in Zwift, Verpflegung, gestern, morgen, Fokus der Woche',[[5,0],[10.5,340]]],
+ ['d2',13,'21:30','Mi · Ruhetag am Abend','Schlafhinweis vor der langen Einheit, 10 min Mobilität statt leerer Seite',[[16,0],[20.5,330]]],
+ ['d3',23,'21:05','Do · nach der Fahrt: Kraft','Übungen direkt auf Heute, Start mit einem Tipp, Timer mit Ton',[[25.5,0],[27.5,260]]],
+ ['d4',36,'07:05','Fr · Ruhetag am Morgen','Neuer Wert von der Waage, Skitour-Vorschlag fürs Wochenende',[[39,0],[42.5,230]]],
+ ['d5',46,'08:15','Sa · Ausfahrt draußen','Wetter stündlich, Kleidung, Wind, Plan B und Verpflegung für 3 Stunden',[[49,0],[54,340]]]];
+const TAPS=[[29.6,200,344]];
+window.render=function(t){
+ let ci=-1;D.forEach((d,i)=>{if(t>=d[1])ci=i});
+ const cap=t<2.5?['','',0,'Heute an fünf Tagen','Gleicher Aufbau, je nach Tag andere Karten. H-Nummern zeigen die Vorschläge.']:D[ci];
+ $('ch').textContent=cap[3];$('cp').textContent=cap[4];
+ const near=Math.min(...D.slice(1).map(d=>Math.abs(t-d[1])),Math.abs(t-2.5),Math.abs(t-58.5));document.querySelector('.cap').style.opacity=t<.4?t/.4:(near<.25?near/.25:1);
+ D.forEach((d,i)=>{const e=$(d[0]);let x=100;
+  if(i===ci){x=i===0?0:100-100*P(t,d[1],d[1]+.5)}else if(i===ci-1){x=-100*P(t,D[ci][1],D[ci][1]+.5)}else if(i<ci){x=-100}
+  if(ci<0&&i===0)x=100;e.style.transform=`translateX(${x}%)`;
+  const k=d[5];let y=k[0][1];if(t>=k[0][0])y=k[0][1]+(k[1][1]-k[0][1])*P(t,k[0][0],k[1][0]);e.firstElementChild.style.transform=`translateY(${-y}px)`});
+ $('clk').textContent=ci<0?'07:12':D[ci][2];
+ // Taps
+ const tp=$('tap');tp.style.opacity=0;for(const x of TAPS){const q=t-x[0];if(q>=0&&q<.5){tp.style.left=x[1]+'px';tp.style.top=x[2]+'px';tp.style.opacity=(1-q/.5)*.9;tp.style.transform=`translate(-50%,-50%) scale(${.6+q})`}}
+ // Kraft-Timer
+ const to=t>=29.9&&t<35.5?Math.min(P(t,29.9,30.4),1-P(t,35,35.5)):0;$('tim').style.transform=`translateY(${100-100*to}%)`;
+ const s=Math.max(0,45-Math.floor((t-30.4)*8));$('tt').textContent=t<30.4?'0:45':'0:'+String(s).padStart(2,'0');$('tr').setAttribute('stroke-dashoffset',301.6*(1-s/45));
+ $('E').style.opacity=P(t,58.5,59.3);
+};
+render(0);
+</script></body></html>
