@@ -842,6 +842,17 @@
   }
   setTimeout(zwFtpBanner, 3000);
   WU.ivSync = ivSync;
+  window.WU_IVSTAT = function (d) { var c = cfg(); if (!c.ivKey || c.ivOn === false) return null; var t0 = new Date(), td = t0.getFullYear() + '-' + ('0' + (t0.getMonth() + 1)).slice(-2) + '-' + ('0' + t0.getDate()).slice(-2); return { ok: (c.ivIds || []).indexOf('wu-' + d) >= 0, adj: d === td ? c.ivAdjNow || '' : '' }; };
+  /* Stündliches Wetter für die Karte „Wetter und Kleidung“ */
+  var HRC = {};
+  window.WU_HOURLY = async function (d) {
+    if (HRC[d] && Date.now() - HRC[d].ts < 3600000) return HRC[d].v;
+    var u = 'https://api.open-meteo.com/v1/forecast?' + qs({ latitude: GEO.lat, longitude: GEO.lon, hourly: 'temperature_2m,apparent_temperature,precipitation_probability,wind_speed_10m,wind_direction_10m', daily: 'sunset', timezone: 'Europe/Vienna', start_date: d, end_date: d });
+    var j = await http(u, {});
+    var h = j && j.hourly || {}, v = { t: h.time || [], tt: h.temperature_2m || [], at: h.apparent_temperature || [], pp: h.precipitation_probability || [], ws: h.wind_speed_10m || [], wd: h.wind_direction_10m || [], ss: j && j.daily && j.daily.sunset && j.daily.sunset[0] };
+    HRC[d] = { ts: Date.now(), v: v };
+    return v;
+  };
   setTimeout(function () { ivSync(false); }, 6000);
   setInterval(function () { if (document.visibilityState === 'visible') ivSync(false); }, 60000);
   window.WU_SKI_ON = function () { return cfg().skiOn !== false; };
