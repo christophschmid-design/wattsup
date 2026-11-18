@@ -756,7 +756,7 @@ body.tabdev nav{top:calc(4px + env(safe-area-inset-top,0px));bottom:auto}body.ta
 <div id="legacy" hidden><div id="p-goal"></div><div id="liste"></div><div id="kp2"></div><div id="f-top"></div><div id="f-best"></div><div id="f-run"></div><div id="m-kpi"></div><div id="m-volb"></div><div id="m-bestb"></div><div id="p-wx"></div><div id="pw-wxb"></div><div id="pl-act"><div id="pl-acb"></div></div><div id="pl-nx"></div><div id="pvb"></div><div id="pl-rdy"></div></div>
 </main>
 <script>
-var CFD={ftp:null,lthr:166,hrmax:186,hrrest:50,weight:null,wd:'19:00',we:'10:00',maxU:4,spring:'2027-03-01',maxU2:6,hrs1:6,hrs2:12,blk:3,m300:0,ramp:8,tsbT1:-30,tsbT2:-10,tsbE1:-10,tsbE2:5,tsbR1:5,tsbR2:25,race:'2027-06-20',raceCtl:85,race2:'2027-08-29',race2Ctl:95,ticket:'offen',goalMin:600,ftpGoal:265,kgGoal:74,raceStops:10,bikeKg:10,mood:true,mFrom:5,mUntil:12,ts:0};
+var CFD={ftp:null,lthr:166,hrmax:186,hrrest:50,weight:null,wd:'19:00',we:'10:00',maxU:4,spring:'2027-03-01',maxU2:6,hrs1:6,hrs2:12,blk:3,m300:0,m280:0,ramp:8,tsbT1:-30,tsbT2:-10,tsbE1:-10,tsbE2:5,tsbR1:5,tsbR2:25,race:'2027-06-20',raceCtl:85,race2:'2027-08-29',race2Ctl:95,ticket:'offen',goalMin:600,ftpGoal:265,kgGoal:74,raceStops:10,bikeKg:10,mood:true,mFrom:5,mUntil:12,ts:0};
 var H0='2026-01-01';
 function isRL(e){return!!e&&(e.code==='rate_limited'||/too many|429|rate.?limit/i.test(String(e.message||'')))}
 function rlOn(){var t=0;try{t=Number(localStorage.getItem('rl429')||0)}catch(e){}return Date.now()-t<16*60000}
@@ -2429,14 +2429,14 @@ function wkRules(d){var sp=d>=String(CF.spring||'2027-03-01');return sp?{u:Numbe
  blk:Number(CF.blk)>0?'- Bis zum Ötztaler sind '+Number(CF.blk)+' mehrtägige Trainingsblöcke vorgesehen (3 bis 5 Tage mit täglich 3 bis 5 Stunden Zone 2 bis Tempo, gern Berge), bevorzugt an verlängerten Wochenenden, Feiertagen oder wenn die Hinweise einen freien Zeitraum nennen. Danach 2 bis 3 lockere Tage. Ein Block darf die Einheitenzahl der Woche überschreiten, nicht aber grenzen.max_wochen_tss. Kein Block in den 3 Wochen vor einem Rennen.\n':''}
  :{u:Number(CF.maxU)||4,h:Number(CF.hrs1)||6,dur:'Dauer bis etwa 90 Minuten',int:'- Genau eine Intensitätseinheit pro Woche, bevorzugt am Dienstag (VO2max, SIT oder 30/30).',blk:''}}
 /* einmalige Ausrichtung auf 300 W FTP (über Frühere Stände rücknehmbar) */
-setTimeout(function(){try{if(Number(CF.m300)===1)return;var o={};try{o=JSON.parse(localStorage.getItem('cfg1')||'{}')||{}}catch(e){}if(Number(o.m300)===1)return;
+setTimeout(function(){try{if(Number(CF.m280)===1)return;var o={};try{o=JSON.parse(localStorage.getItem('cfg1')||'{}')||{}}catch(e){}if(Number(o.m280)===1)return;
  var f={};Object.keys(CFD).forEach(function(k){f[k]=o[k]!==undefined?o[k]:CFD[k]});
- f.ftpGoal=300;f.race2Ctl=Math.max(Number(f.race2Ctl)||0,115);f.raceCtl=Math.max(Number(f.raceCtl)||0,100);
+ f.ftpGoal=280;f.race2Ctl=105;f.raceCtl=95;
  f.maxU=Number(f.maxU)||4;f.hrs1=6;f.spring='2027-03-01';f.maxU2=6;f.hrs2=12;f.blk=3;
- var kg=Number(f.kgGoal)||74;f.goalMin=Math.ceil(ozPred(300,kg,Number(f.raceStops)||10).t/5)*5;f.m300=1;f.ts=Date.now();
- if(window.WU_CFHADD)WU_CFHADD(f,'Ausrichtung auf 300 W FTP (Claude)');try{localStorage.setItem('cfg1',JSON.stringify(f))}catch(e){}
- Object.keys(f).forEach(function(k){CF[k]=f[k]});if(DBH&&UID){DBP(DBH.doc('data/users/'+UID+'/cfg').set(f),'Ausrichtung 300 W').catch(function(){})}
- try{rall()}catch(e){}try{hToast('Planung auf 300 W FTP ausgerichtet. Rücknehmbar unter Einstellungen → Frühere Stände.')}catch(e){}}catch(e){logErr('App','Ausrichtung 300 W',e)}},12000);
+ var kg=Number(f.kgGoal)||74;f.goalMin=Math.ceil(ozPred(280,kg,Number(f.raceStops)||10).t/5)*5;f.m300=1;f.m280=1;f.ts=Date.now();
+ if(window.WU_CFHADD)WU_CFHADD(f,'Realistische Ausrichtung auf 280 W FTP (Claude)');try{localStorage.setItem('cfg1',JSON.stringify(f))}catch(e){}
+ Object.keys(f).forEach(function(k){CF[k]=f[k]});if(DBH&&UID){DBP(DBH.doc('data/users/'+UID+'/cfg').set(f),'Ausrichtung 280 W').catch(function(){})}
+ try{rall()}catch(e){}try{hToast('Planung auf 280 W FTP ausgerichtet. Rücknehmbar unter Einstellungen → Frühere Stände.')}catch(e){}}catch(e){logErr('App','Ausrichtung 300 W',e)}},12000);
 /* Szenarien */
 var SCN={h:null,b:null,f:null,t:null};
 function scGain(h,b){return Math.max(0,Math.min(24,1.5*(h-4)+0.8*((Number(CF.hrs1)||6)-5)+1.2*b))}
@@ -2697,7 +2697,7 @@ function raw(){try{return JSON.parse(localStorage.getItem('cfg1')||'{}')||{}}cat
 function full(o,b){var f={};Object.keys(CFD).forEach(function(k){if(k==='ts')return;f[k]=o&&o[k]!==undefined?o[k]:b&&b[k]!==undefined?b[k]:CFD[k]});return f}
 function sv(x){return x===true?'ja':x===false?'nein':(x==null||x==='')?'automatisch':String(x)}
 function put(e){CFH[e.ts]=e;store();if(typeof DBH!=='undefined'&&DBH&&UID){DBP(DBH.doc('data/users/'+UID+'/cfgh_'+e.ts).set(e),'Früheren Stand sichern').catch(function(){})}}
-window.WU_CFHADD=function(o,src){try{var pr=raw(),pf=full(pr),nf=full(o,pr),ch=Object.keys(nf).filter(function(k){return k!=='m300'&&sv(pf[k])!==sv(nf[k])});if(!ch.length)return;var t=Date.now();while(CFH[t]||CFH[t-1])t+=2;
+window.WU_CFHADD=function(o,src){try{var pr=raw(),pf=full(pr),nf=full(o,pr),ch=Object.keys(nf).filter(function(k){return k!=='m300'&&k!=='m280'&&sv(pf[k])!==sv(nf[k])});if(!ch.length)return;var t=Date.now();while(CFH[t]||CFH[t-1])t+=2;
  if(!list().length)put({ts:t-1,src:'Stand vor der ersten Änderung',v:pf,ch:[]});
  put({ts:t,src:String(src||'Einstellungen'),v:nf,ch:ch.map(function(k){return[k,pf[k],nf[k]]})})}catch(e){}};
 window.WU_CFH=function(v){if(v&&v.ts&&!CFH[v.ts]){CFH[v.ts]=v;clearTimeout(window.WU_CFH.t);window.WU_CFH.t=setTimeout(store,300)}};
