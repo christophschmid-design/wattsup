@@ -47,7 +47,8 @@ def web():
     import hashlib
     hv = hashlib.sha1((R / 'web' / 'shim.js').read_bytes()).hexdigest()[:10]
     head = ('<meta http-equiv="Cache-Control" content="no-cache">\n<link rel="manifest" href="manifest.webmanifest">\n'
-            f'<script src="shim.js?v={hv}"></script>\n')
+            f'<script src="shim.js?v={hv}"></script>\n'
+            f'<script src="map.js?v={hashlib.sha1((R / "web" / "map.js").read_bytes()).hexdigest()[:10]}" defer></script>\n')
     s = rep(s, '<title>WattsUp</title>', '<title>WattsUp</title>\n' + head)
     # Menü: Morgengefühl, Gewicht, Einstellungen (alles Weitere im Einstellungs-Hub)
     i0 = s.index('<li data-k="zon" role="button" tabindex="0">')
@@ -71,6 +72,8 @@ def web():
     (d / 'index.html').write_text(s, encoding='utf-8')
     for f in ['shim.js', 'datenschutz.html', 'icon.svg', 'icon-180.png', 'icon-192.png', 'icon-512.png']:
         shutil.copy(R / 'web' / f, d / f)
+    shutil.copy(R / 'web' / 'map.js', d / 'map.js')
+    shutil.copytree(R / 'web' / 'vendor', d / 'vendor')
     (d / 'manifest.webmanifest').write_text(json.dumps({
         'name': 'WattsUp', 'short_name': 'WattsUp', 'start_url': './', 'scope': './',
         'display': 'standalone', 'background_color': '#0f2236', 'theme_color': '#0f2236', 'lang': 'de',

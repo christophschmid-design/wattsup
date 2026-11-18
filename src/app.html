@@ -873,10 +873,11 @@ var aid=a?a.id:sd?SID[sd.d]:null,meta=a?{day:a.day,name:a.name,sec:a.sec,tss:a.t
 if(aid&&meta)h+=rform(aid);
 if(a&&a.est)h+='<p class="mu">TSS pauschal geschätzt, weil weder Leistungs- noch Pulsdaten vorliegen.</p>';else if(a&&a.hr)h+='<p class="mu">TSS aus dem Puls berechnet (TRIMP mit Schwellenpuls '+CF.lthr+' und Maximalpuls '+CF.hrmax+' aus deinen Einstellungen).</p>';else if(a&&a.htss)h+='<p class="mu">TSS aus der Leistung. Aus dem Puls ergäben sich ca. '+Math.round(a.htss)+'.</p>';
 if(sd)h+='<p>'+sd.x+'</p>';
-var mk=sd&&sd.p?sd.p:a&&H.R['l'+a.id]?'l'+a.id:'';if(mk)h+=H.map(mk);
+var mk=sd&&sd.p?sd.p:a&&H.R['l'+a.id]?'l'+a.id:'';if(a&&window.WU_MAP){h+='<div id="wumap"></div>';mk=mk||'x'}else if(mk)h+=H.map(mk);
 if(a)h+='<h3>Feedback</h3><p>'+E(fb(a,false))+'</p>';else if(sd&&CUR[SID[sd.d]])h+='<h3>Feedback</h3><p>'+CUR[SID[sd.d]]+'</p>';
 var o={t:t,h:h,aid:aid,meta:meta};
 if(a&&a.sec>300&&window.claude){o.h+='<h3>Verlauf</h3><div id="sx"><p class="mu">Lade Details aus Strava …</p></div>';o.f=function(){var k0=cur;vload(a).then(function(p){if(cur===k0&&$('sx'))$('sx').innerHTML=vhtml(a,p,!!mk)+pzh(p)}).catch(function(){if(cur===k0&&$('sx'))$('sx').innerHTML='<p class="mu">Details konnten nicht geladen werden.</p>'})}}
+if(a&&window.WU_MAP){var of0=o.f;o.f=function(){if(of0)of0();var k1=cur;setTimeout(function(){var el=$('wumap');if(el&&cur===k1)window.WU_MAP(el,a)},60)}}
 var lid=a?a.id:k.charAt(0)==='d'?SID[id]:null;if(lid)o.h+='<p class="lk">'+sl(lid)+'</p>';
 return o}
 function dPlan(x){var q=PM[isoOf(x)];
