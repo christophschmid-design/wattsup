@@ -662,6 +662,7 @@ body.tabdev nav{top:calc(4px + env(safe-area-inset-top,0px));bottom:auto}body.ta
 .dtl.f1 .ichint,.dtl.f1 .xpl,.dtl.f1 #fnote{display:none!important}
 .dtl.f2 .dtl-b .icr,.dtl.f2 .dtl-b table,.dtl.f2 .dtl-b>.card>p.mu,.dtl.f2 .dtl-b .zsoll,.dtl.f2 .dtl-b>.card>h3{display:none!important}
 .dfh{display:none!important}
+.cfhh{margin-top:22px}.cfh{border:1px solid var(--ln);border-radius:12px;padding:10px 12px;margin:8px 0}.cfh-t{display:flex;justify-content:space-between;gap:8px;align-items:baseline}.cfh-t small{color:var(--mu)}.cfh ul{margin:6px 0 8px;padding-left:18px;font-size:.88rem}.cfh .pbtn{margin-top:2px}
 </style>
 </head>
 <body>
@@ -1140,7 +1141,7 @@ function advr(){if(!S)return;var X=S.X.filter(function(a){return a.day>=iso(H.ba
 if(mi.length){m.textContent=mi.length+(mi.length===1?' Einheit ist':' Einheiten sind')+' ohne Bewertung. Jetzt Belastung eintragen.';m.setAttribute('data-k','a:'+mi[mi.length-1].id);m.classList.add('on')}else{m.textContent='';m.classList.remove('on');m.removeAttribute('data-k')}
 if(rated.length){var av=rated.reduce(function(t,a){var e=ER(PM[a.day][2]);return t+LOG[a.id].rpe-(e[0]+e[1])/2},0)/rated.length;if(Math.abs(av)>=1.5)ins=' Deine gefühlte Belastung lag zuletzt im Schnitt '+f1(Math.abs(av))+' Punkte '+(av>0?'über':'unter')+' dem Plan. '+(av>0?'Die nächste Intervalleinheit sollte eher gekürzt werden.':'Eine Steigerung ist möglich.')}
 $('adv').textContent=ADV1+ins}
-async function dbinit(){try{var u=await window.claude.use('user'),d=await window.claude.use('db');if(u&&d){UID=await u.id();if(UID){DBH=d;var sn2=await DBP(d.collection('data/users/'+UID).get(),'Laden');sn2.docs.forEach(function(q){var v=q.data();if(v&&q.id.indexOf('log_')===0&&v.id)LOG[v.id]=v;if(v&&q.id.indexOf('plan_')===0&&v.week)PW8[v.week]=v;if(v&&q.id==='cfg')cfgDb(v);if(v&&q.id==='dash'&&window.WU_DASH)WU_DASH.db(v);if(v&&q.id.indexOf('mood_')===0&&v.day)MOOD[v.day]=v;if(v&&q.id.indexOf('wt_')===0&&v.day){WT[v.day]=v.kg;wtApply()}if(v&&q.id.indexOf('bf_')===0&&v.day&&window.BF)window.BF[v.day]=v.p;if(v&&q.id.indexOf('rec_')===0&&v.day&&window.REC)window.REC[v.day]=v.v;if(v&&q.id.indexOf('kr_')===0&&v.day&&typeof KR!=='undefined')KR[v.day]=v.v;if(v&&q.id.indexOf('fu_')===0&&v.id)FU[v.id]=v;if(v&&q.id.indexOf('io_')===0&&v.day&&typeof IOV!=='undefined'){IOV[v.day]={m:v.m,t:v.t};try{localStorage.setItem('io1',JSON.stringify(IOV))}catch(x){}}});rpm();try{localStorage.setItem('plans1',JSON.stringify(PW8))}catch(e){}if(window.__S)H.hook(window.__S);try{localStorage.setItem('log1',JSON.stringify(LOG))}catch(e){}}}}catch(e){}
+async function dbinit(){try{var u=await window.claude.use('user'),d=await window.claude.use('db');if(u&&d){UID=await u.id();if(UID){DBH=d;var sn2=await DBP(d.collection('data/users/'+UID).get(),'Laden');sn2.docs.forEach(function(q){var v=q.data();if(v&&q.id.indexOf('log_')===0&&v.id)LOG[v.id]=v;if(v&&q.id.indexOf('plan_')===0&&v.week)PW8[v.week]=v;if(v&&q.id==='cfg')cfgDb(v);if(v&&q.id.indexOf('cfgh_')===0&&window.WU_CFH)WU_CFH(v);if(v&&q.id==='dash'&&window.WU_DASH)WU_DASH.db(v);if(v&&q.id.indexOf('mood_')===0&&v.day)MOOD[v.day]=v;if(v&&q.id.indexOf('wt_')===0&&v.day){WT[v.day]=v.kg;wtApply()}if(v&&q.id.indexOf('bf_')===0&&v.day&&window.BF)window.BF[v.day]=v.p;if(v&&q.id.indexOf('rec_')===0&&v.day&&window.REC)window.REC[v.day]=v.v;if(v&&q.id.indexOf('kr_')===0&&v.day&&typeof KR!=='undefined')KR[v.day]=v.v;if(v&&q.id.indexOf('fu_')===0&&v.id)FU[v.id]=v;if(v&&q.id.indexOf('io_')===0&&v.day&&typeof IOV!=='undefined'){IOV[v.day]={m:v.m,t:v.t};try{localStorage.setItem('io1',JSON.stringify(IOV))}catch(x){}}});rpm();try{localStorage.setItem('plans1',JSON.stringify(PW8))}catch(e){}if(window.__S)H.hook(window.__S);try{localStorage.setItem('log1',JSON.stringify(LOG))}catch(e){}}}}catch(e){}
 rall()}
 var SID={'10.11.':'20936299951','9.11.':'20923799331','8.11.':'20909375706','7.11.':'20893513498','6.11.':'20886621850','4.11.':'20858342742','3.11.':'20846233681','31.10.':'20803714976','30.10.':'20791140880','26.10.':'20741111784'};
 var WD=['Mo','Di','Mi','Do','Fr','Sa','So'];
@@ -1556,7 +1557,7 @@ if(!reset&&(o.tsbT1>=o.tsbT2||o.tsbE1>=o.tsbE2||o.tsbR1>=o.tsbR2))bad.push('Form
 if(bad.length){m.textContent='Bitte prüfen: '+bad.join(', ')+'.';m.className='mu err';return}
 o.mood=reset?true:$('cf-mood').checked;o.ticket=reset?(CF.ticket||'offen'):$('cf-ticket').value;o.ts=Date.now();
 if(o.lthr!==CF.lthr||o.hrmax!==CF.hrmax||o.hrrest!==CF.hrrest){try{localStorage.removeItem('tss2')}catch(e){}}
-try{localStorage.setItem('cfg1',JSON.stringify(o))}catch(e){}
+try{(window.WU_CFHADD&&WU_CFHADD(o,reset?'Standardwerte':'Einstellungen')),localStorage.setItem('cfg1',JSON.stringify(o))}catch(e){}
 if(DBH&&UID){try{await DBP(DBH.doc('data/users/'+UID+'/cfg').set(o),'Einstellungen speichern')}catch(e){}}
 m.className='mu ok';m.textContent='Gespeichert, die App lädt neu …';setTimeout(function(){try{location.reload()}catch(e){}},700)}
 function cfgDb(v){var l=0;try{l=(JSON.parse(localStorage.getItem('cfg1')||'{}')||{}).ts||0}catch(e){}if((v.ts||0)>l){try{localStorage.setItem('cfg1',JSON.stringify(v));if(sessionStorage.getItem('cfgrl')!==String(v.ts)){sessionStorage.setItem('cfgrl',String(v.ts));location.reload()}}catch(e){}}}
@@ -1723,7 +1724,7 @@ if(c)c.insertAdjacentHTML('beforeend','<p class="mu xpl">Zeitprognose: Die Ansti
 var f=$('p-formc');if(f)f.innerHTML='<h2>Formziel je Phase</h2>'+(S?formSvg():'')+'<p class="mu xpl">Die farbigen Bänder zeigen das Formziel (TSB) der jeweiligen Phase nach TrainingPeaks und Joe Friel. Vor Mondsee nur kurz frisch (0 bis +10), vor dem Ötztaler +10 bis +20. 2026 bist du mit +39 in den Ötztaler gestartet, also deutlich frischer als nötig.</p>';
 var p=$('p-phases');if(p)p.innerHTML='<h2>Phasen</h2><ul class="phx">'+season().map(function(q){var on=t>=q.a&&t<=q.b,past=q.b<t,wk=[],x;for(x=monOf(q.a<t?t:q.a);x<=q.b;x=addD(x,7))wk.push(idealWk(x));var av=wk.length?wk.reduce(function(a,b){return a+b},0)/wk.length:0,z=tsbZ(addD(q.a,Math.floor(dd2(q.a,q.b)/2)));
 return'<li class="'+(on?'on':'')+(past?' past':'')+(q.race?' race':'')+'"><i style="background:'+PHC[q.k]+'"></i><div><b>'+E(q.n)+'</b><span class="dt">'+(q.a===q.b?dd(q.a):lab(q.a)+' bis '+dd(q.b))+(q.race?'':', '+Math.max(1,Math.round((dd2(q.a,q.b)+1)/7))+' Wo.')+'</span><p>'+E(q.d)+'</p>'+(KRT[q.k]&&!past?'<p class="phc">⚡ <b>Krämpfe:</b> '+E(KRT[q.k])+'</p>':'')+(!q.race&&!past&&av?'<div class="phk"><span>ca. '+(Math.round(av/10)*10)+' TSS/Woche</span><span>ca. '+Math.round(av/48)+' h</span><span>Fitness am Ende '+Math.round(tgtAt(q.b))+'</span><span>Form '+(z[0]>0?'+':'')+z[0]+' bis '+(z[1]>0?'+':'')+z[1]+'</span></div>':'')+'</div></li>'}).join('')+'</ul><p class="mu xpl">Wochenziele aus der Zielkurve: so viel Belastung braucht es im Schnitt pro Woche, um die Fitness am Ende der Phase zu erreichen. Stunden grob mit 48 TSS pro Stunde gerechnet, das entspricht ruhiger Grundlage. Die Planung von Claude bekommt Ziel und Obergrenze jeder Woche mit.</p>'}
-async function tkSet(v){CF.ticket=v;var o={};try{o=JSON.parse(localStorage.getItem('cfg1')||'{}')||{}}catch(e){}o.ticket=v;o.ts=Date.now();try{localStorage.setItem('cfg1',JSON.stringify(o))}catch(e){}
+async function tkSet(v){CF.ticket=v;var o={};try{o=JSON.parse(localStorage.getItem('cfg1')||'{}')||{}}catch(e){}o.ticket=v;o.ts=Date.now();try{(window.WU_CFHADD&&WU_CFHADD(o,'Ötztaler-Ticket')),localStorage.setItem('cfg1',JSON.stringify(o))}catch(e){}
 rall();if(DBH&&UID){var full={};Object.keys(CFD).forEach(function(k){full[k]=o[k]!==undefined?o[k]:CFD[k]});full.ts=o.ts;try{await DBP(DBH.doc('data/users/'+UID+'/cfg').set(full),'Einstellungen speichern')}catch(e){}}}
 document.addEventListener('click',function(e){var b=e.target.closest&&e.target.closest('[data-tk]');if(!b)return;tkSet(b.getAttribute('data-tk'))});
 /* Hauptziel Ötztaler unter 10 h */
@@ -1769,7 +1770,7 @@ return{t:'Zonen und Schwellenwerte',h:(o.length?'<div class="zsc in"><b>Vorschl�
 +(old>42?'<p class="note">Seit '+(old>200?'über 6 Monaten':old+' Tagen')+' keine Belastung von 20 Minuten nahe deiner FTP. Eine niedrigere Schätzung heißt deshalb nicht, dass du schwächer bist. Die FTP wird nie automatisch gesenkt, der FTP-Test im Jänner bleibt der Maßstab.</p>':'')+zTables(),f:function(){}}};
 async function zApply(keys){var o={},r=zEst(),ch={};try{o=JSON.parse(localStorage.getItem('cfg1')||'{}')||{}}catch(e){}
 zSug().forEach(function(x){if(keys==='all'||keys===x.k){o[x.k]=x.v;ch[x.k]=1}});if(!Object.keys(ch).length)return;
-if(ch.lthr||ch.hrmax){try{localStorage.removeItem('tss2')}catch(e){}}o.ts=Date.now();try{localStorage.setItem('cfg1',JSON.stringify(o))}catch(e){}
+if(ch.lthr||ch.hrmax){try{localStorage.removeItem('tss2')}catch(e){}}o.ts=Date.now();try{(window.WU_CFHADD&&WU_CFHADD(o,'Schwellenwerte')),localStorage.setItem('cfg1',JSON.stringify(o))}catch(e){}
 if(DBH&&UID){var full={};Object.keys(CFD).forEach(function(k){full[k]=o[k]!==undefined?o[k]:CFD[k]});full.ts=o.ts;try{await DBP(DBH.doc('data/users/'+UID+'/cfg').set(full),'Schwellenwerte speichern')}catch(e){}}
 var z=$('zs');if(z)z.innerHTML='<div class="zsc ok"><b>Übernommen. Die App lädt neu und berechnet die Belastung mit den neuen Werten.</b></div>';var sb=$('shb');if(sb&&cur==='zon')sb.insertAdjacentHTML('afterbegin','<p class="note ok">Übernommen, die App lädt neu …</p>');
 setTimeout(function(){try{location.reload()}catch(e){}},900)}
@@ -2145,7 +2146,7 @@ return{t:'FTP-Test',h:'<p class="mu">Der Test bestimmt deine aktuelle FTP und da
 '<p class="mu">Am Vortag locker, gut essen und schlafen. In Zwift ERG-Modus ausschalten, damit du frei fahren kannst. Name der Aktivität mit „FTP“, dann findet WattsUp sie sicher.</p>'+
 '<div class="row2"><button type="button" class="pbtn sm" id="ftp-zwo">Zwift-Datei speichern</button></div><p class="mu" id="ftp-m"></p>'+
 '<h3>Ergebnis</h3>'+(r?'<p>'+(r.named?'Test':'Beste 20 Minuten der letzten 3 Wochen')+': <span class="lnk" data-k="a:'+r.a.id+'" role="button" tabindex="0">'+E(r.a.name)+', '+lab(r.a.day)+' ›</span></p><div class="kpg"><div><small>20 Minuten</small><b>'+r.p20+' W</b><span>Durchschnitt</span></div><div><small>Neue FTP</small><b>'+r.ftp+' W</b><span>95 % davon</span></div><div><small>Bisher</small><b>'+old+' W</b><span>'+(r.ftp>=old?'+':'')+(r.ftp-old)+' W</span></div></div>'+(r.named||r.ftp>old?'<div class="row2"><button type="button" class="pbtn sm" id="ftp-ok" data-v="'+r.ftp+'">FTP '+r.ftp+' W übernehmen</button></div><p class="mu">Danach werden Zonen und Belastungswerte neu berechnet. Die App lädt neu.</p>':'<p class="mu">Kein Test erkannt. Die FTP wird ohne Test nicht gesenkt.</p>'):'<p class="mu">Noch keine passende Einheit mit Leistungsdaten in den letzten drei Wochen.</p>'),f:function(){}}};
-async function ftpApply(v){var o={};try{o=JSON.parse(localStorage.getItem('cfg1')||'{}')||{}}catch(e){}o.ftp=v;o.ts=Date.now();try{localStorage.setItem('cfg1',JSON.stringify(o));localStorage.removeItem('tss2')}catch(e){}
+async function ftpApply(v){var o={};try{o=JSON.parse(localStorage.getItem('cfg1')||'{}')||{}}catch(e){}o.ftp=v;o.ts=Date.now();try{(window.WU_CFHADD&&WU_CFHADD(o,'FTP')),localStorage.setItem('cfg1',JSON.stringify(o));localStorage.removeItem('tss2')}catch(e){}
 if(DBH&&UID){var full={};Object.keys(CFD).forEach(function(k){full[k]=o[k]!==undefined?o[k]:CF[k]});full.ftp=v;full.ts=o.ts;try{await DBP(DBH.doc('data/users/'+UID+'/cfg').set(full),'FTP speichern')}catch(e){}}
 var m=$('ftp-m');if(m)m.textContent='Übernommen, die App lädt neu …';setTimeout(function(){try{location.reload()}catch(e){}},900)}
 document.addEventListener('click',async function(e){var t=e.target.closest&&e.target.closest('#ftp-zwo,#ftp-ok');if(!t)return;
@@ -2634,6 +2635,38 @@ window.WU_DASH={on:function(v){if(v===ON){if(v&&!document.querySelector('#dash-b
  db:function(v){try{if(!v||!v.L||(v.ts||0)<=(D.ts||0)||v.v!==3)return;D={v:3,cur:v.cur,ord:v.ord,L:typeof v.L==='string'?JSON.parse(v.L):v.L,A:v.A?(typeof v.A==='string'?JSON.parse(v.A):v.A):cp(DEFA),Z:v.Z?(typeof v.Z==='string'?JSON.parse(v.Z):v.Z):cp(DEFZ),ts:v.ts};try{localStorage.setItem('dash1',JSON.stringify(D))}catch(e){}if(ON&&!ED)render()}catch(e){}},
  data:function(){return D},act:openAct};
 if(document.body.getAttribute('data-tab')==='dash')WU_DASH.on(true);
+})();
+/* Frühere Stände der Einstellungen v36 */
+(function(){
+var CFH={};try{(JSON.parse(localStorage.getItem('cfgh1')||'[]')||[]).forEach(function(x){if(x&&x.ts)CFH[x.ts]=x})}catch(e){}
+var ALL=false,ARM=0;
+var LBL={ticket:'Ötztaler-Ticket',mood:'Morgengefühl abfragen'};try{CFF.forEach(function(f){LBL[f[0]]=f[1]})}catch(e){}
+function list(){return Object.keys(CFH).map(function(k){return CFH[k]}).sort(function(a,b){return b.ts-a.ts})}
+function store(){try{localStorage.setItem('cfgh1',JSON.stringify(list().slice().reverse()))}catch(e){}}
+function raw(){try{return JSON.parse(localStorage.getItem('cfg1')||'{}')||{}}catch(e){return{}}}
+function full(o,b){var f={};Object.keys(CFD).forEach(function(k){if(k==='ts')return;f[k]=o&&o[k]!==undefined?o[k]:b&&b[k]!==undefined?b[k]:CFD[k]});return f}
+function sv(x){return x===true?'ja':x===false?'nein':(x==null||x==='')?'automatisch':String(x)}
+function put(e){CFH[e.ts]=e;store();if(typeof DBH!=='undefined'&&DBH&&UID){DBP(DBH.doc('data/users/'+UID+'/cfgh_'+e.ts).set(e),'Früheren Stand sichern').catch(function(){})}}
+window.WU_CFHADD=function(o,src){try{var pr=raw(),pf=full(pr),nf=full(o,pr),ch=Object.keys(nf).filter(function(k){return sv(pf[k])!==sv(nf[k])});if(!ch.length)return;var t=Date.now();while(CFH[t]||CFH[t-1])t+=2;
+ if(!list().length)put({ts:t-1,src:'Stand vor der ersten Änderung',v:pf,ch:[]});
+ put({ts:t,src:String(src||'Einstellungen'),v:nf,ch:ch.map(function(k){return[k,pf[k],nf[k]]})})}catch(e){}};
+window.WU_CFH=function(v){if(v&&v.ts&&!CFH[v.ts]){CFH[v.ts]=v;clearTimeout(window.WU_CFH.t);window.WU_CFH.t=setTimeout(store,300)}};
+setTimeout(function(){if(!list().length)put({ts:Date.now(),src:'Stand bei Einführung der Liste',v:full(raw()),ch:[]})},9000);
+function dt(t){var d=new Date(t);return d.getDate()+'.'+(d.getMonth()+1)+'.'+d.getFullYear()+', '+String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0')}
+function html(){var L=list(),n=ALL?L.length:12,h='<h3 class="cfhh">Frühere Stände</h3><p class="mu">Jede Änderung wird mit Datum festgehalten, unbegrenzt und auf allen Geräten. Wiederherstellen setzt alle Werte auf diesen Stand; der aktuelle Stand bleibt in der Liste.</p>';
+ if(!L.length)return h+'<p class="mu">Noch keine Änderung festgehalten.</p>';
+ h+=L.slice(0,n).map(function(e,i){return'<div class="cfh"><div class="cfh-t"><b>'+dt(e.ts)+'</b><small>'+E(e.src||'')+(i===0?' · aktuell':'')+'</small></div>'+(e.ch&&e.ch.length?'<ul>'+e.ch.map(function(c){return'<li>'+E(LBL[c[0]]||c[0])+': <span class="mu">'+E(sv(c[1]))+'</span> → <b>'+E(sv(c[2]))+'</b></li>'}).join('')+'</ul>':'')+(i===0?'':'<button type="button" class="pbtn sm ghost" data-cfh="'+e.ts+'">'+(ARM===e.ts?'Wirklich wiederherstellen? Nochmal tippen':'Diesen Stand wiederherstellen')+'</button>')+'</div>'}).join('');
+ if(L.length>n)h+='<button type="button" class="pbtn sm ghost" data-cfha="1">Alle '+L.length+' Stände anzeigen</button>';
+ return h}
+var _in=IN['cfg'];IN['cfg']=function(){var o=_in();o.h+=html();return o};
+async function restore(ts){var e=CFH[ts];if(!e)return;var o=JSON.parse(JSON.stringify(e.v));o.ts=Date.now();WU_CFHADD(o,'Wiederhergestellt: Stand vom '+dt(e.ts));
+ try{localStorage.setItem('cfg1',JSON.stringify(o));localStorage.removeItem('tss2')}catch(x){}
+ if(typeof DBH!=='undefined'&&DBH&&UID){try{await DBP(DBH.doc('data/users/'+UID+'/cfg').set(o),'Einstellungen wiederherstellen')}catch(x){}}
+ try{hToast('Stand vom '+dt(e.ts)+' wiederhergestellt, die App lädt neu …')}catch(x){}setTimeout(function(){try{location.reload()}catch(x){}},900)}
+document.addEventListener('click',function(ev){var b=ev.target.closest&&ev.target.closest('[data-cfh],[data-cfha]');if(!b)return;ev.preventDefault();ev.stopPropagation();
+ if(b.hasAttribute('data-cfha')){ALL=true;try{open('cfg')}catch(x){}return}
+ var ts=Number(b.getAttribute('data-cfh'));if(ARM!==ts){ARM=ts;b.textContent='Wirklich wiederherstellen? Nochmal tippen';setTimeout(function(){if(ARM===ts){ARM=0;b.textContent='Diesen Stand wiederherstellen'}},5000);return}
+ ARM=0;restore(ts)},true);
 })();
 rpm();rm();rg();rf();lnk();rb();wx();plAct();dbinit();lp();
 if(window.__S)H.hook(window.__S);
