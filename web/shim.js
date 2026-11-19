@@ -994,14 +994,14 @@
     if (!CAPN || !PL.App) return null;
     var last = lg('wu_updchk', { t: 0, v: 0 });
     var info = await PL.App.getInfo(), cur = Number(info.build) || 0, latest = last.v;
-    if (force || now() - last.t > 6 * 3600000) {
+    if (force || now() - last.t > 3600000) {
       try {
         var r = await fetch('https://api.github.com/repos/christophschmid-design/wattsup/releases/tags/apk', { headers: { Accept: 'application/vnd.github+json' } });
         if (r.ok) { var j = await r.json(), m = /Version 1\.(\d+)/.exec(j.body || ''); if (m) latest = Number(m[1]); ls('wu_updchk', { t: now(), v: latest }); }
       } catch (e) { }
     }
     UPD = { cur: cur, latest: latest, newer: latest > cur };
-    if (UPD.newer) updBanner();
+    if (UPD.newer) updBanner(); else WU_INBOX.drop('upd-');
     return UPD;
   }
   function updBanner() {
@@ -1101,7 +1101,8 @@
   document.addEventListener('DOMContentLoaded', function () {
     startP.then(function (r) {
       if (r === 'stop') return;
-      checkUpdate(false);
+      checkUpdate(true);
+      document.addEventListener('visibilitychange', function () { if (!document.hidden) checkUpdate(false); });
       var c = cfg();
       if (!stOk() || !c.aKey || !gOk()) setTimeout(function () { WU.open(!stOk() ? 'Willkommen bei WattsUp. Verbinde zuerst Strava, dann Google und hinterlege den Schlüssel für Claude.' : !gOk() ? 'Google ist noch nicht verbunden. Ohne Google gibt es keinen Kalender und keinen Abgleich zwischen Geräten.' : 'Für die Planung fehlt noch der Schlüssel für die Claude-Schnittstelle.'); }, 600);
     });
