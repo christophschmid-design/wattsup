@@ -1441,6 +1441,11 @@ try{var r=await SJ(sm,ctxp(w,lk),{cache:false}),ses=vsn(r&&r.sessions,w,lk);if(!
 q.prop={sessions:ses,summary:String(r.summary||'').slice(0,600),why:String(r.begruendung||'').slice(0,900),ts:Date.now(),locked:lk};await pwSave(w);try{if(r.rueckblick&&window.WU_RB)WU_RB(w,r.rueckblick)}catch(x){}delete PWB[w];msg(w,'Vorschlag erstellt. Prüfe die Änderungen und übernimm ihn, wenn er passt.','ok')}
 catch(e){delete PWB[w];var c=e&&e.code;msg(w,c==='not_granted'?'Die Claude-Anfrage wurde nicht erlaubt. Erlaube sie über das Berechtigungen-Menü der Seite und versuche es erneut.':c==='rate_limited'?'Zu viele Anfragen. Bitte in ein paar Minuten noch einmal versuchen.':c==='network'?E(e.message||'Keine Verbindung zu Claude.')+' Bitte noch einmal versuchen.':c==='invalid_json'||c==='leer'?'Claude hat keinen gültigen Plan geliefert. Bitte noch einmal versuchen.':'Der Vorschlag konnte nicht erstellt werden'+(c?' (Fehler: '+c+')':'')+'. Bitte noch einmal versuchen.','err')}
 upd(w)}
+/* Fortschritt der Kalender-Übertragung nur im Statuskasten nachführen, ohne das ganze Blatt neu aufzubauen (sonst flackert es nach jedem Termin) */
+function updCal(w){var box=PWS.w===w&&$('pwb')?$('pwb').querySelector('.busy.cal'):null;if(!box){upd(w);return}var t=document.createElement('div');t.innerHTML=calBusyHtml(w);var nb=t.firstChild;
+ var oo=box.querySelector('ol.steps'),no=nb.querySelector('ol.steps');if(!oo||!no||oo.children.length!==no.children.length){box.replaceWith(nb);return}
+ [].forEach.call(no.children,function(li,k){var ol=oo.children[k];if(ol.className!==li.className)ol.className=li.className;var a=ol.querySelector('span'),b=li.querySelector('span');if(a&&b&&a.innerHTML!==b.innerHTML)a.innerHTML=b.innerHTML});
+ var om=box.querySelector('ul.made'),nm=nb.querySelector('ul.made');if(nm){if(!om)box.appendChild(nm);else{for(var k=om.children.length;k<nm.children.length;k++)om.appendChild(nm.children[k].cloneNode(true))}}}
 async function calSync(w,lk){var q=PW8[w],m=null;lk=lk||[];if(!q||!q.acc||busy(w))return;
 var B=PWB[w]={kind:'cal',done:false,fail:0,made:[],steps:[{t:'Kalender „Training“ lesen',s:'run'},{t:'Bisherige Termine der Woche entfernen',s:'wait',n:null},{t:'Neue Termine anlegen',s:'wait',n:null}]};
 function fin(t,ok){B.done=true;q.cal={ok:ok,ts:Date.now()};pwSave(w);msg(w,t,ok?'ok':'err');upd(w)}
@@ -1450,12 +1455,12 @@ var td=iso(new Date()),days=wkDays(w),ev=[],i,del=0,add=0,f1=0,f2=0;
 try{var r=await CT(m,'Google Calendar','list_events',{calendarId:CALID,startTime:days[0]+'T00:00:00',endTime:nxDay(days[6])+'T00:00:00',orderBy:'startTime',pageSize:100},{cache:false});ev=(r.payload&&r.payload.events)||[];B.steps[0].s='ok'}
 catch(e){B.steps[0].s='err';B.fail=1;fin(calErr(e),false);return}
 var dels=ev.filter(function(e){var sd=e.start&&(e.start.dateTime||e.start.date),d=sd?(e.start.dateTime?iso(new Date(sd)):String(sd).slice(0,10)):'';return d&&d>=td&&lk.indexOf(d)<0&&days.indexOf(d)>=0&&!e.recurringEventId&&!/Wochen-Update/i.test(e.summary||'')});
-B.steps[1].s='run';B.steps[1].n='0 von '+dels.length;upd(w);
-for(i=0;i<dels.length;i++){try{await CT(m,'Google Calendar','delete_event',{calendarId:CALID,eventId:dels[i].id,notificationLevel:'NONE'});del++}catch(x){f1++}B.steps[1].n=del+' von '+dels.length;upd(w)}
+B.steps[1].s='run';B.steps[1].n='0 von '+dels.length;updCal(w);
+for(i=0;i<dels.length;i++){try{await CT(m,'Google Calendar','delete_event',{calendarId:CALID,eventId:dels[i].id,notificationLevel:'NONE'});del++}catch(x){f1++}B.steps[1].n=del+' von '+dels.length;updCal(w)}
 B.steps[1].s=f1?'err':'ok';
 var ses=q.acc.sessions.filter(function(x){return x.date>=td&&lk.indexOf(x.date)<0});
-B.steps[2].s='run';B.steps[2].n='0 von '+ses.length;upd(w);
-for(i=0;i<ses.length;i++){var x=ses[i],st=sTime(x),du=sDur(x);try{await CT(m,'Google Calendar','create_event',{calendarId:CALID,summary:x.title,startTime:x.date+'T'+st+':00',endTime:addMin(x.date,st,du),description:(x.desc?x.desc+'\n\n':'')+'Geplant mit der Trainings-App, ca. '+x.tss+' TSS.'+kraftTxt(x),notificationLevel:'NONE'});add++;B.made.push([dl(x.date)+', '+st,x.title])}catch(y){f2++}B.steps[2].n=add+' von '+ses.length;upd(w)}
+B.steps[2].s='run';B.steps[2].n='0 von '+ses.length;updCal(w);
+for(i=0;i<ses.length;i++){var x=ses[i],st=sTime(x),du=sDur(x);try{await CT(m,'Google Calendar','create_event',{calendarId:CALID,summary:x.title,startTime:x.date+'T'+st+':00',endTime:addMin(x.date,st,du),description:(x.desc?x.desc+'\n\n':'')+'Geplant mit der Trainings-App, ca. '+x.tss+' TSS.'+kraftTxt(x),notificationLevel:'NONE'});add++;B.made.push([dl(x.date)+', '+st,x.title])}catch(y){f2++}B.steps[2].n=add+' von '+ses.length;updCal(w)}
 B.steps[2].s=f2?'err':'ok';B.fail=f1+f2;
 fin(B.fail?'Kalender nur teilweise aktualisiert: '+add+' Termine eingetragen, '+del+' entfernt, '+B.fail+(B.fail>1?' Aktionen':' Aktion')+' fehlgeschlagen. Mit „Erneut übertragen“ kannst du es noch einmal versuchen.':'Fertig: '+add+(add===1?' Termin':' Termine')+' im Kalender „Training“ eingetragen, '+del+' bisherige entfernt.',!B.fail)}
 function pwAcc(w){var q=PW8[w];if(!q||!q.prop||busy(w))return;var lk=q.prop.locked||[],ses=[];lk.forEach(function(d){if(PM[d])ses.push({date:d,title:PM[d][2],tss:PM[d][1],desc:PM[d][3]||''})});q.prop.sessions.forEach(function(x){ses.push(x)});q.acc={sessions:ses,ts:Date.now(),summary:q.prop.summary};q.prop=null;q.cal=null;rpm();pwSave(w);if(window.__S)H.hook(window.__S);calSync(w,lk)}
