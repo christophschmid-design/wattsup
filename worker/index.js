@@ -101,6 +101,19 @@ export default {
       return new Response('method', { status: 405 });
     }
 
+    // Nachricht aus der App an das Handy (Coach, Wochenrückblick)
+    if (url.pathname === '/notify') {
+      if (req.method === 'OPTIONS') return new Response(null, { headers: Object.assign({ 'Access-Control-Allow-Methods': 'POST', 'Access-Control-Allow-Headers': 'Content-Type' }, cors) });
+      if (req.method !== 'POST') return new Response('method', { status: 405, headers: cors });
+      const j = await req.json().catch(() => ({}));
+      const a = String(j.a || ''), k = String(j.k || 'coach');
+      if (!/^\d+$/.test(a) || !/^(coach|plan)$/.test(k)) return new Response('bad', { status: 400, headers: cors });
+      try {
+        await push(env, a, String(j.t || 'WattsUp').slice(0, 60), String(j.b || '').slice(0, 220), { k });
+        return Response.json({ ok: true }, { headers: cors });
+      } catch (e) { return Response.json({ ok: false, error: e.message }, { status: 500, headers: cors }); }
+    }
+
     // Meldung von Strava
     if (req.method === 'POST') {
       const ev = await req.json().catch(() => null);

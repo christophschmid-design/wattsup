@@ -288,6 +288,7 @@
   function costs() { return lg('wu_cost', []) || []; }
   function monthKey(t) { var d = new Date(t); return d.getFullYear() + '-' + ('0' + (d.getMonth() + 1)).slice(-2); }
   function monthSum() { var m = monthKey(now()); return costs().filter(function (c) { return monthKey(c.ts) === m; }).reduce(function (s, c) { return s + c.usd; }, 0); }
+  window.WU_LIMIT = function () { return Number(cfg().limit || 0); };
   function usd(v) { return v.toFixed(v < 1 ? 3 : 2).replace('.', ',') + ' $'; }
   async function ask(input, opts) {
     var c = cfg(); opts = opts || {};
@@ -297,13 +298,16 @@
     if (lim > 0 && ms >= lim && !c.over) throw fail('rate_limited', 'Monatsgrenze von ' + usd(lim) + ' erreicht. Unter Einstellungen → Claude und Kosten anpassen.');
     var msgs = typeof input === 'string' ? [{ role: 'user', content: input }] : input;
     var body = { model: model, max_tokens: opts.maxTokens || 16000, messages: msgs };
-    if (opts.json) body.system = 'Antworte ausschließlich mit einem einzigen gültigen JSON-Objekt. Kein Markdown, keine Codeblöcke, kein Text davor oder danach.';
+    var jsys = 'Antworte ausschließlich mit einem einzigen gültigen JSON-Objekt. Kein Markdown, keine Codeblöcke, kein Text davor oder danach.';
+    if (opts.system) body.system = typeof opts.system === 'string' ? (opts.json ? opts.system + '\n' + jsys : opts.system) : (opts.json ? opts.system.concat([{ type: 'text', text: jsys }]) : opts.system);
+    else if (opts.json) body.system = jsys;
     var j = await http('https://api.anthropic.com/v1/messages', { method: 'POST', signal: opts.signal, headers: { 'Content-Type': 'application/json', 'x-api-key': c.aKey, 'anthropic-version': '2023-06-01', 'anthropic-dangerous-direct-browser-access': 'true' }, body: JSON.stringify(body) });
     var u = j.usage || {}, inp = (u.input_tokens || 0) + (u.cache_creation_input_tokens || 0) * 1.25 + (u.cache_read_input_tokens || 0) * 0.1, out = u.output_tokens || 0;
     var cost = (inp * M.i + out * M.o) / 1e6, list = costs();
     list.push({ ts: now(), model: model, i: u.input_tokens || 0, o: out, usd: cost }); if (list.length > 400) list = list.slice(-400); ls('wu_cost', list);
     if (c.once) setCfg({ once: null });
-    toast('Planung mit ' + M.n + ': ' + usd(cost) + (lim > 0 ? ', Monat ' + usd(monthSum()) + ' von ' + usd(lim) : ', Monat ' + usd(monthSum())));
+    try { window.dispatchEvent(new CustomEvent('wu-cost', { detail: { usd: cost, tag: opts.tag || 'plan', model: model } })); } catch (e) { }
+    if (!opts.quiet) toast('Planung mit ' + M.n + ': ' + usd(cost) + (lim > 0 ? ', Monat ' + usd(monthSum()) + ' von ' + usd(lim) : ', Monat ' + usd(monthSum())));
     if (lim > 0 && monthSum() >= lim * 0.8 && monthSum() < lim) setTimeout(function () { toast('Achtung: 80 % der Monatsgrenze erreicht.'); }, 4200);
     return (j.content || []).filter(function (b) { return b.type === 'text'; }).map(function (b) { return b.text; }).join('');
   }
@@ -880,7 +884,7 @@
   /* Sprung aus einer Benachrichtigung direkt in den passenden Dialog */
   var T0 = now();
   function goFrom(o) {
-    if (!o || (o.k !== 'mood' && o.k !== 'act' && o.k !== 'plan' && o.k !== 'ski')) { if (now() - T0 > 8000) location.reload(); return; }
+    if (!o || (o.k !== 'mood' && o.k !== 'act' && o.k !== 'plan' && o.k !== 'ski' && o.k !== 'coach')) { if (now() - T0 > 8000) location.reload(); return; }
     try { sessionStorage.setItem('wu_go', JSON.stringify({ k: o.k, id: o.id || null, t: now() })); } catch (e) { }
     if (now() - T0 > 8000) location.reload(); else goRun();
   }
@@ -892,6 +896,7 @@
     (function tick() {
       if (now() - t0 > 25000) { done(); return; }
       if (!window.WU_OPEN || !window.WU_STATE) { setTimeout(tick, 400); return; }
+      if (o.k === 'coach') { done(); WU.close(); window.WU_OPEN('coach'); return; }
       if (o.k === 'ski') { done(); WU.close(); skiSync(true).then(function () { window.WU_OPEN('ski'); }); return; }
       if (o.k === 'plan') { done(); WU.close(); var nm = new Date(); nm.setDate(nm.getDate() + ((8 - nm.getDay()) % 7 || 7)); window.WU_OPEN('w:' + nm.getFullYear() + '-' + ('0' + (nm.getMonth() + 1)).slice(-2) + '-' + ('0' + nm.getDate()).slice(-2)); return; }
       if (o.k === 'mood') { done(); WU.close(); var go = function () { window.WU_OPEN('mood'); }; if (typeof hcSync === 'function' && cfg().hcOk) { Promise.race([hcSync(false), new Promise(function (r) { setTimeout(r, 6000); })]).then(go, go); } else go(); return; }
@@ -967,6 +972,13 @@
     runnerCfg();
     await pushTest();
   }
+  /* Nachricht an das Handy (z. B. vom Coach), auch von Tablet oder Surface */
+  window.WU_NOTIFY = async function (title, body, k) {
+    var base = pushBase(); if (!/^https:\/\//.test(base)) return false;
+    var id = String(cfg().pushTopic || '').split('_')[1]; if (!id) { try { id = String((await athlete()).id); } catch (e) { return false; } }
+    var r = await http(base + '/notify', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ a: id, t: String(title || '').slice(0, 60), b: String(body || '').slice(0, 220), k: k || 'coach' }) });
+    return !!(r && r.ok);
+  };
   async function pushTest() {
     var c = cfg(), id = String(c.pushTopic || '').split('_')[1];
     var r = await http(pushBase() + '/test?athlete=' + encodeURIComponent(id));
