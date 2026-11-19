@@ -31,9 +31,10 @@ public class MainActivity extends BridgeActivity {
             Insets b = insets.getInsets(bars);
             Insets ime = insets.getInsets(WindowInsetsCompat.Type.ime());
             v.setPadding(b.left, b.top, b.right, Math.max(b.bottom, ime.bottom));
-            // Nur die Leisten als erledigt markieren, Tastatur-Infos weiterreichen,
-            // damit die Webansicht Eingabefelder normal bedienen kann.
-            return new WindowInsetsCompat.Builder(insets).setInsets(bars, Insets.NONE).build();
+            // Leisten und Tastatur sind hier über das Padding erledigt. Die Tastatur nicht
+            // zusätzlich an die Webansicht weiterreichen, sonst zieht sie ihre Höhe ein
+            // zweites Mal ab (Fenster nur noch ca. 140 px hoch, Coach-Eingabe verschwindet).
+            return new WindowInsetsCompat.Builder(insets).setInsets(bars | WindowInsetsCompat.Type.ime(), Insets.NONE).build();
         });
         ViewCompat.requestApplyInsets(host);
     }
