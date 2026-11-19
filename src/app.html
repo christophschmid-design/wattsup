@@ -2622,21 +2622,21 @@ function coCostHtml(){var c=CO.cost[mKey()]||{all:0,coach:0,nc:0},lim=window.WU_
 window.addEventListener('wu-credit',function(){var c=document.getElementById('co-cost');if(c)c.innerHTML=coCostHtml();coSubShow()});
 /* Coach-Untertitel: frech, anlassbezogen; pro Anlass und Tag fest, damit er nicht bei jedem Öffnen springt */
 var COSUB={
- credit:['Guthaben leer. Auch ein Coach arbeitet nicht für einen feuchten Händedruck.','Kein Geld, kein Gelaber. Lad auf, dann reden wir.'],
- race:['Rennwoche. Jetzt nix Neues: kein neues Material, kein neues Essen, keine neue Freundin.','Die Arbeit ist gemacht. Jetzt nur nicht deppert werden.','Beine rasiert? Dann bist du bereit.'],
- raceday:['Heute wird abgerechnet. Hau rein und kotz erst im Ziel.','Renntag. Schmerz ist vorübergehend, Strava ist für immer.'],
- red:['Dein Körper sagt Nein. Hör auf ihn, er ist nicht so blöd wie du.','Heute keine Heldentaten. Sofa ist auch eine Trainingsform.','Rote Ampel. Wer jetzt trotzdem Intervalle fährt, darf sich nachher nicht ausweinen.'],
- done:['Erledigt. Duschen, essen, angeben.','Training im Kasten. Jetzt Kohlenhydrate rein und Klappe zu.','Gut gemacht. Der Hintern dankt es dir morgen nicht.'],
- hard:['Heute tut es weh. Absichtlich.','Intervalle heute. Wer jammert, fährt eine Wiederholung mehr.','Heute wird gelitten. Kübel neben die Rolle stellen.','Harte Einheit. Die Komfortzone kannst du dir am Sonntag wieder schön reden.'],
- long:['Lange Ausfahrt. Sitzcreme ist kein Luxus, sondern Selbstachtung.','Heute Kilometer fressen. Und vergiss das Essen nicht, sonst frisst der Hungerast dich.','Lang und locker. Wer auf Zone 2 Rennen fährt, ist ein Wappler.'],
- easy:['Locker heißt locker. Nicht „locker für mich“.','Zone 2: langweilig, aber genau deshalb wirst du schnell.','Heute rollen lassen. Ego bleibt daheim.'],
- rest:['Ruhetag. Nicht heimlich doch auf Zwift.','Heute gewinnt das Sofa. Erholung ist auch Training.','Pause. Die Beine wachsen nur, wenn du sie in Ruhe lässt.'],
- missed:['Gestern ausgelassen? Passiert. Zweimal hintereinander heißt Ausrede.','Der Plan hat gestern umsonst gewartet. Heute wieder anständig?'],
- tired:['Du bist ziemlich im Eimer. Schlaf mehr, sauf weniger.','Müde Beine sind Teil des Plans. Jammern nicht.'],
- fresh:['Du bist frisch wie lang nicht. Zeit, das auszunutzen.','Ausgeruht bis in die Zehen. Keine Ausreden mehr.'],
- mile:['Noch {d} Tage bis Sölden. Das Timmelsjoch wartet nicht auf Weicheier.','{d} Tage bis zum Ötztaler. Jeder Tag zählt, auch die faulen.'],
- winter:['Der Ötztaler wird im Winter gewonnen. Auf der Rolle, mit Ventilator und Selbsthass.','Dunkel, kalt, Zwift. So entstehen Waden.','Sommerbeine werden im Winter gemacht.'],
- gen:['Konstanz schlägt Talent. Vor allem bei wenig Talent.','Kein Mensch erinnert sich an die bequemen Einheiten.','Leiden ist freiwillig. Zum Glück bist du nicht ganz dicht.','Hör auf zu scrollen, fang an zu treten.']};
+ credit:['Koa Göd, koa Gred. Lod af, dann redn ma weida.','A Coach arbat a net fiar an feichtn Händedruck.'],
+ race:['Jetzt nix Neis: koa neichs Radl, koa neichs Essn, koa neiche Freindin.','D\'Arbat is gmocht. Jetzt nur net deppat wern.','Haxn rasiert? Dann bist bereit.'],
+ raceday:['Heit wird obgrechnet. Gib Gas und speib erst im Ziel.','Renntog. Da Schmerz vergeht, Strava bleibt.'],
+ red:['Dei Körper sogt Na. Hea af eam, der is gscheida ois du.','Heit koane Heldentaten. Des Kanapee is a a Training.','Rote Ampel. Wer heit trotzdem Intervalle fahrt, braucht se nochad net ausweinen.'],
+ done:['Passt. Duschn, essn, a Bia, und dann Mäu hoitn.','Guat gmocht. Da Oasch bedankt se moang trotzdem net.','Erledigt. Jetzt Nudln eine und gscheit ongebn.'],
+ hard:['Heit duats weh. Und zwar mit Absicht.','Wer jammert, fahrt no oane extra.','Heit wird glittn. Kübe neba d\'Rolle stöin.'],
+ long:['Sitzcreme is koa Luxus, des is Selbstochtung fürn Oasch.','Vagiss s\'Essn net, sunst frisst di da Hungerast af.','Lang und locker. Wer in Zone 2 a Renna fahrt, is a Loamsiada mit Ego.'],
+ easy:['Locker hoaßt locker. Net „locker fia mi“.','Zone 2 is fad. Grod drum wirst schnö.','Heit rolln lossn. S\'Ego bleibt dahoam.'],
+ rest:['Rasttog. Und net hoamlich doch af Zwift, i siach des.','D\'Haxn wochsn nur, wennst as in Ruah lasst.','Heit gwinnt s\'Kanapee.'],
+ missed:['Gestan ausglassn? Passiert. Zwoamoi hintanand is a Ausred.','Da Plan hot gestan umasunst gwart. Heit wieda gscheit?'],
+ tired:['Du bist ganz schee hi. Mehr schlofn, weniger saufn.','Miade Haxn ghean zum Plan. S\'Jammern net.'],
+ fresh:['So frisch warst scho lang nimma. Jetzt nutz des aus.','Ausgrast bis in d\'Zehen. Koane Ausredn mehr.'],
+ mile:['No {d} Tog bis Sölden. S\'Timmelsjoch wart net af Hosnscheißer.','{d} Tog bis zum Ötztaler. Jeda Tog zöd, a de foin.'],
+ winter:['Da Ötztaler wird im Winta gwunna. Af da Rolle, mit Ventilator und Selbsthass.','Finsta, koid, Zwift. So wochsn Wadln.','Sommerhaxn wern im Winta gmocht.'],
+ gen:['Konstanz schlogt Talent. Vor oim, wennst wenig Talent host.','Leidn is freiwillig. Zum Glück bist net ganz dicht.','Hea af zum Wischn und tritt in d\'Pedale.','An de gmiadlichn Einheitn erinnert se koa Mensch.']};
 function coSubKey(){var t=tod(),X=window.ACT||[],p=PM[t],y=addD(t,-1),r=null,dr=CF.race2?dd2(t,String(CF.race2)):999,d1=CF.race?dd2(t,String(CF.race)):999;
  if(window.WU_NOCREDIT&&WU_NOCREDIT())return['credit'];
  if(dr===0||d1===0)return['raceday'];if((dr>0&&dr<=7)||(d1>0&&d1<=7))return['race'];
