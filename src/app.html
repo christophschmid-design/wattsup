@@ -708,16 +708,14 @@ body.tabdev nav{top:calc(4px + env(safe-area-inset-top,0px));bottom:auto}body.ta
 .kco-in{border:1px solid var(--ln);border-radius:12px;padding:7px 10px;color:var(--mu);font-size:.85rem;cursor:text}
 
 /* v41 Coach überall */
-#cofab{position:fixed;right:16px;bottom:calc(86px + env(safe-area-inset-bottom,0px));z-index:30;width:54px;height:54px;border-radius:50%;border:0;background:var(--ac);color:var(--onac);font-size:1.45rem;box-shadow:0 8px 24px rgba(8,20,40,.3);cursor:pointer}
-#cofab i{position:absolute;top:-3px;right:-3px;min-width:20px;height:20px;border-radius:10px;background:var(--bad);color:#fff;font-style:normal;font-size:.72rem;font-weight:800;display:grid;place-items:center;padding:0 5px}
-#cofab i[hidden]{display:none}
-body.tabdev #cofab{bottom:calc(20px + env(safe-area-inset-bottom,0px));right:20px}
-body.mo #cofab,body.co-open #cofab{display:none}
-#copanel{position:fixed;right:0;top:calc(64px + env(safe-area-inset-top,0px));bottom:0;width:400px;z-index:40;background:var(--card);border-left:1px solid var(--ln);box-shadow:-12px 0 40px rgba(8,20,40,.18);display:flex;flex-direction:column}
+#copanel{position:fixed;left:0;right:0;top:0;bottom:0;z-index:40;padding-top:env(safe-area-inset-top,0px);background:var(--card);border-left:1px solid var(--ln);box-shadow:-12px 0 40px rgba(8,20,40,.18);display:flex;flex-direction:column}
 .cop-top{display:flex;align-items:center;gap:10px;padding:10px 14px;border-bottom:1px solid var(--ln)}.cop-top b{font-size:1.05rem}.cop-top .mu{flex:1;font-size:.78rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .cop-body{flex:1;overflow:auto;padding:12px 14px 0}
 #copanel .co-loc{display:none}
-body.co-open main{margin-right:412px}body.co-open[data-tab=dash] main{margin-right:400px}
+body.co-wide #copanel{left:auto;width:400px;top:calc(64px + env(safe-area-inset-top,0px));padding-top:0}body.co-wide main{margin-right:412px}body.co-wide[data-tab=dash] main{margin-right:400px}
+body.co-open:not(.co-wide){overflow:hidden}
+#shco{border:0;background:var(--bg2);color:var(--ac);width:38px;height:38px;border-radius:19px;display:grid;place-items:center;flex:none;margin:0 8px 0 auto;cursor:pointer}.cop-top .coic{width:24px;height:24px;color:var(--ac);margin:0}#shco .ic{width:22px;height:22px;margin:0;color:var(--ac)}
+nav a.cnav{position:relative}.cnb{position:absolute;top:2px;right:2px;min-width:17px;height:17px;border-radius:9px;background:var(--bad);color:#fff;font-style:normal;font-size:.66rem;font-weight:800;display:grid;place-items:center;padding:0 4px}.cnb[hidden]{display:none}
 .co-loc{font-size:.76rem;margin:0}
 .coask{margin:10px 0 0;font-size:.88rem}
 </style>
@@ -734,6 +732,7 @@ body.co-open main{margin-right:412px}body.co-open[data-tab=dash] main{margin-rig
 <symbol id="ic-bike" viewBox="0 0 24 24"><circle cx="6" cy="16.5" r="3.5"/><circle cx="18" cy="16.5" r="3.5"/><path d="M6 16.5l4-8h5l3 8M10 8.5l3.5 8M9 6h3"/></symbol>
 <symbol id="ic-run" viewBox="0 0 24 24"><circle cx="14.5" cy="4.5" r="1.8"/><path d="M10 21l2-5 3 1 1.5 4M7 12l3-3 4 1 2 3 3 1M12 16l-1-4"/></symbol>
 <symbol id="ic-hike" viewBox="0 0 24 24"><path d="M3 19l6.5-11 4 6.5 2-3L21 19H3z"/></symbol>
+<symbol id="ic-coach" viewBox="0 0 24 24"><circle cx="9" cy="14.5" r="5.5"/><path d="M12.2 10H21.5v3.6h-7.4"/><circle cx="9" cy="14.5" r="1.4"/><path d="M5.6 10.2C4.2 7.6 5 4.4 7.6 3.6c1.8-.5 3.4.4 4 1.9"/></symbol>
 <symbol id="ic-grid" viewBox="0 0 24 24"><rect x="3.5" y="3.5" width="7" height="9" rx="2"/><rect x="13.5" y="3.5" width="7" height="5" rx="2"/><rect x="13.5" y="11.5" width="7" height="9" rx="2"/><rect x="3.5" y="15.5" width="7" height="5" rx="2"/></symbol>
 <symbol id="ic-gym" viewBox="0 0 24 24"><path d="M6.5 8v8M17.5 8v8M3.5 10v4M20.5 10v4M6.5 12h11"/></symbol>
 </defs></svg>
@@ -754,6 +753,7 @@ body.co-open main{margin-right:412px}body.co-open[data-tab=dash] main{margin-rig
 <a href="#heute" data-t="heute"><svg class="ic" aria-hidden="true"><use href="#ic-gauge"/></svg><span>Heute</span></a>
 <a href="#plan" data-t="plan"><svg class="ic" aria-hidden="true"><use href="#ic-cal"/></svg><span>Woche</span></a>
 <a href="#weg" data-t="weg"><svg class="ic" aria-hidden="true"><use href="#ic-trend"/></svg><span>Weg</span></a>
+<a href="#coach" data-t="coach" class="cnav" aria-label="Coach"><svg class="ic" aria-hidden="true"><use href="#ic-coach"/></svg><span>Coach</span><i class="cnb" hidden></i></a>
 </nav>
 <div id="qr" hidden></div>
 <div id="zs" hidden></div>
@@ -971,7 +971,7 @@ live().catch(function(){setSt('Strava-Daten konnten nicht geladen werden.')});
 </script>
 <div id="bg" hidden></div>
 <aside id="sh" role="dialog" aria-modal="true" aria-labelledby="sht" hidden>
-<div class="shh"><h2 id="sht"></h2><button id="shx" type="button" aria-label="Schließen">×</button></div>
+<div class="shh"><h2 id="sht"></h2><button id="shco" type="button" aria-label="Coach fragen" title="Coach fragen"><svg class="ic" aria-hidden="true"><use href="#ic-coach"/></svg></button><button id="shx" type="button" aria-label="Schließen">×</button></div>
 <div id="shb"></div>
 </aside>
 <script>
@@ -2468,7 +2468,7 @@ rf();rm();rg()}
 document.addEventListener('click',function(e){var t=e.target.closest&&e.target.closest('[data-k]');if(t&&!e.target.closest('a,button,textarea,input,label,summary,details'))open(t.getAttribute('data-k'))});
 document.addEventListener('click',function(e){var b=e.target.closest&&e.target.closest('button[data-k]');if(b){e.preventDefault();open(b.getAttribute('data-k'))}});
 document.addEventListener('keydown',function(e){if(e.key==='Escape'&&!$('sh').hidden){close();return}var t=e.target;if((e.key==='Enter'||e.key===' ')&&t.getAttribute&&t.getAttribute('data-k')){e.preventDefault();open(t.getAttribute('data-k'))}});
-document.addEventListener('focusin',function(e){if(!$('sh').hidden&&!$('sh').contains(e.target))$('shx').focus()});
+document.addEventListener('focusin',function(e){if(!$('sh').hidden&&!$('sh').contains(e.target)&&!(e.target.closest&&e.target.closest('#copanel')))$('shx').focus()});
 $('bg').addEventListener('click',close);$('shx').addEventListener('click',close);
 tag('#c1','c1');tag('#c2','c2');tag('#c3','c3');tag('.kp [data-k]',function(e){return e.getAttribute('data-k')});
 tag('#plan .l li',function(e){var m=/([0-9]+[.][0-9]+[.])/.exec(e.textContent);return m?'p:'+m[1]:null});
@@ -2627,7 +2627,7 @@ function coScroll(){var l=document.getElementById('co-log');if(l){var sh=documen
 function coRefresh(){var l=document.getElementById('co-log');if(l){l.innerHTML=coLog();CO.seen=Date.now();coSaveL();coScroll()}var c=document.getElementById('co-cost');if(c)c.innerHTML=coCostHtml();var mm=document.querySelector('.comem');if(mm){var op=mm.open;mm.outerHTML=coMemHtml();var n2=document.querySelector('.comem');if(n2)n2.open=op}coBadge()}
 function coUnread(){return CO.m.filter(function(m){return(m.r==='c'||m.r==='rb')&&m.ts>(CO.seen||0)}).length}
 function coBadge(){var n=coUnread(),last=CO.m.filter(function(m){return m.r==='c'||m.r==='rb'}).slice(-1)[0],tx=last?(last.r==='rb'?'Wochenrückblick '+((last.rb||{}).titel||''):String(last.t)).replace(/\s+/g,' ').slice(0,110):'Frag mich zu Training, Plan und Form.';
- var fb=document.getElementById('cofab-n');if(fb){fb.hidden=!n;fb.textContent=n}
+ [].forEach.call(document.querySelectorAll('.cnb'),function(fb){fb.hidden=!n;fb.textContent=n});
  [].forEach.call(document.querySelectorAll('.cobar'),function(x){x.innerHTML='<span class="cobi">💬</span><span class="cobt"><b>Coach'+(n?' <i class="cobn">'+n+' neu</i>':'')+'</b><small>'+E(tx)+'</small></span><span class="cobg">›</span>'})}
 document.addEventListener('click',function(e){var t=e.target.closest&&e.target.closest('#co-s,[data-coq],[data-cop],[data-cog],[data-comd]');if(!t)return;e.preventDefault();e.stopPropagation();
  if(t.id==='co-s'){var ta=document.getElementById('co-t');if(ta&&ta.value.trim()){var v=ta.value;ta.value='';coSend(v)}return}
@@ -2667,6 +2667,8 @@ function coAct(id){return(window.ACT||[]).filter(function(a){return String(a.id)
 function coWhere(){var tab=document.body.getAttribute('data-tab')||'heute',sh=!$('sh').hidden&&cur&&cur!=='coach'?cur:'';
  if(sh&&sh.indexOf('a:')===0){var a=coAct(sh.slice(2));if(a)return{l:'Einheit '+a.name+', '+lab(a.day),d:'Details der Einheit',x:{einheit:coActSum(a)}}}
  if(sh&&(sh.indexOf('w:')===0||sh.indexOf('p:')===0))return{l:sh.indexOf('w:')===0?'Woche planen ab '+lab(sh.slice(2)):'Plan '+sh.slice(2),d:'Planung'};
+ if(sh==='cfg'){var cf={};Object.keys(CFD).forEach(function(k){if(k!=='ts'&&k!=='m300'&&k!=='m280')cf[k]=CF[k]});return{l:'Einstellungen · Training und Ziele',d:'Dialog Einstellungen Training und Ziele',x:{einstellungen:cf}}}
+ if(sh){var tt=($('sht')||{}).textContent||sh;return{l:tt,d:'Dialog „'+tt+'“'}}
  if(tab==='dash'&&window.WU_DASH&&WU_DASH.where){var w=WU_DASH.where();if(w.aid&&w.cmp){var A=coAct(w.aid),B=coAct(w.cmp);return{l:'Vergleich '+(A?A.name:'')+' ⇄ '+(B?B.name:''),d:'Vergleich zweier Einheiten im Dashboard (A gegen B)',x:{A:coActSum(A),B:coActSum(B)}}}
   if(w.aid){var a2=coAct(w.aid);return{l:'Analyse '+(a2?a2.name+', '+lab(a2.day):''),d:'Aktivitäts-Analyse im Dashboard',x:{einheit:coActSum(a2)}}}return{l:'Dashboard „'+w.lay+'“',d:'Dashboard mit dem Layout '+w.lay}}
  if(tab==='heute'){var d=addD(tod(),DOFF||0),p=PM[d];return{l:'Heute'+(DOFF?' · '+dl(d):''),d:'Tagesansicht '+d,x:{tag:d,plan:p?{titel:p[2],beschreibung:p[3]||'',tss:p[1]}:null,einheiten:(window.ACT||[]).filter(function(a){return a.day===d}).map(coActSum)}}}
@@ -2675,20 +2677,20 @@ function coWhere(){var tab=document.body.getAttribute('data-tab')||'heute',sh=!$
  if(tab==='analyse')return{l:'Analysen · '+({form:'Form & Belastung',leist:'Leistung',zon:'Zonen & Umfang',koerp:'Körper & Erholung'}[ATS]||ATS),d:'Analysen, Thema '+ATS};
  if(tab==='einheiten')return{l:'Alle Einheiten',d:'Archiv aller Einheiten'};if(tab==='saison')return{l:'Saison im Detail',d:'Saisonübersicht'};return{l:tab,d:tab}}
 function coWide(){return document.body.classList.contains('tabdev')&&window.innerWidth>=900}
-function coOpen(q){var loc=coWhere();CO.loc=loc;if(coWide()){coPanel(true)}else{if(cur!=='coach')open('coach')}coLocShow();if(q)coSend(q,loc);setTimeout(function(){var t=document.getElementById('co-t');if(t&&!q&&coWide())t.focus()},60)}
-function coPanel(on){var p=document.getElementById('copanel');if(on){if(!p){p=document.createElement('aside');p.id='copanel';p.setAttribute('aria-label','Coach');document.body.appendChild(p)}var o=IN['coach']();p.innerHTML='<div class="cop-top"><b>💬 Coach</b><span class="mu" id="co-loc"></span><button type="button" class="dbtn" id="co-x" aria-label="Coach schließen">✕</button></div><div class="cop-body">'+o.h+'</div>';document.body.classList.add('co-open');if(o.f)o.f()}
- else{if(p)p.remove();document.body.classList.remove('co-open')}try{window.dispatchEvent(new Event('resize'))}catch(e){}}
+function coOpen(q){var loc=coWhere();CO.loc=loc;if(!document.getElementById('copanel'))coPanel(true);coLocShow();if(q)coSend(q,loc);setTimeout(function(){var t=document.getElementById('co-t');if(t&&!q&&coWide())t.focus()},60)}
+function coPanel(on){var p=document.getElementById('copanel');if(on){if(!p){p=document.createElement('aside');p.id='copanel';p.setAttribute('aria-label','Coach');document.body.appendChild(p)}var o=IN['coach']();p.innerHTML='<div class="cop-top"><svg class="ic coic" aria-hidden="true"><use href="#ic-coach"/></svg><b>Coach</b><span class="mu" id="co-loc"></span><button type="button" class="dbtn" id="co-x" aria-label="Coach schließen">✕</button></div><div class="cop-body">'+o.h+'</div>';document.body.classList.add('co-open');document.body.classList.toggle('co-wide',coWide());if(o.f)o.f()}
+ else{if(p)p.remove();document.body.classList.remove('co-open','co-wide')}try{window.dispatchEvent(new Event('resize'))}catch(e){}}
 function coLocShow(){var e=document.getElementById('co-loc'),l=CO.loc;if(e)e.textContent=l?'📍 '+l.l:'';var e2=document.getElementById('co-loc2');if(e2)e2.textContent=l?'📍 '+l.l:''}
-/* Knopf */
-(function(){var b=document.createElement('button');b.id='cofab';b.type='button';b.setAttribute('aria-label','Coach öffnen');b.innerHTML='💬<i id="cofab-n" hidden></i>';document.body.appendChild(b);
- b.addEventListener('click',function(e){e.preventDefault();if(document.getElementById('copanel')){coPanel(false);return}coOpen()})})();
-document.addEventListener('click',function(e){var t=e.target.closest&&e.target.closest('#co-x,[data-coask],[data-k="coach"]');if(!t)return;
+
+document.addEventListener('click',function(e){var t=e.target.closest&&e.target.closest('#co-x,#shco,.cnav,[data-coask],[data-k="coach"]');if(!t)return;
+ if(t.classList.contains('cnav')&&document.getElementById('copanel')){e.preventDefault();e.stopPropagation();coPanel(false);return}
  if(t.id==='co-x'){e.preventDefault();e.stopPropagation();coPanel(false);return}
  e.preventDefault();e.stopPropagation();coOpen(t.getAttribute('data-coask')||'')},true);
-document.addEventListener('keydown',function(e){if((e.ctrlKey||e.metaKey)&&(e.key==='k'||e.key==='K')){e.preventDefault();if(document.getElementById('copanel'))coPanel(false);else coOpen()}if(e.key==='Escape'&&document.getElementById('copanel')&&!document.body.classList.contains('mo')){coPanel(false)}});
+document.addEventListener('keydown',function(e){if((e.ctrlKey||e.metaKey)&&(e.key==='k'||e.key==='K')){e.preventDefault();if(document.getElementById('copanel'))coPanel(false);else coOpen()}if(e.key==='Escape'&&document.getElementById('copanel')){e.preventDefault();e.stopPropagation();coPanel(false)}},true);
 /* Ort beim Öffnen des Blatts merken (Handy) und laufend in der Seitenleiste anzeigen */
 var _coF=IN['coach'];IN['coach']=function(){var o=_coF();o.h=o.h.replace('<div class="co">','<div class="co"><p class="co-loc mu" id="co-loc2"></p>');var f=o.f;o.f=function(){if(f)f();coLocShow()};return o};
 setInterval(function(){if(document.getElementById('copanel')){var l=coWhere();if(!CO.loc||CO.loc.l!==l.l){CO.loc=l;coLocShow()}}},1500);
+var _openCo=open;open=function(k){if(k==='coach'){coOpen();return}return _openCo(k)};
 /* Links „Frag den Coach“ an passenden Stellen */
 var _dActC=dAct;dAct=function(x){var o=_dActC(x);try{o.h+='<p class="coask"><span class="lnk" data-coask="Was sagst du zu dieser Einheit?" role="button" tabindex="0">💬 Mit dem Coach besprechen</span></p>'}catch(e){}return o};
 var _whyC=whyHtml;whyHtml=function(r,sc){var h=_whyC(r,sc);if(r&&r.lv>=1)h+='<p class="coask"><span class="lnk" data-coask="Meine Ampel steht heute auf '+(r.lv===2?'Rot':'Gelb')+'. Was heißt das für heute und die nächsten Tage?" role="button" tabindex="0">💬 Was heißt das für heute?</span></p>';return h};
