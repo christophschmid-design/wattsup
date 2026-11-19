@@ -2,7 +2,7 @@
   "name": "wattsup-android",
   "private": true,
   "version": "1.0.0",
-  "description": "Android-Hülle für WattsUp",
+  "description": "Android-H\u00fclle f\u00fcr WattsUp",
   "dependencies": {
     "@capacitor/android": "^8.0.0",
     "@capacitor/app": "^8.0.0",
@@ -12,7 +12,8 @@
     "@capacitor/share": "^8.0.0",
     "@capacitor/local-notifications": "^8.0.0",
     "@capacitor/preferences": "^8.0.0",
-    "@capgo/capacitor-health": "^8.0.0"
+    "@capgo/capacitor-health": "^8.0.0",
+    "@capacitor/keyboard": "^8.0.0"
   },
   "devDependencies": {
     "@capacitor/cli": "^8.0.0"

@@ -576,6 +576,20 @@
     else setCfg(p);
     lastSig = ''; if (window.WU_STATE && window.WU_SYNC) window.WU_SYNC(window.WU_STATE);
   }
+  /* Bildschirmtastatur: Höhe als CSS-Variable --kb, damit fest positionierte Ebenen (Coach) über der Tastatur enden */
+  (function () {
+    var root = document.documentElement, cur = -1;
+    function setKb(h) { h = Math.max(0, Math.round(h || 0)); if (h === cur) return; cur = h; root.style.setProperty('--kb', h + 'px'); root.classList.toggle('kb-open', h > 0); try { window.dispatchEvent(new Event('wu-kb')); } catch (e) { } }
+    var base = window.innerHeight; window.addEventListener('resize', function () { if (cur <= 0 && !document.activeElement.matches('input,textarea,[contenteditable]')) base = window.innerHeight; });
+    /* Falls die WebView selbst schrumpft, nur den Rest der Tastatur ausgleichen */
+    function eff(h) { return (h || 0) - Math.max(0, base - window.innerHeight); }
+    if (PL.Keyboard && PL.Keyboard.addListener) {
+      try { PL.Keyboard.addListener('keyboardWillShow', function (e) { setKb(eff(e && e.keyboardHeight)); }); PL.Keyboard.addListener('keyboardDidShow', function (e) { setTimeout(function () { setKb(eff(e && e.keyboardHeight)); }, 50); }); PL.Keyboard.addListener('keyboardWillHide', function () { setKb(0); }); PL.Keyboard.addListener('keyboardDidHide', function () { setKb(0); }); } catch (e) { }
+    } else if (window.visualViewport) {
+      var vv = window.visualViewport, upd = function () { var d = window.innerHeight - vv.height - vv.offsetTop; setKb(d > 80 ? d : 0); };
+      vv.addEventListener('resize', upd); vv.addEventListener('scroll', upd);
+    }
+  })();
   /* ---------- Erinnerungen: Glocke statt Banner (v44) ---------- */
   var INB = lg('wu_inbox', {});
   function inbSave() { ls('wu_inbox', INB); inbBell(); }

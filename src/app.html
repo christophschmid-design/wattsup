@@ -729,6 +729,9 @@ body.tabdev nav{top:calc(4px + env(safe-area-inset-top,0px));bottom:auto}body.ta
 .co #co-s{background:#e3b257;color:#1a1407;border-color:#e3b257}
 .co .co-chips button{border-color:rgba(227,178,87,.45)}
 .co-cost{margin:8px 2px 0}
+/* Tastatur offen: Coach endet über der Tastatur */
+body:not(.co-wide) #copanel{bottom:var(--kb,0px);transition:bottom .12s}
+.kb-open body:not(.co-wide) #copanel :is(.co-chips,.co-cost,.comem){display:none}
 /* Coach: nie breiter als der Bildschirm */
 #copanel .cop-body{overflow-x:hidden}.co,.co-log,.co-in{min-width:0;max-width:100%}.co-log>*{max-width:100%;box-sizing:border-box}.co .cm{overflow-wrap:anywhere;word-break:normal;min-width:0}.co .cm *{max-width:100%}.co table{display:block;overflow-x:auto}.co pre,.co code{white-space:pre-wrap;overflow-wrap:anywhere}.co-row{min-width:0}.co-row textarea{min-width:0}.cb,.cb-h,.cb-l{min-width:0;max-width:100%}.cb-h{flex-wrap:wrap}
 .hero2.hfuse{padding-bottom:0;overflow:hidden}
@@ -2647,6 +2650,7 @@ function hFuse(){var c=$('hd-b');if(!c||DOFF)return;var hero=c.querySelector('.h
  var mob=c.querySelector(':scope>.hmob');if(mob)hero.insertAdjacentElement('afterend',mob);
  var mm=c.querySelectorAll(':scope>.hmini');if(mm.length===2){var w=document.createElement('div');w.className='hpair';mm[0].parentNode.insertBefore(w,mm[0]);w.appendChild(mm[0]);w.appendChild(mm[1])}}
 var _rHF=rH;rH=function(){_rHF();try{hFuse()}catch(e){}};
+window.addEventListener('wu-kb',function(){if(document.getElementById('copanel')&&!document.body.classList.contains('co-wide')){try{window.scrollTo(0,0)}catch(e){}setTimeout(coScroll,60)}});
 /* Kontext für den Coach */
 function coCtx(){var t=tod(),X=window.ACT||[],n=S?S.ct.length:0,ph=phaseOf(t),bw=bodyAt(t),kg=bw?bw.kg:W;
  var ak=X.filter(function(a){return a.day>=addD(t,-21)}).map(function(a){var p=PM[a.day],q=LOG[a.id]||{};return{datum:a.day,name:a.name,sport:sn(a.sp),minuten:Math.round(a.sec/60),km:a.km>0?Math.round(a.km):null,hm:a.hm>0?Math.round(a.hm):null,tss:Math.round(a.tss),np:a.np?Math.round(a.np):null,puls:a.ah||null,if:a.iff?Math.round(a.iff*100)/100:null,entkopplung_prozent:a.dc==null?null:a.dc,geplant:p?p[2]:null,rpe:q.rpe||null,notiz:q.note||null,kraempfe:q.kr&&q.kr.s?krSum(q.kr):null}});
