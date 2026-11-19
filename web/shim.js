@@ -237,7 +237,7 @@
     if (!gOk()) { syncSt('aus'); return; }
     try {
       var id = await dFind(); ls('wu_dfid', id);
-      if (id) { var tk = await gToken(); var r = await fetch('https://www.googleapis.com/drive/v3/files/' + id + '?alt=media', { headers: { Authorization: 'Bearer ' + tk } }); if (r.ok) { var rem = await r.json(); ls(DBK, merge(dbAll(), (rem && rem.docs) || {})); } }
+      if (id) { var tk = await gToken(); var r = await fetch('https://www.googleapis.com/drive/v3/files/' + id + '?alt=media', { headers: { Authorization: 'Bearer ' + tk } }); if (r.ok) { var rem = await r.json(), before = JSON.stringify(dbAll()), mg = merge(dbAll(), (rem && rem.docs) || {}); ls(DBK, mg); lastPull = now(); if (JSON.stringify(mg) !== before) { try { window.dispatchEvent(new Event('wu-db-pulled')); } catch (e) { } } } }
       syncSt('ok');
     } catch (e) { syncSt('err', e.message); }
   }
@@ -254,6 +254,10 @@
       syncSt('ok');
     } catch (e) { syncSt('err', e.message); }
   }
+  var lastPull = 0;
+  /* Laufender Abgleich: alle 10 Minuten und beim Zurückkehren ins Fenster neue Daten anderer Geräte holen */
+  setInterval(function () { if (document.visibilityState === 'visible' && syncP) pull(); }, 10 * 60000);
+  document.addEventListener('visibilitychange', function () { if (document.visibilityState === 'visible' && syncP && now() - lastPull > 2 * 60000) pull(); });
   function schedulePush() { clearTimeout(pushT); pushT = setTimeout(push, 2500); }
   function ready() { if (!syncP) syncP = Promise.race([pull(), new Promise(function (r) { setTimeout(r, 6000); })]); return syncP; }
   function snap(path, rec) { return { id: path.split('/').pop(), exists: !!rec, data: function () { return rec ? JSON.parse(JSON.stringify(rec.d)) : undefined; } }; }
