@@ -290,6 +290,15 @@
   function monthSum() { var m = monthKey(now()); return costs().filter(function (c) { return monthKey(c.ts) === m; }).reduce(function (s, c) { return s + c.usd; }, 0); }
   window.WU_LIMIT = function () { return Number(cfg().limit || 0); };
   function usd(v) { return v.toFixed(v < 1 ? 3 : 2).replace('.', ',') + ' $'; }
+  /* Guthaben in der Anthropic Console aufgebraucht: klare Meldung, Hinweis im Coach und einmal am Tag eine Push-Nachricht */
+  function noCredit() {
+    var t = now(), last = Number(lg('wu_nocredit', 0)) || 0;
+    ls('wu_nocredit', t);
+    try { window.dispatchEvent(new Event('wu-credit')); } catch (e) { }
+    if (t - last > 20 * 3600 * 1000 && window.WU_NOTIFY) { try { window.WU_NOTIFY('Claude-Guthaben aufgebraucht', 'Coach und Wochenplanung pausieren, bis du in der Anthropic Console unter Billing aufgeladen hast.', 'coach'); } catch (e) { } }
+    return fail('no_credit', 'Dein Guthaben in der Anthropic Console ist aufgebraucht. Coach und Wochenplanung gehen wieder, sobald du unter platform.claude.com → Billing aufgeladen hast.');
+  }
+  window.WU_NOCREDIT = function () { return Number(lg('wu_nocredit', 0)) || 0; };
   async function ask(input, opts) {
     var c = cfg(); opts = opts || {};
     if (!c.aKey) throw fail('not_granted', 'Kein Schlüssel für die Claude-Schnittstelle eingetragen');
@@ -304,12 +313,14 @@
     var rq = { method: 'POST', signal: opts.signal, headers: { 'Content-Type': 'application/json', 'x-api-key': c.aKey, 'anthropic-version': '2023-06-01', 'anthropic-dangerous-direct-browser-access': 'true' }, body: JSON.stringify(body) }, j;
     try { j = await http('https://api.anthropic.com/v1/messages', rq); }
     catch (e) {
+      if (e && e.status === 400 && /credit balance/i.test(e.message || '')) throw noCredit();
       /* Verbindung abgerissen (z. B. App kurz im Hintergrund, Funkloch): einmal still wiederholen */
       if (!e || e.code !== 'network' || (opts.signal && opts.signal.aborted)) throw e;
       await new Promise(function (r) { setTimeout(r, 2500); });
       try { j = await http('https://api.anthropic.com/v1/messages', rq); }
-      catch (e2) { if (e2 && e2.code === 'network') e2.message = 'Keine Verbindung zu Claude (zweimal versucht). Bitte Internet prüfen und die App während der Planung im Vordergrund lassen.'; throw e2; }
+      catch (e2) { if (e2 && e2.status === 400 && /credit balance/i.test(e2.message || '')) throw noCredit(); if (e2 && e2.code === 'network') e2.message = 'Keine Verbindung zu Claude (zweimal versucht). Bitte Internet prüfen und die App während der Planung im Vordergrund lassen.'; throw e2; }
     }
+    if (lg('wu_nocredit', 0)) { ls('wu_nocredit', 0); try { window.dispatchEvent(new Event('wu-credit')); } catch (e) { } }
     var u = j.usage || {}, inp = (u.input_tokens || 0) + (u.cache_creation_input_tokens || 0) * 1.25 + (u.cache_read_input_tokens || 0) * 0.1, out = u.output_tokens || 0;
     var cost = (inp * M.i + out * M.o) / 1e6, list = costs();
     list.push({ ts: now(), model: model, i: u.input_tokens || 0, o: out, usd: cost }); if (list.length > 400) list = list.slice(-400); ls('wu_cost', list);

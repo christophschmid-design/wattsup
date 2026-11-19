@@ -706,7 +706,42 @@ body.tabdev nav{top:calc(4px + env(safe-area-inset-top,0px));bottom:auto}body.ta
 .co-in{position:sticky;bottom:0;background:var(--card);padding-top:6px}
 .co-chips{display:flex;gap:6px;overflow-x:auto;padding-bottom:6px}.co-chips button{flex:none;font:inherit;font-size:.78rem;padding:6px 10px;border-radius:99px;border:1px solid var(--ln);background:var(--bg2);color:var(--ink);cursor:pointer}
 .co-row{display:flex;gap:8px;align-items:flex-end}.co-row textarea{flex:1;font:inherit;padding:9px 12px;border-radius:14px;border:1px solid var(--ln);background:var(--bg2);color:var(--ink);resize:none}
-.co-cost{font-size:.76rem;margin:6px 2px 0}.co-more{align-self:center;font-size:.8rem}
+.co-cost{font-size:.76rem;margin:6px 2px 0}
+/* Coach v42: goldener Kopf, Mitschrift statt Sprechblasen, Budgetbalken */
+#copanel{--co:#e3b257}
+#copanel .cop-top{padding:16px 14px 14px;border:0;background:radial-gradient(120% 140% at 0% 0%,#f3d27a 0%,transparent 55%),radial-gradient(120% 140% at 100% 0%,#c9802e 0%,transparent 60%),linear-gradient(120deg,#8a5a12,#b8862f 50%,#6e4a14);color:#1a1407;border-radius:0 0 22px 22px;box-shadow:0 10px 30px rgba(180,130,40,.28);position:relative;z-index:1}
+#copanel .cop-top .coic{width:42px;height:42px;padding:10px;border-radius:50%;background:rgba(26,20,7,.18);color:#1a1407;box-sizing:border-box;flex:none}
+#copanel .cop-tt{flex:1;min-width:0;display:flex;flex-direction:column;line-height:1.2}
+#copanel .cop-tt b{font-size:1.15rem;color:#1a1407}
+#copanel .cop-tt small{font-size:.74rem;font-weight:600;color:rgba(26,20,7,.75);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+#copanel .cop-top .dbtn{background:rgba(26,20,7,.14);border-color:transparent;color:#1a1407}
+#copanel .cop-body{padding-top:14px;background:radial-gradient(110% 40% at 50% 0%,rgba(227,178,87,.10),transparent 70%)}
+#copanel .co-loc{display:block;margin:0 0 10px;font-size:.74rem}
+.co .co-log{gap:14px}
+.co .cm-c{max-width:none;background:none;border-radius:0;padding:2px 0 2px 44px;position:relative}
+.co .cm-c::before{content:"";position:absolute;left:0;top:2px;width:30px;height:30px;border-radius:50%;background:#e3b257 url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%231a1407' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M8.5 8.5H21v4h-6'/%3E%3Ccircle cx='8.5' cy='13.5' r='5'/%3E%3Cpath d='M12 8.5V6.5h3v2'/%3E%3C/svg%3E") center/18px no-repeat}
+.co .cm-c::after{content:"";position:absolute;left:14px;top:38px;bottom:0;width:2px;background:color-mix(in srgb,#e3b257 35%,transparent)}
+.co .cm-c .cm-b{font-size:.96rem}
+.co .cm-c.cm-wait::after{display:none}
+.co .cm-pro{border:0}.co .cm-pro small{color:#c8932f}
+.co .cm-u{max-width:78%;border-radius:18px;font-size:.9rem}
+.co .cm-c .pbtn{border-color:#e3b257!important;color:#c8932f!important}
+.co #co-s{background:#e3b257;color:#1a1407;border-color:#e3b257}
+.co .co-chips button{border-color:rgba(227,178,87,.45)}
+.co-cost{margin:8px 2px 0}
+.cb{font-size:.78rem}
+.cb-h{display:flex;justify-content:space-between;align-items:baseline;gap:8px;margin-bottom:6px}
+.cb-h b{font-size:.86rem}
+.cb-bar{position:relative;height:10px;border-radius:6px;background:var(--bg2);border:1px solid var(--ln);display:flex;overflow:visible}
+.cb-bar i{display:block;height:100%}
+.cb-bar .c1{background:#e3b257;border-radius:5px 0 0 5px}
+.cb-bar .c2{background:#5b8def}
+.cb-bar .pr{position:absolute;top:-4px;bottom:-4px;width:2px;background:var(--ink);opacity:.7;border-radius:1px}
+.cb-l{display:flex;gap:4px 12px;flex-wrap:wrap;margin-top:7px;color:var(--mu)}
+.cb-l span::before{content:"";display:inline-block;width:8px;height:8px;border-radius:2px;margin-right:5px;background:var(--d)}
+.cb-l .cb-p::before{display:none}
+.cb-x{margin:0 0 8px;padding:8px 10px;border-radius:10px;background:color-mix(in srgb,var(--bad) 14%,transparent);color:var(--bad);font-size:.82rem;font-weight:600}
+.co-more{align-self:center;font-size:.8rem}
 .comem{font-size:.85rem;margin-top:4px}.comem summary{cursor:pointer;color:var(--mu)}.comem ul{list-style:none;padding:0;margin:6px 0}.comem li{display:flex;justify-content:space-between;gap:8px;padding:4px 0;border-bottom:1px solid var(--ln)}
 .kco{flex:1;min-height:0;overflow:hidden;display:flex;flex-direction:column;justify-content:flex-end;gap:5px}.kco p{margin:0;font-size:.82rem;padding:5px 9px;border-radius:12px;max-width:92%}.kco-c,.kco-rb{background:var(--bg2);align-self:flex-start}.kco-u{background:var(--ac);color:var(--onac);align-self:flex-end}
 .kco-in{border:1px solid var(--ln);border-radius:12px;padding:7px 10px;color:var(--mu);font-size:.85rem;cursor:text}
@@ -1443,7 +1478,7 @@ try{sm=await window.claude.use('sample')}catch(e){}if(!sm){msg(w,'Die Claude-Anf
 var n=$('pw-n');if(n&&PWS.w===w)q.notes=n.value;await pwSave(w);var lk=locked(w);PWB[w]={kind:'plan',t0:Date.now()};msg(w,'','');upd(w);toBusy();tick();
 try{var r=await SJ(sm,ctxp(w,lk),{cache:false}),ses=vsn(r&&r.sessions,w,lk);if(!ses.length)throw{code:'leer'};
 q.prop={sessions:ses,summary:String(r.summary||'').slice(0,600),why:String(r.begruendung||'').slice(0,900),ts:Date.now(),locked:lk};await pwSave(w);try{if(r.rueckblick&&window.WU_RB)WU_RB(w,r.rueckblick)}catch(x){}delete PWB[w];msg(w,'Vorschlag erstellt. Prüfe die Änderungen und übernimm ihn, wenn er passt.','ok')}
-catch(e){delete PWB[w];var c=e&&e.code;msg(w,c==='not_granted'?'Die Claude-Anfrage wurde nicht erlaubt. Erlaube sie über das Berechtigungen-Menü der Seite und versuche es erneut.':c==='rate_limited'?'Zu viele Anfragen. Bitte in ein paar Minuten noch einmal versuchen.':c==='network'?E(e.message||'Keine Verbindung zu Claude.')+' Bitte noch einmal versuchen.':c==='invalid_json'||c==='leer'?'Claude hat keinen gültigen Plan geliefert. Bitte noch einmal versuchen.':'Der Vorschlag konnte nicht erstellt werden'+(c?' (Fehler: '+c+')':'')+'. Bitte noch einmal versuchen.','err')}
+catch(e){delete PWB[w];var c=e&&e.code;msg(w,c==='not_granted'?'Die Claude-Anfrage wurde nicht erlaubt. Erlaube sie über das Berechtigungen-Menü der Seite und versuche es erneut.':c==='rate_limited'?'Zu viele Anfragen. Bitte in ein paar Minuten noch einmal versuchen.':c==='no_credit'?E(e.message):c==='network'?E(e.message||'Keine Verbindung zu Claude.')+' Bitte noch einmal versuchen.':c==='invalid_json'||c==='leer'?'Claude hat keinen gültigen Plan geliefert. Bitte noch einmal versuchen.':'Der Vorschlag konnte nicht erstellt werden'+(c?' (Fehler: '+c+')':'')+'. Bitte noch einmal versuchen.','err')}
 upd(w)}
 /* Fortschritt der Kalender-Übertragung nur im Statuskasten nachführen, ohne das ganze Blatt neu aufzubauen (sonst flackert es nach jedem Termin) */
 function updCal(w){var box=PWS.w===w&&$('pwb')?$('pwb').querySelector('.busy.cal'):null;if(!box){upd(w);return}var t=document.createElement('div');t.innerHTML=calBusyHtml(w);var nb=t.firstChild;
@@ -2579,7 +2614,45 @@ window.WU_CMEM=function(){return CO.mem.filter(function(x){return!x.done}).map(f
 function mKey(){var d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')}
 window.addEventListener('wu-cost',function(e){var d=e.detail||{},k=mKey(),c=CO.cost[k]||{m:k,all:0,coach:0,n:0,nc:0};c.all+=d.usd||0;c.n++;if(d.tag==='coach'){c.coach+=d.usd||0;c.nc++}c.ts=Date.now();CO.cost[k]=c;coSaveL();coDb('ccost_'+k,c);var x=document.getElementById('co-cost');if(x)x.innerHTML=coCostHtml()});
 function usd2(v){return(v||0).toFixed(2).replace('.',',')+' $'}
-function coCostHtml(){var c=CO.cost[mKey()]||{all:0,coach:0,nc:0},lim=window.WU_LIMIT?WU_LIMIT():0;return'💶 Diesen Monat: Coach <b>'+usd2(c.coach)+'</b> ('+(c.nc||0)+' Antworten) · Claude gesamt <b>'+usd2(c.all)+'</b>'+(lim>0?' von '+usd2(lim):'')+' <span class="mu">· alle Geräte</span>'}
+function coCostHtml(){var c=CO.cost[mKey()]||{all:0,coach:0,nc:0},lim=window.WU_LIMIT?WU_LIMIT():0,all=Number(c.all)||0,co=Math.min(all,Number(c.coach)||0),pl=Math.max(0,all-co),d=new Date(),dm=new Date(d.getFullYear(),d.getMonth()+1,0).getDate(),pr=all/Math.max(1,d.getDate()-1+d.getHours()/24)*dm,mon=d.toLocaleDateString('de-AT',{month:'long'}),nc=window.WU_NOCREDIT?WU_NOCREDIT():0;
+ var warn=nc?'<p class="cb-x">⚠️ Guthaben in der Anthropic Console aufgebraucht (seit '+lab(iso(new Date(nc)))+'). Coach und Wochenplanung pausieren, bis du unter platform.claude.com → Billing auflädst.</p>':'';
+ if(!(lim>0))return warn+'<div class="cb"><div class="cb-h"><b>Kosten '+mon+'</b><span><b>'+usd2(all)+'</b></span></div><div class="cb-l"><span style="--d:#e3b257">Coach '+usd2(co)+' · '+(c.nc||0)+' Antworten</span><span style="--d:#5b8def">Planung '+usd2(pl)+'</span></div></div>';
+ var f=all/lim,fr=Math.max(0,lim-all),col=f>=1?'var(--bad)':f>=.8?'var(--warn)':'var(--ok)',w1=Math.min(100,co/lim*100),w2=Math.min(100-w1,pl/lim*100),px=Math.min(100,pr/lim*100);
+ return warn+'<div class="cb"><div class="cb-h"><b>Budget '+mon+'</b><span><b>'+usd2(all)+'</b> von '+usd2(lim)+' · <span style="color:'+col+'">'+(f>=1?'Grenze erreicht':usd2(fr)+' frei')+'</span></span></div><div class="cb-bar" role="img" aria-label="'+usd2(all)+' von '+usd2(lim)+' verbraucht, Hochrechnung '+usd2(pr)+'"><i class="c1" style="width:'+w1+'%"></i><i class="c2" style="width:'+w2+'%"></i>'+(d.getDate()>2?'<span class="pr" style="left:calc('+px+'% - 1px)"></span>':'')+'</div><div class="cb-l"><span style="--d:#e3b257">Coach '+usd2(co)+' · '+(c.nc||0)+' Antworten</span><span style="--d:#5b8def">Planung '+usd2(pl)+'</span>'+(d.getDate()>2?'<span class="cb-p">┃ Hochrechnung Monatsende ca. '+usd2(pr)+'</span>':'')+'<span class="cb-p">alle Geräte</span></div></div>'}
+window.addEventListener('wu-credit',function(){var c=document.getElementById('co-cost');if(c)c.innerHTML=coCostHtml();coSubShow()});
+/* Coach-Untertitel: frech, anlassbezogen; pro Anlass und Tag fest, damit er nicht bei jedem Öffnen springt */
+var COSUB={
+ credit:['Guthaben leer. Auch ein Coach arbeitet nicht für einen feuchten Händedruck.','Kein Geld, kein Gelaber. Lad auf, dann reden wir.'],
+ race:['Rennwoche. Jetzt nix Neues: kein neues Material, kein neues Essen, keine neue Freundin.','Die Arbeit ist gemacht. Jetzt nur nicht deppert werden.','Beine rasiert? Dann bist du bereit.'],
+ raceday:['Heute wird abgerechnet. Hau rein und kotz erst im Ziel.','Renntag. Schmerz ist vorübergehend, Strava ist für immer.'],
+ red:['Dein Körper sagt Nein. Hör auf ihn, er ist nicht so blöd wie du.','Heute keine Heldentaten. Sofa ist auch eine Trainingsform.','Rote Ampel. Wer jetzt trotzdem Intervalle fährt, darf sich nachher nicht ausweinen.'],
+ done:['Erledigt. Duschen, essen, angeben.','Training im Kasten. Jetzt Kohlenhydrate rein und Klappe zu.','Gut gemacht. Der Hintern dankt es dir morgen nicht.'],
+ hard:['Heute tut es weh. Absichtlich.','Intervalle heute. Wer jammert, fährt eine Wiederholung mehr.','Heute wird gelitten. Kübel neben die Rolle stellen.','Harte Einheit. Die Komfortzone kannst du dir am Sonntag wieder schön reden.'],
+ long:['Lange Ausfahrt. Sitzcreme ist kein Luxus, sondern Selbstachtung.','Heute Kilometer fressen. Und vergiss das Essen nicht, sonst frisst der Hungerast dich.','Lang und locker. Wer auf Zone 2 Rennen fährt, ist ein Wappler.'],
+ easy:['Locker heißt locker. Nicht „locker für mich“.','Zone 2: langweilig, aber genau deshalb wirst du schnell.','Heute rollen lassen. Ego bleibt daheim.'],
+ rest:['Ruhetag. Nicht heimlich doch auf Zwift.','Heute gewinnt das Sofa. Erholung ist auch Training.','Pause. Die Beine wachsen nur, wenn du sie in Ruhe lässt.'],
+ missed:['Gestern ausgelassen? Passiert. Zweimal hintereinander heißt Ausrede.','Der Plan hat gestern umsonst gewartet. Heute wieder anständig?'],
+ tired:['Du bist ziemlich im Eimer. Schlaf mehr, sauf weniger.','Müde Beine sind Teil des Plans. Jammern nicht.'],
+ fresh:['Du bist frisch wie lang nicht. Zeit, das auszunutzen.','Ausgeruht bis in die Zehen. Keine Ausreden mehr.'],
+ mile:['Noch {d} Tage bis Sölden. Das Timmelsjoch wartet nicht auf Weicheier.','{d} Tage bis zum Ötztaler. Jeder Tag zählt, auch die faulen.'],
+ winter:['Der Ötztaler wird im Winter gewonnen. Auf der Rolle, mit Ventilator und Selbsthass.','Dunkel, kalt, Zwift. So entstehen Waden.','Sommerbeine werden im Winter gemacht.'],
+ gen:['Konstanz schlägt Talent. Vor allem bei wenig Talent.','Kein Mensch erinnert sich an die bequemen Einheiten.','Leiden ist freiwillig. Zum Glück bist du nicht ganz dicht.','Hör auf zu scrollen, fang an zu treten.']};
+function coSubKey(){var t=tod(),X=window.ACT||[],p=PM[t],y=addD(t,-1),r=null,dr=CF.race2?dd2(t,String(CF.race2)):999,d1=CF.race?dd2(t,String(CF.race)):999;
+ if(window.WU_NOCREDIT&&WU_NOCREDIT())return['credit'];
+ if(dr===0||d1===0)return['raceday'];if((dr>0&&dr<=7)||(d1>0&&d1<=7))return['race'];
+ try{r=rdy()}catch(e){}if(r&&r.lv===2)return['red'];
+ if(X.some(function(a){return a.day===t}))return['done'];
+ var tt=p?String(p[2]||''):'';
+ if(p&&/vo2|schwelle|intervall|30\/30|sweet|ftp|test|4×4|4x4|tempo/i.test(tt))return['hard'];
+ if(p&&/lang|ausfahrt|rennrad|gravel|tour/i.test(tt))return['long'];
+ if(p&&p[1]>0)return['easy'];
+ if(PM[y]&&PM[y][1]>0&&!X.some(function(a){return a.day===y}))return['missed'];
+ if(S){var n=S.fm.length,f=S.fm[n-1];if(f<-20)return['tired'];if(f>12)return['fresh']}
+ if(dr>0&&(dr%50===0||dr===365||dr<=30))return['mile',dr];
+ if(!p)return['rest'];
+ var m=new Date().getMonth();return[(m>=10||m<=1)?'winter':'gen']}
+function coSub(){try{var k=coSubKey(),L=COSUB[k[0]]||COSUB.gen,h=0,str=tod()+k[0];for(var i=0;i<str.length;i++)h=(h*31+str.charCodeAt(i))>>>0;return L[h%L.length].replace('{d}',k[1])}catch(e){return'dein Trainer'}}
+function coSubShow(){var e=document.getElementById('co-sub');if(e)e.textContent=coSub()}
 /* Kontext für den Coach */
 function coCtx(){var t=tod(),X=window.ACT||[],n=S?S.ct.length:0,ph=phaseOf(t),bw=bodyAt(t),kg=bw?bw.kg:W;
  var ak=X.filter(function(a){return a.day>=addD(t,-21)}).map(function(a){var p=PM[a.day],q=LOG[a.id]||{};return{datum:a.day,name:a.name,sport:sn(a.sp),minuten:Math.round(a.sec/60),km:a.km>0?Math.round(a.km):null,hm:a.hm>0?Math.round(a.hm):null,tss:Math.round(a.tss),np:a.np?Math.round(a.np):null,puls:a.ah||null,if:a.iff?Math.round(a.iff*100)/100:null,entkopplung_prozent:a.dc==null?null:a.dc,geplant:p?p[2]:null,rpe:q.rpe||null,notiz:q.note||null}});
@@ -2632,7 +2705,7 @@ function coMsgHtml(m){var d=new Date(m.ts),tm=(iso(d)===tod()?'':lab(iso(d))+' '
 var CON=30;
 function coLog(){var L=CO.m.slice(-CON);return(CO.m.length>CON?'<button type="button" class="lnk co-more" data-cog="more">Ältere Nachrichten anzeigen</button>':'')+(L.length?L.map(coMsgHtml).join(''):'<div class="cm cm-c"><div class="cm-b">Servus! Ich kenne deinen Plan, deine Einheiten, Schlaf, HRV und Gewicht. Frag mich, was du willst, oder sag mir, wenn sich etwas ändert, zum Beispiel „Ich bin erkältet“ oder „Samstag habe ich 5 Stunden“.</div></div>')+(COBUSY?'<div class="cm cm-c cm-wait"><div class="cm-b"><span class="spin"></span> Coach denkt nach …</div></div>':'')}
 function coMemHtml(){var L=CO.mem.filter(function(x){return!x.done});return'<details class="comem"><summary>🧠 Was ich mir merke ('+L.length+')</summary>'+(L.length?'<ul>'+L.map(function(x){return'<li><span>'+E(x.t)+' <small class="mu">seit '+lab(x.d)+'</small></span><button type="button" class="lnk" data-comd="'+x.id+'" aria-label="Notiz entfernen">✕</button></li>'}).join('')+'</ul>':'<p class="mu">Noch nichts. Sag mir einfach, was ich wissen soll.</p>')+'</details>'}
-IN['coach']=function(){return{t:'Coach',h:'<div class="co"><div id="co-log" class="co-log" aria-live="polite">'+coLog()+'</div><div class="co-in"><div class="co-chips">'+['Wie war meine letzte Einheit?','Wie sieht meine Woche aus?','Ich bin erkältet','Ich habe diese Woche mehr Zeit','Bin ich auf Kurs für den Ötztaler?'].map(function(x){return'<button type="button" data-coq="'+E(x)+'">'+E(x)+'</button>'}).join('')+'</div><div class="co-row"><textarea id="co-t" rows="2" maxlength="1500" placeholder="Nachricht an den Coach …"></textarea><button type="button" class="pbtn" id="co-s" aria-label="Senden">Senden</button></div><p class="co-cost" id="co-cost">'+coCostHtml()+'</p>'+coMemHtml()+'</div></div>',f:function(){CO.seen=Date.now();coSaveL();coScroll();coBadge()}}};
+IN['coach']=function(){return{t:'Coach',h:'<div class="co"><div id="co-log" class="co-log" aria-live="polite">'+coLog()+'</div><div class="co-in"><div class="co-chips">'+['Wie war meine letzte Einheit?','Wie sieht meine Woche aus?','Ich bin erkältet','Ich habe diese Woche mehr Zeit','Bin ich auf Kurs für den Ötztaler?'].map(function(x){return'<button type="button" data-coq="'+E(x)+'">'+E(x)+'</button>'}).join('')+'</div><div class="co-row"><textarea id="co-t" rows="2" maxlength="1500" placeholder="Nachricht an den Coach …"></textarea><button type="button" class="pbtn" id="co-s" aria-label="Senden">Senden</button></div><div class="co-cost" id="co-cost">'+coCostHtml()+'</div>'+coMemHtml()+'</div></div>',f:function(){CO.seen=Date.now();coSaveL();coScroll();coBadge()}}};
 function coScroll(){var l=document.getElementById('co-log');if(l){var sh=document.getElementById('sh');var last=l.lastElementChild;if(last&&last.scrollIntoView)last.scrollIntoView({block:'end'})}}
 function coRefresh(){var l=document.getElementById('co-log');if(l){l.innerHTML=coLog();CO.seen=Date.now();coSaveL();coScroll()}var c=document.getElementById('co-cost');if(c)c.innerHTML=coCostHtml();var mm=document.querySelector('.comem');if(mm){var op=mm.open;mm.outerHTML=coMemHtml();var n2=document.querySelector('.comem');if(n2)n2.open=op}coBadge()}
 function coUnread(){return CO.m.filter(function(m){return(m.r==='c'||m.r==='rb')&&m.ts>(CO.seen||0)}).length}
@@ -2690,7 +2763,7 @@ function coWhere(){var tab=document.body.getAttribute('data-tab')||'heute',sh=!$
  if(tab==='einheiten')return{l:'Alle Einheiten',d:'Archiv aller Einheiten'};if(tab==='saison')return{l:'Saison im Detail',d:'Saisonübersicht'};return{l:tab,d:tab}}
 function coWide(){return document.body.classList.contains('tabdev')&&window.innerWidth>=900}
 function coOpen(q){var loc=coWhere();CO.loc=loc;if(!document.getElementById('copanel'))coPanel(true);coLocShow();if(q)coSend(q,loc);setTimeout(function(){var t=document.getElementById('co-t');if(t&&!q&&coWide())t.focus()},60)}
-function coPanel(on){var p=document.getElementById('copanel');if(on){if(!p){p=document.createElement('aside');p.id='copanel';p.setAttribute('aria-label','Coach');document.body.appendChild(p)}var o=IN['coach']();p.innerHTML='<div class="cop-top"><svg class="ic coic" aria-hidden="true"><use href="#ic-coach"/></svg><b>Coach</b><span class="mu" id="co-loc"></span><button type="button" class="dbtn" id="co-x" aria-label="Coach schließen">✕</button></div><div class="cop-body">'+o.h+'</div>';document.body.classList.add('co-open');document.body.classList.toggle('co-wide',coWide());if(o.f)o.f()}
+function coPanel(on){var p=document.getElementById('copanel');if(on){if(!p){p=document.createElement('aside');p.id='copanel';p.setAttribute('aria-label','Coach');document.body.appendChild(p)}var o=IN['coach']();p.innerHTML='<div class="cop-top"><svg class="ic coic" aria-hidden="true"><use href="#ic-coach"/></svg><div class="cop-tt"><b>Coach</b><small id="co-sub">'+E(coSub())+'</small></div><span class="mu" id="co-loc" hidden></span><button type="button" class="dbtn" id="co-x" aria-label="Coach schließen">✕</button></div><div class="cop-body">'+o.h+'</div>';document.body.classList.add('co-open');document.body.classList.toggle('co-wide',coWide());if(o.f)o.f()}
  else{if(p)p.remove();document.body.classList.remove('co-open','co-wide')}try{window.dispatchEvent(new Event('resize'))}catch(e){}}
 function coLocShow(){var e=document.getElementById('co-loc'),l=CO.loc;if(e)e.textContent=l?'📍 '+l.l:'';var e2=document.getElementById('co-loc2');if(e2)e2.textContent=l?'📍 '+l.l:''}
 
