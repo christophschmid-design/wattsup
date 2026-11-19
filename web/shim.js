@@ -267,9 +267,10 @@
     } catch (e) { syncSt('err', e.message); }
   }
   var lastPull = 0;
-  /* Laufender Abgleich: alle 10 Minuten und beim Zurückkehren ins Fenster neue Daten anderer Geräte holen */
-  setInterval(function () { if (document.visibilityState === 'visible' && syncP) pull(); }, 10 * 60000);
-  document.addEventListener('visibilitychange', function () { if (document.visibilityState === 'visible' && syncP && now() - lastPull > 2 * 60000) pull(); });
+  /* Laufender Abgleich: alle 3 Minuten, beim Zurückkehren ins Fenster (ab 20 s) und beim Tippen auf ↻ neue Daten anderer Geräte holen */
+  setInterval(function () { if (document.visibilityState === 'visible' && syncP) pull(); }, 3 * 60000);
+  document.addEventListener('visibilitychange', function () { if (document.visibilityState === 'visible' && syncP && now() - lastPull > 20000) pull(); });
+  document.addEventListener('click', function (e) { if (syncP && e.target.closest && e.target.closest('#rf')) pull(); }, true);
   function schedulePush() { clearTimeout(pushT); pushT = setTimeout(push, 2500); }
   function ready() { if (!syncP) syncP = Promise.race([pull(), new Promise(function (r) { setTimeout(r, 6000); })]); return syncP; }
   function snap(path, rec) { return { id: path.split('/').pop(), exists: !!rec, data: function () { return rec ? JSON.parse(JSON.stringify(rec.d)) : undefined; } }; }
