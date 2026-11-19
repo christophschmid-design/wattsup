@@ -1439,7 +1439,7 @@ try{sm=await window.claude.use('sample')}catch(e){}if(!sm){msg(w,'Die Claude-Anf
 var n=$('pw-n');if(n&&PWS.w===w)q.notes=n.value;await pwSave(w);var lk=locked(w);PWB[w]={kind:'plan',t0:Date.now()};msg(w,'','');upd(w);toBusy();tick();
 try{var r=await SJ(sm,ctxp(w,lk),{cache:false}),ses=vsn(r&&r.sessions,w,lk);if(!ses.length)throw{code:'leer'};
 q.prop={sessions:ses,summary:String(r.summary||'').slice(0,600),why:String(r.begruendung||'').slice(0,900),ts:Date.now(),locked:lk};await pwSave(w);try{if(r.rueckblick&&window.WU_RB)WU_RB(w,r.rueckblick)}catch(x){}delete PWB[w];msg(w,'Vorschlag erstellt. Prüfe die Änderungen und übernimm ihn, wenn er passt.','ok')}
-catch(e){delete PWB[w];var c=e&&e.code;msg(w,c==='not_granted'?'Die Claude-Anfrage wurde nicht erlaubt. Erlaube sie über das Berechtigungen-Menü der Seite und versuche es erneut.':c==='rate_limited'?'Zu viele Anfragen. Bitte in ein paar Minuten noch einmal versuchen.':c==='invalid_json'||c==='leer'?'Claude hat keinen gültigen Plan geliefert. Bitte noch einmal versuchen.':'Der Vorschlag konnte nicht erstellt werden'+(c?' (Fehler: '+c+')':'')+'. Bitte noch einmal versuchen.','err')}
+catch(e){delete PWB[w];var c=e&&e.code;msg(w,c==='not_granted'?'Die Claude-Anfrage wurde nicht erlaubt. Erlaube sie über das Berechtigungen-Menü der Seite und versuche es erneut.':c==='rate_limited'?'Zu viele Anfragen. Bitte in ein paar Minuten noch einmal versuchen.':c==='network'?E(e.message||'Keine Verbindung zu Claude.')+' Bitte noch einmal versuchen.':c==='invalid_json'||c==='leer'?'Claude hat keinen gültigen Plan geliefert. Bitte noch einmal versuchen.':'Der Vorschlag konnte nicht erstellt werden'+(c?' (Fehler: '+c+')':'')+'. Bitte noch einmal versuchen.','err')}
 upd(w)}
 async function calSync(w,lk){var q=PW8[w],m=null;lk=lk||[];if(!q||!q.acc||busy(w))return;
 var B=PWB[w]={kind:'cal',done:false,fail:0,made:[],steps:[{t:'Kalender „Training“ lesen',s:'run'},{t:'Bisherige Termine der Woche entfernen',s:'wait',n:null},{t:'Neue Termine anlegen',s:'wait',n:null}]};
@@ -1471,7 +1471,7 @@ if(t.id==='pw-c'){calSync(w,locked(w))}});
 
 /* ---------- Erweiterungen v22 ---------- */
 var MOOD={};try{MOOD=JSON.parse(localStorage.getItem('mood1')||'{}')||{}}catch(e){}
-var KR=Math.pow(41/42,7),MDS={},RL3=['Bereit für Training','Mit Vorsicht','Erholung empfohlen'];
+var KDEC=Math.pow(41/42,7),MDS={},RL3=['Bereit für Training','Mit Vorsicht','Erholung empfohlen'];
 function addD(d,n){var x=new Date(d+'T12:00:00');x.setDate(x.getDate()+n);return iso(x)}
 function dd2(a,b){return Math.round((new Date(b+'T12:00:00')-new Date(a+'T12:00:00'))/864e5)}
 function intense(t){return/VO2max|SIT|Sprint|30[/]30|Intervall|[45]×4/.test(t||'')}
@@ -1494,7 +1494,7 @@ function tgtBase(){return S?S.ct[S.ct.length-1]:40}
 function tgtAt(d){var P=season(),g0=P[1].a,tp=P[4].a,R=CF.race,B=tgtBase(),T=Math.max(B,Number(CF.raceCtl)||80);if(d<g0)return B;
 if(d>=tp)return T-T*.12*Math.min(1,dd2(tp,d)/Math.max(1,dd2(tp,R)));
 function ef(n){return n-Math.floor(n/4)}var wk=Math.floor(dd2(g0,d)/7)+1,tot=Math.max(1,Math.ceil(dd2(g0,tp)/7));return B+(T-B)*Math.min(1,ef(wk)/ef(tot))}
-function wkT(w,ov){var cs=ctlAt(addD(w,-1)),c1=addD(w,6)<season()[1].a?Math.max(cs,tgtAt(addD(w,6))):tgtAt(addD(w,6)),L=Math.max(0,(c1-cs*KR)/(1-KR)),mxL=cs+CF.ramp/(1-KR),ce=ctlAt(addD(w,6),ov);return{ziel:Math.round(7*Math.min(L,mxL)),max:Math.round(7*mxL),cs:cs,c1:c1,ce:ce,ramp:ce-cs,ph:phaseOf(w)}}
+function wkT(w,ov){var cs=ctlAt(addD(w,-1)),c1=addD(w,6)<season()[1].a?Math.max(cs,tgtAt(addD(w,6))):tgtAt(addD(w,6)),L=Math.max(0,(c1-cs*KDEC)/(1-KDEC)),mxL=cs+CF.ramp/(1-KDEC),ce=ctlAt(addD(w,6),ov);return{ziel:Math.round(7*Math.min(L,mxL)),max:Math.round(7*mxL),cs:cs,c1:c1,ce:ce,ramp:ce-cs,ph:phaseOf(w)}}
 function seasonNote(w){if(!S)return'';var t=wkT(w);return'<p class="note sn"><b>Saisonphase '+E(t.ph.n)+'.</b> Ziel ca. '+t.ziel+' TSS, Obergrenze ca. '+t.max+' TSS. Mit dem aktuellen Plan ändert sich die Fitness um '+(t.ramp>=0?'+':'')+f1(t.ramp)+'.</p>'}
 function guardHtml(w,pr){if(!S)return'';var lk=pr.locked||[],td=iso(new Date()),ov={};wkDays(w).forEach(function(d){if(d>=td&&lk.indexOf(d)<0)ov[d]=0});pr.sessions.forEach(function(x){if(x.date in ov)ov[x.date]=x.tss});
 var t=wkT(w,ov),st=t.ramp>rampBad()?'bad':t.ramp>CF.ramp?'warn':'ok';
@@ -1729,8 +1729,8 @@ for(i=1;i<p.length;i++)if(d<=p[i][0]){var a=p[i-1],b=p[i],k=phaseOf(d).k,dd=d;
 if((k==='gru'||k==='gr2'||k==='auf'||k==='au2')&&Math.floor(dd2(g1,d)/7)%4===3)dd=addD(d,-((dd2(g1,d)%7)+1));
 var q=Math.max(0,Math.min(1,dd2(a[0],dd)/Math.max(1,dd2(a[0],b[0]))));return a[1]+(b[1]-a[1])*q}
 return p[p.length-1][1]}
-function wkT(w,ov){var cs=ctlAt(addD(w,-1)),c1=addD(w,6)<season()[1].a?Math.max(cs,tgtAt(addD(w,6))):tgtAt(addD(w,6)),L=Math.max(0,(c1-cs*KR)/(1-KR)),mxL=cs+CF.ramp/(1-KR),ce=ctlAt(addD(w,6),ov);return{ziel:Math.round(7*Math.min(L,mxL)),max:Math.round(7*mxL),cs:cs,c1:c1,ce:ce,ramp:ce-cs,ph:phaseOf(w)}}
-function idealWk(m){var c0=tgtAt(addD(m,-1)),c1=tgtAt(addD(m,6));return Math.max(0,7*(c1-c0*KR)/(1-KR))}
+function wkT(w,ov){var cs=ctlAt(addD(w,-1)),c1=addD(w,6)<season()[1].a?Math.max(cs,tgtAt(addD(w,6))):tgtAt(addD(w,6)),L=Math.max(0,(c1-cs*KDEC)/(1-KDEC)),mxL=cs+CF.ramp/(1-KDEC),ce=ctlAt(addD(w,6),ov);return{ziel:Math.round(7*Math.min(L,mxL)),max:Math.round(7*mxL),cs:cs,c1:c1,ce:ce,ramp:ce-cs,ph:phaseOf(w)}}
+function idealWk(m){var c0=tgtAt(addD(m,-1)),c1=tgtAt(addD(m,6));return Math.max(0,7*(c1-c0*KDEC)/(1-KDEC))}
 function tsbZ(d){var k=phaseOf(d).k,n=function(x){return Number(CF[x])};if(d>='2027-01-02'&&d<='2027-01-05')return[n('tsbR1'),n('tsbR2')];
 return k==='erh'||k==='rec'||k==='som'?[n('tsbE1'),n('tsbE2')]:k==='mt'||k==='ren'?[0,10]:k==='tap'||k==='ra2'?[Math.max(n('tsbR1'),10),Math.min(n('tsbR2'),20)]:[n('tsbT1'),n('tsbT2')]}
 function rampZ(d){var k=phaseOf(d).k;return k==='erh'?[-3,3]:k==='rec'||k==='som'?[-10,0]:k==='mt'||k==='ren'||k==='tap'||k==='ra2'?[-15,0]:[3,Number(CF.ramp)]}

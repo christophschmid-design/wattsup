@@ -301,7 +301,15 @@
     var jsys = 'Antworte ausschließlich mit einem einzigen gültigen JSON-Objekt. Kein Markdown, keine Codeblöcke, kein Text davor oder danach.';
     if (opts.system) body.system = typeof opts.system === 'string' ? (opts.json ? opts.system + '\n' + jsys : opts.system) : (opts.json ? opts.system.concat([{ type: 'text', text: jsys }]) : opts.system);
     else if (opts.json) body.system = jsys;
-    var j = await http('https://api.anthropic.com/v1/messages', { method: 'POST', signal: opts.signal, headers: { 'Content-Type': 'application/json', 'x-api-key': c.aKey, 'anthropic-version': '2023-06-01', 'anthropic-dangerous-direct-browser-access': 'true' }, body: JSON.stringify(body) });
+    var rq = { method: 'POST', signal: opts.signal, headers: { 'Content-Type': 'application/json', 'x-api-key': c.aKey, 'anthropic-version': '2023-06-01', 'anthropic-dangerous-direct-browser-access': 'true' }, body: JSON.stringify(body) }, j;
+    try { j = await http('https://api.anthropic.com/v1/messages', rq); }
+    catch (e) {
+      /* Verbindung abgerissen (z. B. App kurz im Hintergrund, Funkloch): einmal still wiederholen */
+      if (!e || e.code !== 'network' || (opts.signal && opts.signal.aborted)) throw e;
+      await new Promise(function (r) { setTimeout(r, 2500); });
+      try { j = await http('https://api.anthropic.com/v1/messages', rq); }
+      catch (e2) { if (e2 && e2.code === 'network') e2.message = 'Keine Verbindung zu Claude (zweimal versucht). Bitte Internet prüfen und die App während der Planung im Vordergrund lassen.'; throw e2; }
+    }
     var u = j.usage || {}, inp = (u.input_tokens || 0) + (u.cache_creation_input_tokens || 0) * 1.25 + (u.cache_read_input_tokens || 0) * 0.1, out = u.output_tokens || 0;
     var cost = (inp * M.i + out * M.o) / 1e6, list = costs();
     list.push({ ts: now(), model: model, i: u.input_tokens || 0, o: out, usd: cost }); if (list.length > 400) list = list.slice(-400); ls('wu_cost', list);
