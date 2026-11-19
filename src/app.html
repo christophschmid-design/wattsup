@@ -2665,6 +2665,23 @@ function coFit(){var p=document.getElementById('copanel');if(!p)return;if(docume
 }
 (function(){var vv=window.visualViewport;function f(){coFit();if(document.activeElement&&document.activeElement.id==='co-t')setTimeout(coScroll,30)}if(vv){vv.addEventListener('resize',f);vv.addEventListener('scroll',f)}window.addEventListener('resize',f);window.addEventListener('wu-kb',f);document.addEventListener('focusin',function(e){if(e.target&&e.target.id==='co-t'){setTimeout(f,150);setTimeout(f,450)}});document.addEventListener('focusout',function(e){if(e.target&&e.target.id==='co-t')setTimeout(f,300)})})();
 
+/* Kompakte Dashboard-Kacheln v45: Pacing, Wochenrückblick, Krämpfe */
+window.WU_PACEK=function(w,h){try{var ftp=Number(CF.ftpGoal),kg=Number(CF.kgGoal),g=Number(CF.goalMin),r=ozPace(ftp,kg,Number(CF.raceStops),g),cl=r.f<=.72?'ok':r.f<=.78?'warn':'bad';
+ var hd='<div class="kh"><span>⛰️ Pacing Ötztaler</span><em>'+hmS(g)+' h · '+ftp+' W</em></div>';
+ var ch='<div class="pchips">'+r.seg.map(function(x){return'<span><small>'+x.sg.n+'</small><b>'+Math.round(x.P/5)*5+' W</b>'+(h>1?'<small>'+hmS(x.t)+'</small>':'')+'</span>'}).join('')+'</div>';
+ return hd+ch+'<p class="kt pz" style="margin-top:6px">Anstiege mit IF <b class="'+cl+'">'+(Math.round(r.f*100)/100).toFixed(2).replace('.',',')+'</b>'+(h>1?' · Abfahrten '+hmS(OZ26.rest)+', Pausen '+hmS(Number(CF.raceStops))+' h':'')+'</p>'}catch(e){return''}};
+window.WU_RBK=function(w,h){var wk=wkOf(WOFF||0)[0],q=PW8[wk],b=q&&q.rb,src=wk;if(!b){Object.keys(PW8).sort().reverse().some(function(k){if(PW8[k]&&PW8[k].rb){b=PW8[k].rb;src=k;return true}})}
+ if(!b)return'<div class="kh"><span>📊 Wochenrückblick</span></div><p class="mu kt">Entsteht bei der Sonntagsplanung der Folgewoche.</p>';
+ var hl=b.highlights||[],ll=b.lowlights||[],n=h>1?3:0;
+ return'<div class="kh"><span>📊 '+E(b.titel||'Wochenrückblick')+'</span><em><span class="rbn">'+(hl.length?'<i class="ok">▲ '+hl.length+'</i>':'')+(ll.length?'<i class="bd">▼ '+ll.length+'</i>':'')+'</span></em></div>'
+ +(b.fokus?'<p class="kt'+(h>1?'':' cl2')+'"><b>Fokus:</b> '+E(b.fokus)+'</p>':'')+(n?'<p class="kt cm-hl" style="margin:4px 0 0">'+hl.slice(0,2).map(function(x){return'▲ '+E(x)}).join('<br>')+'</p><p class="kt cm-ll" style="margin:2px 0 0">'+ll.slice(0,2).map(function(x){return'▼ '+E(x)}).join('<br>')+'</p>':'')};
+window.WU_KRK=function(w,h){var t=tod(),from=addD(t,-60),L=[];(window.ACT||[]).forEach(function(a){if(a.day<from)return;var k=(LOG[a.id]||{}).kr;if(k&&k.s)L.push({a:a,k:k})});
+ var hd='<div class="kh"><span>⚡ Krämpfe</span><em>60 Tage</em></div>';
+ if(!L.length)return hd+'<p class="kt">Keine Krämpfe erfasst.</p><p class="mu kt">Nach jeder Einheit unter „Krämpfe“ eintragen, auch erste Anzeichen. Dann erkennt der Coach Muster.</p>';
+ var ja=L.filter(function(x){return x.k.s===2}).length,an=L.length-ja,W2={},Z={};L.forEach(function(x){(x.k.w||[]).forEach(function(v){W2[v]=(W2[v]||0)+1});if(x.k.z)Z[x.k.z]=(Z[x.k.z]||0)+1});
+ var top=function(o){return Object.keys(o).sort(function(a,b){return o[b]-o[a]}).slice(0,2).join(', ')};
+ return hd+'<div class="krow" style="gap:16px"><div><div class="kbig">'+ja+'</div><small class="mu">Krämpfe</small></div><div><div class="kbig" style="color:var(--warn)">'+an+'</div><small class="mu">Anzeichen</small></div></div>'
+ +(top(W2)?'<p class="kt">Meist: <b>'+E(top(W2))+'</b>'+(top(Z)?' · '+E(top(Z)):'')+'</p>':'')+(h>1?'<p class="mu kt">Zuletzt '+lab(L[L.length-1].a.day)+': '+E(L[L.length-1].a.name)+'</p>':'')};
 /* Kontext für den Coach */
 function coCtx(){var t=tod(),X=window.ACT||[],n=S?S.ct.length:0,ph=phaseOf(t),bw=bodyAt(t),kg=bw?bw.kg:W;
  var ak=X.filter(function(a){return a.day>=addD(t,-21)}).map(function(a){var p=PM[a.day],q=LOG[a.id]||{};return{datum:a.day,name:a.name,sport:sn(a.sp),minuten:Math.round(a.sec/60),km:a.km>0?Math.round(a.km):null,hm:a.hm>0?Math.round(a.hm):null,tss:Math.round(a.tss),np:a.np?Math.round(a.np):null,puls:a.ah||null,if:a.iff?Math.round(a.iff*100)/100:null,entkopplung_prozent:a.dc==null?null:a.dc,geplant:p?p[2]:null,rpe:q.rpe||null,notiz:q.note||null,kraempfe:q.kr&&q.kr.s?krSum(q.kr):null}});
@@ -2794,7 +2811,7 @@ var _whyC=whyHtml;whyHtml=function(r,sc){var h=_whyC(r,sc);if(r&&r.lv>=1)h+='<p 
 var _propC=propHtml;propHtml=function(pr,w){return _propC(pr,w)+'<p class="coask"><span class="lnk" data-coask="Was hältst du von diesem Wochenvorschlag?" role="button" tabindex="0"><svg class="ic coi" aria-hidden="true"><use href="#ic-coach"/></svg> Coach dazu fragen</span></p>'};
 /* Tablet-Dashboard v35: Baukasten, kompakte Kacheln, Aktivitäts-Layout */
 (function(){
-var CATS=[['Kompakt',[['k-ready','Bereitschaft'],['k-sess','Einheit heute'],['k-check','Dein Tag'],['k-wx','Wetter zur Trainingszeit'],['k-week','Woche kompakt'],['k-morgen','Morgen'],['k-last','Letzte Einheit kompakt'],['k-list','Alle Einheiten (Liste)'],['k-form','Fitness · Ermüdung · Form'],['k-prog','Ötztaler-Prognose'],['k-goals','Ziele'],['k-season','Saison und Phase'],['k-ftp','FTP und W/kg'],['k-scn','Szenarien Ötztaler'],['k-coach','Coach'],['k-phase','Phasen zum Blättern'],['k-best','Bestleistungen'],['k-wt','Gewicht und W/kg']]],
+var CATS=[['Kompakt',[['k-ready','Bereitschaft'],['k-sess','Einheit heute'],['k-check','Dein Tag'],['k-wx','Wetter zur Trainingszeit'],['k-week','Woche kompakt'],['k-morgen','Morgen'],['k-last','Letzte Einheit kompakt'],['k-list','Alle Einheiten (Liste)'],['k-form','Fitness · Ermüdung · Form'],['k-prog','Ötztaler-Prognose'],['k-goals','Ziele'],['k-season','Saison und Phase'],['k-ftp','FTP und W/kg'],['k-scn','Szenarien Ötztaler'],['k-coach','Coach'],['k-pace','Pacing Ötztaler'],['k-rb','Wochenrückblick'],['k-cramp','Krämpfe (Auswertung)'],['k-phase','Phasen zum Blättern'],['k-best','Bestleistungen'],['k-wt','Gewicht und W/kg']]],
 ['Heute und Plan',[['hd-b','Heute komplett'],['pl-wk','Woche komplett'],['d-last','Letzte Einheit mit Karte'],['weg-b','Weg zum Ziel'],['neu','Alle Einheiten']]],
 ['Analyse',[['a-form','Fitness, Ermüdung, Form (Verlauf)'],['a-kpi','Kennzahlen'],['a-load','Tägliche Belastung'],['a-vol','Wochenumfang'],['a-pdc','Leistungskurve'],['a-zw','Zonenverteilung'],['a-dur','Durability'],['a-best','Bestleistungen'],['m-int','Intervalle'],['m-zones','Zonen und Schwellen'],['a-fuel','Verpflegung und Schweiß']]],
 ['Saison und Körper',[['p-season','Saison 2027'],['p-curve','Fitness bis zu den Rennen'],['p-formc','Formziel je Phase'],['p-phases','Phasen und Wochenziele'],['p-report','Phasenbericht'],['p-ftp','FTP-Test'],['p-wt','Gewicht und W/kg'],['p-rec','Erholung'],['p-cramp','Krämpfe vermeiden']]]];
@@ -2802,23 +2819,24 @@ var XCATS=[['Aktivität',[['x-head','Kopf und Werte'],['x-map','Karte'],['x-pro'
 var NM={};CATS.concat(XCATS).forEach(function(c){c[1].forEach(function(x){NM[x[0]]=x[1]})});
 function it(id,w,h){return{id:id,w:w,h:h}}
 var DEFL={
-Alltag:[it('k-ready',2,1),it('k-week',2,1),it('k-form',2,1),it('k-sess',2,2),it('k-wx',2,1),it('k-list',2,2),it('d-last',2,2),it('k-check',2,1),it('k-prog',1,1),it('k-ftp',1,1)],
-Woche:[it('k-week',6,2),it('k-sess',2,2),it('k-list',2,2),it('k-wx',2,1),it('k-morgen',2,1)],
-Analyse:[it('a-form',3,2),it('a-pdc',3,2),it('a-load',2,2),it('a-vol',2,2),it('k-list',2,2)],
-Saison:[it('k-season',4,1),it('k-prog',2,1),it('p-curve',3,3),it('k-scn',3,2),it('k-goals',3,1)]};
+Alltag:[it('k-ready',2,1),it('k-sess',2,2),it('k-coach',2,1),it('k-week',2,1),it('k-wx',2,1),it('k-form',2,1),it('d-last',2,2),it('k-list',2,2),it('k-rb',2,1)],
+Woche:[it('k-week',6,2),it('k-rb',2,2),it('k-sess',2,2),it('k-wx',2,1),it('k-morgen',2,1)],
+Analyse:[it('a-form',3,2),it('a-pdc',3,2),it('a-load',2,2),it('a-vol',2,2),it('k-cramp',2,2)],
+Saison:[it('k-season',4,1),it('k-prog',2,1),it('p-curve',2,3),it('k-pace',2,3),it('k-scn',2,3)]};
 var DEFP={
-Alltag:[it('k-ready',2,1),it('k-week',2,1),it('k-sess',2,2),it('k-form',2,1),it('k-wx',2,1),it('k-check',2,1),it('k-prog',1,1),it('k-ftp',1,1),it('d-last',2,2),it('k-list',2,2)],
-Woche:[it('k-week',4,2),it('k-sess',2,2),it('k-list',2,2),it('k-wx',2,1),it('k-morgen',2,1)],
-Analyse:[it('a-form',4,2),it('a-pdc',4,2),it('a-load',2,2),it('k-list',2,2)],
-Saison:[it('k-season',4,1),it('k-prog',2,1),it('k-ftp',2,1),it('p-curve',4,2),it('k-scn',4,2)]};
+Alltag:[it('k-ready',2,1),it('k-coach',2,1),it('k-sess',2,2),it('k-week',2,1),it('k-wx',2,1),it('k-form',2,1),it('k-rb',2,1),it('d-last',2,2),it('k-list',2,2)],
+Woche:[it('k-week',4,2),it('k-rb',4,1),it('k-sess',2,2),it('k-morgen',2,1),it('k-wx',2,1),it('k-coach',4,1)],
+Analyse:[it('a-form',4,2),it('a-pdc',4,2),it('a-load',2,2),it('k-cramp',2,2)],
+Saison:[it('k-season',4,1),it('k-prog',2,1),it('k-ftp',2,1),it('k-pace',4,2),it('k-scn',4,2)]};
 var DEFA={q:[it('x-map',4,3),it('x-head',2,1),it('x-sx',2,2),it('x-pro',4,1),it('x-fb',2,1)],h:[it('x-map',4,3),it('x-pro',4,1),it('x-head',2,1),it('x-fb',2,1),it('x-sx',4,1)]};
 var DEFZ={q:[it('x-sx',3,4),it('x-head',3,1),it('x-iv',3,2),it('x-fb',3,1)],h:[it('x-sx',4,3),it('x-head',4,1),it('x-iv',4,1),it('x-fb',4,1)]};
 function cp(o){return JSON.parse(JSON.stringify(o))}
-function defs(){var L={};Object.keys(DEFL).forEach(function(n){L[n]={q:cp(DEFL[n]),h:cp(DEFP[n])}});return{v:4,cur:'Alltag',ord:Object.keys(DEFL),L:L,A:cp(DEFA),ts:0}}
+function defs(){var L={};Object.keys(DEFL).forEach(function(n){L[n]={q:cp(DEFL[n]),h:cp(DEFP[n])}});return{v:5,cur:'Alltag',ord:Object.keys(DEFL),L:L,A:cp(DEFA),ts:0}}
 var D;try{D=JSON.parse(localStorage.getItem('dash1')||'null')}catch(e){}
 if(!D||!D.L||!D.cur)D=defs();
-if(D.v!==3&&D.v!==4){var nd=defs();Object.keys(D.L).forEach(function(n){if(!nd.L[n]){nd.L[n]=D.L[n];nd.ord.push(n)}});nd.ts=Date.now();D=nd;try{localStorage.setItem('dash1',JSON.stringify(D))}catch(e){}}
+if(D.v!==3&&D.v!==4&&D.v!==5){var nd=defs();Object.keys(D.L).forEach(function(n){if(!nd.L[n]){nd.L[n]=D.L[n];nd.ord.push(n)}});nd.ts=Date.now();D=nd;try{localStorage.setItem('dash1',JSON.stringify(D))}catch(e){}}
 if(D.v===3){D.L.Saison={q:cp(DEFL.Saison),h:cp(DEFP.Saison)};if(D.ord.indexOf('Saison')<0)D.ord.push('Saison');D.v=4;D.ts=Date.now();try{localStorage.setItem('dash1',JSON.stringify(D))}catch(e){}}
+if(D.v===4){Object.keys(DEFL).forEach(function(n){D.L[n]={q:cp(DEFL[n]),h:cp(DEFP[n])};if(D.ord.indexOf(n)<0)D.ord.push(n)});D.A=cp(DEFA);D.Z=cp(DEFZ);if(typeof DEFC!=='undefined')D.C=cp(DEFC);D.v=5;D.ts=Date.now();try{localStorage.setItem('dash1',JSON.stringify(D))}catch(e){}}
 if(!D.A)D.A=cp(DEFA);if(!D.Z)D.Z=cp(DEFZ);
 function hasMap(a){return!!a&&a.sp!=='VirtualRide'&&!/zwift/i.test(a.name||'')&&a.km>0}
 function AK(){return hasMap(aById(AID))?'A':'Z'}
@@ -2891,6 +2909,9 @@ var KR2={
  var sv='';if(ks.length>1){var v=ks.map(function(d){return WT[d]}),mn=Math.min.apply(0,v.concat([g]))-0.5,mx=Math.max.apply(0,v)+0.5,d0=ks[0],sp=Math.max(1,dd2(d0,t));sv='<div class="kspark"><svg viewBox="0 0 100 40" preserveAspectRatio="none"><line x1="0" x2="100" y1="'+(40-(g-mn)/(mx-mn)*40).toFixed(1)+'" y2="'+(40-(g-mn)/(mx-mn)*40).toFixed(1)+'" class="gl" vector-effect="non-scaling-stroke"/><path d="'+ks.map(function(d,i){return(i?'L':'M')+(dd2(d0,d)/sp*100).toFixed(1)+' '+(40-(WT[d]-mn)/(mx-mn)*40).toFixed(1)}).join('')+'" vector-effect="non-scaling-stroke"/></svg></div>'}
  return kh('Gewicht',bw.d===t?'heute':'zuletzt '+dlab(bw.d))+'<div class="krow"><div class="kbig">'+f1(bw.kg)+' kg</div><small class="mu">'+(dl!=null?(dl>0?'+':'−')+f1(Math.abs(dl))+' kg in 4 Wochen · ':'')+f1(FTP/bw.kg)+' W/kg · Ziel '+g+' kg</small></div>'+(h>1||w>2?sv:'')},
 'k-scn':function(w,h){return window.WU_SCN?WU_SCN(w):''},
+'k-pace':function(w,h){return window.WU_PACEK?WU_PACEK(w,h):''},
+'k-rb':function(w,h){return window.WU_RBK?WU_RBK(w,h):''},
+'k-cramp':function(w,h){return window.WU_KRK?WU_KRK(w,h):''},
 'k-ftp':function(w,h){var bw=bodyAt(t0()),kg=bw?bw.kg:W;return kh('FTP')+'<div class="kbig">'+FTP+' W</div><small class="mu">'+f1(FTP/kg)+' W/kg bei '+f1(kg)+' kg</small>'}
 };
 function rK(id,w,h){var e=el(id),f=KR2[id];if(!f)return;try{e.innerHTML=f(w,h)}catch(x){e.innerHTML=kh(NM[id]||id)+'<p class="mu">Noch nicht verfügbar.</p>'}}
