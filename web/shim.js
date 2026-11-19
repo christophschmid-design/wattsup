@@ -53,7 +53,9 @@
     if (/activity:write/.test(t.sc || '') || t.w === 1) return st(true, 'Hochladen erlaubt') + (t.at ? ' <span class="wu-mu">seit ' + new Date(t.at).toLocaleDateString('de-AT') + '</span>' : '');
     return st(false, 'Hochladen noch nicht erlaubt') + ' <span class="wu-mu">Die Verbindung stammt von vor der Umstellung. Einmal „Neu verbinden“ und alle Häkchen setzen.</span>';
   }
-  function stMark(ok) { var t = stTok(); if (t) { t.w = ok ? 1 : 0; ls('wu_strava', t); } }
+  function stWrCheck() { try { var t = stTok(); if (!stOk() || !t) return; var ok = t.w === 1 || (t.w !== 0 && /activity:write/.test(t.sc || '')); if (ok) WU_INBOX.drop('stw'); else WU_INBOX.add({ id: 'stw', ic: '🔗', t: 'Strava neu verbinden', b: 'Damit WattsUp Krafteinheiten hochladen und für Follower ausblenden darf. Beim Verbinden alle Häkchen setzen.', a: [['Jetzt verbinden', 'st']] }); } catch (e) { } }
+  setTimeout(stWrCheck, 4000);
+  function stMark(ok) { var t = stTok(); if (t) { t.w = ok ? 1 : 0; ls('wu_strava', t); } stWrCheck(); }
   function stOk() { var c = cfg(); return !!(c.stId && c.stSec && stTok()); }
   function stConnect() {
     var c = cfg();
@@ -304,6 +306,7 @@
   function noCredit() {
     var t = now(), last = Number(lg('wu_nocredit', 0)) || 0;
     ls('wu_nocredit', t);
+    try { WU_INBOX.add({ id: 'credit', ic: '💳', t: 'Claude-Guthaben aufgebraucht', b: 'Coach und Wochenplanung pausieren, bis du in der Claude Console unter Billing aufgeladen hast.', a: [['Zur Console', 'bill'], ['Erledigt', 'ok']] }); } catch (e) { }
     try { window.dispatchEvent(new Event('wu-credit')); } catch (e) { }
     if (t - last > 20 * 3600 * 1000 && window.WU_NOTIFY) { try { window.WU_NOTIFY('Claude-Guthaben aufgebraucht', 'Coach und Wochenplanung pausieren, bis du in der Anthropic Console unter Billing aufgeladen hast.', 'coach'); } catch (e) { } }
     return fail('no_credit', 'Dein Guthaben in der Anthropic Console ist aufgebraucht. Coach und Wochenplanung gehen wieder, sobald du unter platform.claude.com → Billing aufgeladen hast.');
@@ -331,7 +334,7 @@
       try { j = await http('https://api.anthropic.com/v1/messages', rq); }
       catch (e2) { if (e2 && e2.status === 400 && /credit balance/i.test(e2.message || '')) throw noCredit(); if (e2 && e2.code === 'network') e2.message = 'Keine Verbindung zu Claude (zweimal versucht). Bitte Internet prüfen und die App während der Planung im Vordergrund lassen.'; throw e2; }
     }
-    if (lg('wu_nocredit', 0)) { ls('wu_nocredit', 0); try { window.dispatchEvent(new Event('wu-credit')); } catch (e) { } }
+    if (lg('wu_nocredit', 0)) { ls('wu_nocredit', 0); try { WU_INBOX.done('credit'); } catch (e) { } try { window.dispatchEvent(new Event('wu-credit')); } catch (e) { } }
     var u = j.usage || {}, inp = (u.input_tokens || 0) + (u.cache_creation_input_tokens || 0) * 1.25 + (u.cache_read_input_tokens || 0) * 0.1, out = u.output_tokens || 0;
     var cost = (inp * M.i + out * M.o) / 1e6, list = costs();
     list.push({ ts: now(), model: model, i: u.input_tokens || 0, o: out, usd: cost }); if (list.length > 400) list = list.slice(-400); ls('wu_cost', list);
@@ -439,7 +442,7 @@
     '.wu-st{display:inline-block;font-size:.78rem;font-weight:700;padding:3px 9px;border-radius:999px;margin-left:6px}.wu-ok{background:rgba(61,220,151,.18);color:var(--ok,#0b7a4b)}.wu-no{background:rgba(255,107,87,.16);color:var(--bad,#b2361f)}.wu-wa{background:rgba(245,176,74,.2);color:var(--warn,#9a6200)}' +
     '.wu-x{float:right;border:0;background:var(--bg2,#e3ebf5);border-radius:50%;width:34px;height:34px;font-size:18px;cursor:pointer;color:var(--ink,#0f2236)}.wu-cp{font:12px ui-monospace,monospace;background:var(--bg2,#e9eef4);color:var(--ink,#0f2236);padding:6px 8px;border-radius:8px;word-break:break-all;display:block;margin-top:4px}' +
     '.wu-t{position:fixed;left:50%;top:calc(env(safe-area-inset-top,0px) + 14px);transform:translateX(-50%);background:#0f2236;color:#fff;padding:10px 16px;border-radius:12px;font:14px system-ui;z-index:10000;max-width:88vw;box-shadow:0 6px 18px rgba(0,0,0,.3)}' +
-    '.wu-upd{position:fixed;left:12px;right:12px;bottom:calc(env(safe-area-inset-bottom,0px) + 14px);z-index:9998;background:#0f2236;color:#fff;border-radius:16px;padding:12px 12px 12px 16px;display:flex;align-items:center;gap:10px;box-shadow:0 8px 24px rgba(0,0,0,.35);font:14px system-ui}.wu-upd>div{flex:1}.wu-upd b{display:block}.wu-upd span{color:#9fb3c8;font-size:12px}.wu-upd .wu-b{margin:0;background:#3ddc97;color:#0f2236}.wu-upd .wu-x{background:#1d3550;color:#fff;width:30px;height:30px;font-size:16px}.wu-note{background:rgba(245,176,74,.18)!important}.wu-top{display:flex;align-items:center;gap:8px;margin-bottom:4px}.wu-top h2{flex:1;margin:0}.wu-bk{border:0;background:var(--bg2,#e3ebf5);color:var(--ink,#0f2236);border-radius:50%;width:34px;height:34px;font-size:22px;line-height:1;cursor:pointer}.wu-top .wu-x{float:none}.wu-gh{margin:18px 4px 6px;font-size:.78rem;text-transform:uppercase;letter-spacing:.06em;color:var(--mu,#5b6b7b)}.wu-grp{background:var(--card,#fff);border-radius:16px;overflow:hidden;box-shadow:0 1px 4px rgba(15,34,54,.08)}.wu-row{display:flex;align-items:center;gap:10px;width:100%;border:0;background:none;color:inherit;font:inherit;text-align:left;padding:13px 14px;cursor:pointer;border-bottom:1px solid var(--ln,#e3e9f0)}.wu-row:last-child{border-bottom:0}.wu-row:active{background:var(--bg2,#eef2f6)}.wu-rt{flex:1;min-width:0}.wu-rt b{display:block;font-weight:600}.wu-rt small{display:block;color:var(--mu,#5b6b7b);font-size:.82rem;margin-top:2px}.wu-chev{color:var(--mu,#5b6b7b);font-size:20px}.wu-sh details>summary{cursor:pointer;font-weight:600;padding:2px 0}.wu-sh details[open]>summary{margin-bottom:6px}.wu-tb{width:100%;border-collapse:collapse;font-size:.86rem}.wu-tb td{padding:4px 0;border-bottom:1px solid var(--ln,#e3e9f0)}.wu-tb td:last-child{text-align:right}';
+    '#inb{flex:none;width:34px;height:34px;border-radius:17px;border:1px solid rgba(255,255,255,.28);background:rgba(255,255,255,.12);color:#fff;display:grid;place-items:center;padding:0;cursor:pointer;position:relative}#inb i{position:absolute;top:-4px;right:-4px;min-width:18px;height:18px;border-radius:9px;background:#e3b257;color:#1a1407;font:800 11px/18px system-ui;font-style:normal;text-align:center;padding:0 4px;box-sizing:border-box}#inb i:empty{display:none}#inb:not(.on){opacity:.75}.wu-ib{display:grid;grid-template-columns:36px 1fr;gap:10px;padding:12px 0;border-top:1px solid var(--ln,#e3e9f0)}.wu-ibi{width:36px;height:36px;border-radius:10px;background:var(--bg2,#eef2f6);display:grid;place-items:center;font-size:18px}.wu-ib b{display:block}.wu-ib p{margin:3px 0 8px;font-size:.86rem;color:var(--mu,#5b6b7b)}.wu-ibb{display:flex;flex-wrap:wrap;gap:8px;align-items:center}.wu-ibb .wu-b{margin:0}.wu-ibd{opacity:.55}'+'.wu-upd{position:fixed;left:12px;right:12px;bottom:calc(env(safe-area-inset-bottom,0px) + 14px);z-index:9998;background:#0f2236;color:#fff;border-radius:16px;padding:12px 12px 12px 16px;display:flex;align-items:center;gap:10px;box-shadow:0 8px 24px rgba(0,0,0,.35);font:14px system-ui}.wu-upd>div{flex:1}.wu-upd b{display:block}.wu-upd span{color:#9fb3c8;font-size:12px}.wu-upd .wu-b{margin:0;background:#3ddc97;color:#0f2236}.wu-upd .wu-x{background:#1d3550;color:#fff;width:30px;height:30px;font-size:16px}.wu-note{background:rgba(245,176,74,.18)!important}.wu-top{display:flex;align-items:center;gap:8px;margin-bottom:4px}.wu-top h2{flex:1;margin:0}.wu-bk{border:0;background:var(--bg2,#e3ebf5);color:var(--ink,#0f2236);border-radius:50%;width:34px;height:34px;font-size:22px;line-height:1;cursor:pointer}.wu-top .wu-x{float:none}.wu-gh{margin:18px 4px 6px;font-size:.78rem;text-transform:uppercase;letter-spacing:.06em;color:var(--mu,#5b6b7b)}.wu-grp{background:var(--card,#fff);border-radius:16px;overflow:hidden;box-shadow:0 1px 4px rgba(15,34,54,.08)}.wu-row{display:flex;align-items:center;gap:10px;width:100%;border:0;background:none;color:inherit;font:inherit;text-align:left;padding:13px 14px;cursor:pointer;border-bottom:1px solid var(--ln,#e3e9f0)}.wu-row:last-child{border-bottom:0}.wu-row:active{background:var(--bg2,#eef2f6)}.wu-rt{flex:1;min-width:0}.wu-rt b{display:block;font-weight:600}.wu-rt small{display:block;color:var(--mu,#5b6b7b);font-size:.82rem;margin-top:2px}.wu-chev{color:var(--mu,#5b6b7b);font-size:20px}.wu-sh details>summary{cursor:pointer;font-weight:600;padding:2px 0}.wu-sh details[open]>summary{margin-bottom:6px}.wu-tb{width:100%;border-collapse:collapse;font-size:.86rem}.wu-tb td{padding:4px 0;border-bottom:1px solid var(--ln,#e3e9f0)}.wu-tb td:last-child{text-align:right}';
   function addCss() { if (document.getElementById('wu-css')) return; var s = document.createElement('style'); s.id = 'wu-css'; s.textContent = CSS; document.head.appendChild(s); }
   var tT = null;
   function toast(m) { addCss(); var t = document.querySelector('.wu-t'); if (!t) { t = document.createElement('div'); t.className = 'wu-t'; document.body.appendChild(t); } if (!t.onclick) t.onclick = function () { t.hidden = true; }; t.textContent = m; t.hidden = false; clearTimeout(tT); tT = setTimeout(function () { t.hidden = true; }, Math.max(8000, String(m).length * 90)); }
@@ -549,7 +552,7 @@
   }
   function saveBtn() { return '<button class="wu-b" data-wu="save">Speichern</button>'; }
   function render(note) {
-    var f = { intervals: pageIntervals, ski: pageSki, home: pageHome, strava: pageStrava, google: pageGoogle, health: pageHealth, claude: pageClaude, notif: pageNotif, app: pageApp, data: pageData }[PG] || pageHome;
+    var f = { inbox: pageInbox, intervals: pageIntervals, ski: pageSki, home: pageHome, strava: pageStrava, google: pageGoogle, health: pageHealth, claude: pageClaude, notif: pageNotif, app: pageApp, data: pageData }[PG] || pageHome;
     return f(note);
   }
   function saveForm() {
@@ -565,6 +568,40 @@
     if (document.getElementById('wu-nMood')) { var wasAct = cfg().nAct !== false; p.nMood = cb('wu-nMood'); p.nAct = cb('wu-nAct'); p.nPlan = cb('wu-nPlan'); p.nWeigh = cb('wu-nWeigh'); setCfg(p); if (wasAct !== (cfg().nAct !== false)) pushTopic(cfg().nAct !== false); }
     else setCfg(p);
     lastSig = ''; if (window.WU_STATE && window.WU_SYNC) window.WU_SYNC(window.WU_STATE);
+  }
+  /* ---------- Erinnerungen: Glocke statt Banner (v44) ---------- */
+  var INB = lg('wu_inbox', {});
+  function inbSave() { ls('wu_inbox', INB); inbBell(); }
+  function inbOpen() { var n = 0, t = now(); Object.keys(INB).forEach(function (k) { var x = INB[k]; if (!x.done && !(x.sn > t)) n++; }); return n; }
+  window.WU_INBOX = {
+    add: function (it) { var o = INB[it.id]; if (o && o.done) return; INB[it.id] = Object.assign({ ts: now() }, o || {}, it, { done: 0 }); inbSave(); },
+    done: function (id) { if (INB[id] && !INB[id].done) { INB[id].done = now(); inbSave(); } },
+    drop: function (pre) { var ch = false; Object.keys(INB).forEach(function (k) { if (k.indexOf(pre) === 0 && !INB[k].done) { INB[k].done = now(); ch = true; } }); if (ch) inbSave(); },
+    count: inbOpen
+  };
+  function inbBell() {
+    var tb = document.querySelector('.tbs'); if (!tb) return; addCss();
+    var b = document.getElementById('inb');
+    if (!b) { b = document.createElement('button'); b.id = 'inb'; b.type = 'button'; b.innerHTML = '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg><i></i>'; b.addEventListener('click', function () { WU.open(null, 'inbox'); }); tb.insertBefore(b, tb.firstChild); }
+    var n = inbOpen(); b.querySelector('i').textContent = n ? String(n) : ''; b.classList.toggle('on', n > 0); b.setAttribute('aria-label', n ? n + (n === 1 ? ' offene Erinnerung' : ' offene Erinnerungen') : 'Erinnerungen');
+    var keep = {}, t = now(); Object.keys(INB).forEach(function (k) { if (!INB[k].done || t - INB[k].done < 7 * 864e5) keep[k] = INB[k]; }); if (Object.keys(keep).length !== Object.keys(INB).length) { INB = keep; ls('wu_inbox', INB); }
+  }
+  document.addEventListener('DOMContentLoaded', inbBell); setTimeout(inbBell, 1200); setInterval(inbBell, 60000);
+  function pageInbox() {
+    var t = now(), L = Object.keys(INB).map(function (k) { return INB[k]; }), open = L.filter(function (x) { return !x.done; }).sort(function (a, b) { return (a.sn > t) - (b.sn > t) || b.ts - a.ts; }), dn = L.filter(function (x) { return x.done; }).sort(function (a, b) { return b.done - a.done; });
+    function it(x, d) { return '<div class="wu-ib' + (d ? ' wu-ibd' : '') + '"><span class="wu-ibi">' + (x.ic || '🔔') + '</span><div><b>' + E(x.t) + '</b>' + (x.b ? '<p>' + E(x.b) + '</p>' : '') + (!d ? '<div class="wu-ibb">' + (x.a || []).map(function (a, i) { return '<button class="wu-b' + (i ? ' alt' : '') + '" data-wu="ib:' + E(x.id) + ':' + E(a[1]) + '">' + E(a[0]) + '</button>'; }).join('') + (x.sn > t ? '<small class="wu-mu">später · ' + new Date(x.sn).toLocaleString('de-AT', { weekday: 'short', hour: '2-digit', minute: '2-digit' }) + '</small>' : '<button class="wu-b alt" data-wu="ibs:' + E(x.id) + '">Später</button>') + '</div>' : '') + '</div></div>'; }
+    return '<div class="wu-top"><h2>Zu erledigen</h2><button class="wu-x" data-wu="close" aria-label="Schließen">×</button></div><p class="wu-mu">' + (open.length ? open.length + ' offen' : 'Alles erledigt.') + ' · Erledigtes verschwindet nach 7 Tagen. Kurze Bestätigungen erscheinen weiter unten als kleine Meldung.</p>' +
+      open.map(function (x) { return it(x, false); }).join('') + (dn.length ? '<p class="wu-gh">Erledigt</p>' + dn.map(function (x) { return it(x, true); }).join('') : '');
+  }
+  async function inbAct(id, key) {
+    var x = INB[id]; if (!x) return;
+    if (key === 'zftp') { var f = cfg().zwFtp; setCfg({ zwFtp: null, zwFtpOk: f }); toast('Danke, FTP ' + f + ' W in Zwift bestätigt.'); WU_INBOX.done(id); }
+    else if (key === 'upd') { WU.close(); doUpdate(null); return; }
+    else if (key === 'updx') { ls('wu_updskip', UPD && UPD.latest); WU_INBOX.done(id); }
+    else if (key === 'st') { WU.close(); stConnect(); return; }
+    else if (key === 'bill') { WU_INBOX.done(id); window.open('https://platform.claude.com/settings/billing', '_blank'); }
+    else WU_INBOX.done(id);
+    WU.open(null, 'inbox');
   }
   var WU = {
     open: function (note, page) { if (page) PG = page; else if (note || !document.getElementById('wu-ov') || document.getElementById('wu-ov').hidden) PG = PG && document.getElementById('wu-ov') && !document.getElementById('wu-ov').hidden ? PG : 'home'; var sh = document.getElementById('sh'), sx = document.getElementById('shx'); if (sh && !sh.hidden && sx) sx.click(); addCss(); var o = document.getElementById('wu-ov'); if (!o) { o = document.createElement('div'); o.id = 'wu-ov'; o.className = 'wu-ov'; document.body.appendChild(o); o.addEventListener('click', onClick); o.addEventListener('change', onChange); } o.innerHTML = '<div class="wu-sh" role="dialog" aria-modal="true">' + render(note) + '</div>'; o.hidden = false; },
@@ -592,6 +629,8 @@
     if (e.target.id === 'wu-ov') { if (PG !== 'home') { saveForm(); WU.open(null, 'home'); } else { saveForm(); WU.close(); } return; }
     var b = e.target.closest('[data-wu]'); if (!b) return; var k = b.getAttribute('data-wu');
     if (k === 'close') { saveForm(); WU.close(); return; }
+    if (k.indexOf('ib:') === 0) { var q = k.slice(3), ix = q.lastIndexOf(':'); await inbAct(q.slice(0, ix), q.slice(ix + 1)); return; }
+    if (k.indexOf('ibs:') === 0) { var id2 = k.slice(4); if (INB[id2]) { INB[id2].sn = now() + 20 * 3600 * 1000; inbSave(); } WU.open(null, 'inbox'); return; }
     if (k.indexOf('pg:') === 0) { saveForm(); PG = k.slice(3); WU.open(null, PG); var sh0 = document.querySelector('.wu-sh'); if (sh0) sh0.scrollTop = 0; return; }
     if (k.indexOf('app:') === 0) { saveForm(); WU.close(); PG = 'home'; RET_HUB = true; if (window.WU_OPEN) window.WU_OPEN(k.slice(4)); return; }
     saveForm();
@@ -609,7 +648,7 @@
     if (k === 'push') { try { await pushActivate(); } catch (x) { toast('Push einrichten fehlgeschlagen: ' + (x.message || x)); } WU.open(); }
     if (k === 'pusht') { try { await pushTest(); } catch (x) { toast('Test fehlgeschlagen: ' + (x.message || x)); } }
     if (k === 'updchk') { await checkUpdate(true); WU.open(); if (UPD && !UPD.newer) toast('WattsUp ist aktuell.'); }
-    if (k === 'upd') { WU.close(); doUpdate(document.getElementById('wu-upd')); }
+    if (k === 'upd') { WU.close(); doUpdate(null); }
   }
   async function onChange(e) {
     if (e.target.id !== 'wu-imp' || !e.target.files || !e.target.files[0]) return;
@@ -880,15 +919,9 @@
   }
   /* Neue FTP: bleibt sichtbar, bis bestätigt ist, dass sie in Zwift eingetragen wurde */
   function zwFtpBanner() {
-    var f = cfg().zwFtp, old = document.getElementById('wu-zftp');
-    if (!f) { if (old) old.remove(); return; }
-    if (old) return;
-    addCss();
-    var b = document.createElement('div'); b.id = 'wu-zftp'; b.className = 'wu-upd';
-    if (document.getElementById('wu-upd')) b.style.bottom = 'calc(env(safe-area-inset-bottom,0px) + 96px)';
-    b.innerHTML = '<div><b>Neue FTP ' + f + ' W auch in Zwift eintragen</b><span>intervals.icu ist schon aktualisiert. Zwift lässt sich nur von Hand ändern: im Profil bei FTP.</span></div><button class="wu-b" data-wu="zftp">In Zwift erledigt</button>';
-    b.addEventListener('click', function (e) { if (!e.target.closest('[data-wu="zftp"]')) return; setCfg({ zwFtp: null, zwFtpOk: f }); b.remove(); toast('Danke, FTP ' + f + ' W in Zwift bestätigt.'); });
-    document.body.appendChild(b);
+    var f = cfg().zwFtp;
+    if (!f) { WU_INBOX.drop('zftp-'); return; }
+    WU_INBOX.add({ id: 'zftp-' + f, ic: '⚡', t: 'Neue FTP ' + f + ' W in Zwift eintragen', b: 'intervals.icu ist schon aktualisiert. Zwift lässt sich nur von Hand ändern: im Profil bei FTP.', a: [['In Zwift erledigt', 'zftp']] });
   }
   setTimeout(zwFtpBanner, 3000);
   WU.ivSync = ivSync;
@@ -951,11 +984,8 @@
     return UPD;
   }
   function updBanner() {
-    addCss(); if (document.getElementById('wu-upd') || lg('wu_updskip', 0) === UPD.latest) return;
-    var b = document.createElement('div'); b.id = 'wu-upd'; b.className = 'wu-upd';
-    b.innerHTML = '<div><b>Neue App-Version 1.' + UPD.latest + '</b><span>Installiert: 1.' + UPD.cur + '</span></div><button class="wu-b" data-wu="upd">Jetzt aktualisieren</button><button class="wu-x" data-wu="updx" aria-label="Später">×</button>';
-    b.addEventListener('click', function (e) { var k = e.target.closest('[data-wu]'); if (!k) return; if (k.getAttribute('data-wu') === 'updx') { ls('wu_updskip', UPD.latest); b.remove(); } else doUpdate(b); });
-    document.body.appendChild(b);
+    if (lg('wu_updskip', 0) === UPD.latest) return;
+    WU_INBOX.drop('upd-'); WU_INBOX.add({ id: 'upd-' + UPD.latest, ic: '📲', t: 'Neue App-Version 1.' + UPD.latest, b: 'Installiert ist 1.' + UPD.cur + '. Nötig für Widget, Benachrichtigungen und Berechtigungen; Inhalte kommen ohnehin automatisch.', a: [['Jetzt aktualisieren', 'upd'], ['Diese Version auslassen', 'updx']] });
   }
   async function doUpdate(el) {
     if (!NAT) { location.href = APK; return; }
