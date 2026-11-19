@@ -21,6 +21,15 @@ jobs:
       - uses: actions/checkout@v4
       - name: Bauen
         run: python3 tools/build.py
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Selbsttest vorbereiten
+        run: |
+          npm install --no-save --no-package-lock playwright@1.48.2 typescript@5.6.3
+          npx playwright install --with-deps chromium
+      - name: Selbsttest (bei Fehlern wird nicht veröffentlicht)
+        run: node tools/selftest.mjs
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:
