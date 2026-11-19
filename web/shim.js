@@ -253,10 +253,25 @@
       syncSt('ok');
     } catch (e) { syncSt('err', e.message); }
   }
+  /* Vor dem Hochladen immer erst den Stand der anderen Geräte holen und zusammenführen.
+     Früher hat ein Gerät die Datei mit seinem eigenen Stand überschrieben und so frische
+     Einträge eines anderen Geräts gelöscht (z. B. RPE vom Tablet fehlte am Handy). */
+  var pushing = null, pushAgain = false;
   async function push() {
     if (!gOk()) return;
+    if (pushing) { pushAgain = true; return pushing; }
+    pushing = (async function () { do { pushAgain = false; await push1(); } while (pushAgain); })();
+    try { await pushing; } finally { pushing = null; }
+  }
+  async function push1() {
     try {
-      var body = JSON.stringify({ v: 1, ts: now(), docs: dbAll() }), id = lg('wu_dfid', null) || await dFind();
+      var id0 = lg('wu_dfid', null) || await dFind();
+      if (id0) {
+        var tk0 = await gToken(), r0 = await fetch('https://www.googleapis.com/drive/v3/files/' + id0 + '?alt=media', { headers: { Authorization: 'Bearer ' + tk0 } });
+        if (r0.ok) { var rem0 = await r0.json(), before0 = JSON.stringify(dbAll()), mg0 = merge(dbAll(), (rem0 && rem0.docs) || {}); ls(DBK, mg0); lastPull = now(); if (JSON.stringify(mg0) !== before0) { try { window.dispatchEvent(new Event('wu-db-pulled')); } catch (e) { } } }
+        else if (r0.status === 404) { ls('wu_dfid', null); id0 = await dFind(); }
+      }
+      var body = JSON.stringify({ v: 1, ts: now(), docs: dbAll() }), id = id0;
       if (id) await gApi('https://www.googleapis.com/upload/drive/v3/files/' + id + '?uploadType=media', { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: body });
       else {
         var bd = 'wu' + now(), mp = '--' + bd + '\r\nContent-Type: application/json; charset=UTF-8\r\n\r\n' + JSON.stringify({ name: DFN, parents: ['appDataFolder'] }) + '\r\n--' + bd + '\r\nContent-Type: application/json\r\n\r\n' + body + '\r\n--' + bd + '--';

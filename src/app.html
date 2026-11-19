@@ -737,8 +737,8 @@ body.tabdev nav{top:calc(4px + env(safe-area-inset-top,0px));bottom:auto}body.ta
 .hero2.hfuse{padding-bottom:0;overflow:hidden}
 .hfuse .hses.hin{border:0;border-top:1px solid var(--ln);border-radius:0;margin:14px -16px 0;padding:12px 16px 0;background:none;box-shadow:none}
 .hchips{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0 12px}
-.hchips .hck{font-family:inherit;font-size:.78rem;font-weight:600;line-height:1.2;white-space:nowrap;display:inline-flex;align-items:center;gap:4px;padding:6px 10px;border-radius:99px;border:1px solid var(--ln);background:var(--bg2);color:var(--ink);cursor:pointer;opacity:1}
-.hchips .hck.d,.hchips .hck.on{background:color-mix(in srgb,var(--ok) 16%,transparent);border-color:transparent;color:var(--ok)}
+.hchips .hck{width:auto!important;flex:none!important;max-width:100%;font-family:inherit;font-size:.78rem;font-weight:600;line-height:1.2;white-space:nowrap;display:inline-flex;align-items:center;gap:4px;padding:6px 10px;border-radius:99px;border:1px solid var(--ln);background:var(--bg2);color:var(--ink);cursor:pointer;opacity:1}
+.hchips .hck.dn,.hchips .hck.on{background:color-mix(in srgb,var(--ok) 16%,transparent);border-color:transparent;color:var(--ok)}
 .hcoach{display:flex;gap:10px;align-items:center;margin:0 -16px;padding:11px 16px;background:linear-gradient(90deg,rgba(227,178,87,.18),rgba(227,178,87,.04));border-top:1px solid rgba(227,178,87,.3);cursor:pointer}
 .hcoach .hcav{width:28px;height:28px;border-radius:50%;background:#e3b257;display:grid;place-items:center;flex:none}
 .hcoach .hcav svg{width:17px;height:17px;color:#1a1407!important}
@@ -2648,7 +2648,7 @@ var _coMemT=coMemHtml;coMemHtml=function(){var h=_coMemT();return h.replace('�
 function hFuse(){var c=$('hd-b');if(!c||DOFF)return;var hero=c.querySelector('.hero2');if(!hero)return;hero.classList.add('hfuse');
  var ses=c.querySelector('.hses');if(ses&&ses.parentNode===c){ses.classList.add('hin');hero.appendChild(ses)}
  var chips='',ck=null;[].forEach.call(c.querySelectorAll(':scope>.card'),function(cd){var l=cd.querySelector(':scope>.hcl');if(l&&l.textContent==='Dein Tag')ck=cd});
- if(ck){[].forEach.call(ck.querySelectorAll('.ck'),function(x){if(/^p:/.test(x.getAttribute('data-k')||'')&&ses)return;var dn=x.querySelector('i.d');chips+='<span class="hck'+(dn?' d':'')+'" data-k="'+E(x.getAttribute('data-k'))+'" role="button" tabindex="0">'+(dn?'✓ ':'○ ')+E(x.querySelector('span').textContent)+'</span>'});ck.remove()}
+ if(ck){[].forEach.call(ck.querySelectorAll('.ck'),function(x){if(/^p:/.test(x.getAttribute('data-k')||'')&&ses)return;var dn=x.querySelector('i.d');chips+='<span class="hck'+(dn?' dn':'')+'" data-k="'+E(x.getAttribute('data-k'))+'" role="button" tabindex="0">'+(dn?'✓ ':'○ ')+E(x.querySelector('span').textContent)+'</span>'});ck.remove()}
  var ex=c.querySelector(':scope>.hextra');if(ex){[].forEach.call(ex.querySelectorAll('.xbtn'),function(b){b.classList.add('hck');chips+=b.outerHTML});ex.remove()}
  if(chips)hero.insertAdjacentHTML('beforeend','<div class="hchips">'+chips+'</div>');
  var cs='';try{cs=coSub()}catch(e){}if(cs)hero.insertAdjacentHTML('beforeend','<div class="hcoach" data-k="coach" role="button" tabindex="0"><span class="hcav"><svg class="ic" aria-hidden="true"><use href="#ic-coach"/></svg></span><p>„'+E(cs)+'“</p><b aria-hidden="true">›</b></div>');
