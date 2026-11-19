@@ -10,6 +10,7 @@
   var PL = (window.Capacitor && window.Capacitor.Plugins) || {};
   var CAL0 = 'to0nbho9j5d91ac0mref1bh804@group.calendar.google.com';
   var GEO = { lat: 47.796, lon: 13.046, name: 'Salzburg' };
+  var AUTO = { coach: 'claude-haiku-5-5', plan: 'claude-sonnet-5-5' };
   var MODELS = {
     'claude-sonnet-5-5': { n: 'Sonnet 5.5', i: 2, o: 10 },
     'claude-opus-5-5': { n: 'Opus 5.5', i: 4, o: 20 },
@@ -311,7 +312,8 @@
   async function ask(input, opts) {
     var c = cfg(); opts = opts || {};
     if (!c.aKey) throw fail('not_granted', 'Kein Schlüssel für die Claude-Schnittstelle eingetragen');
-    var model = c.once || c.model || 'claude-sonnet-5-5', M = MODELS[model] || MODELS['claude-sonnet-5-5'];
+    /* Modell automatisch: Coach (Chat und Meldungen) günstig mit Haiku, Wochenplanung gründlich mit Sonnet */
+    var model = AUTO[opts.tag === 'coach' ? 'coach' : 'plan'], M = MODELS[model];
     var lim = Number(c.limit || 0), ms = monthSum();
     if (lim > 0 && ms >= lim && !c.over) throw fail('rate_limited', 'Monatsgrenze von ' + usd(lim) + ' erreicht. Unter Einstellungen → Claude und Kosten anpassen.');
     var msgs = typeof input === 'string' ? [{ role: 'user', content: input }] : input;
@@ -333,7 +335,6 @@
     var u = j.usage || {}, inp = (u.input_tokens || 0) + (u.cache_creation_input_tokens || 0) * 1.25 + (u.cache_read_input_tokens || 0) * 0.1, out = u.output_tokens || 0;
     var cost = (inp * M.i + out * M.o) / 1e6, list = costs();
     list.push({ ts: now(), model: model, i: u.input_tokens || 0, o: out, usd: cost }); if (list.length > 400) list = list.slice(-400); ls('wu_cost', list);
-    if (c.once) setCfg({ once: null });
     try { window.dispatchEvent(new CustomEvent('wu-cost', { detail: { usd: cost, tag: opts.tag || 'plan', model: model } })); } catch (e) { }
     if (!opts.quiet) toast('Planung mit ' + M.n + ': ' + usd(cost) + (lim > 0 ? ', Monat ' + usd(monthSum()) + ' von ' + usd(lim) : ', Monat ' + usd(monthSum())));
     if (lim > 0 && monthSum() >= lim * 0.8 && monthSum() < lim) setTimeout(function () { toast('Achtung: 80 % der Monatsgrenze erreicht.'); }, 4200);
@@ -465,7 +466,7 @@
         row('pg:intervals', 'Zwift über intervals.icu', c.ivKey ? (c.ivErr ? c.ivErr : 'Zwift-Einheiten automatisch in Zwift') : 'Noch nicht verbunden', c.ivKey && c.ivOn !== false ? (c.ivErr ? st(false, 'Fehler') : st(true, 'aktiv')) : st('w', 'aus'))
       ].concat(CAPN ? [row('pg:health', 'Gesundheitsdaten', 'Waage, Schlaf, Ruhepuls und HRV über Health Connect', c.hcOk && c.hcOn !== false ? st(true, 'verbunden') : st('w', 'aus'))] : [])) +
       grp('Planung', [
-        row('pg:claude', 'Claude und Kosten', c.aKey ? (MODELS[c.model || 'claude-sonnet-5-5'] || {}).n + ', diesen Monat ' + usd(sum) + (lim > 0 ? ' von ' + usd(lim) : '') : 'Noch kein Schlüssel', c.aKey ? (lim > 0 && sum >= lim ? st(false, 'Grenze') : lim > 0 && sum >= lim * .8 ? st('w', '80 %') : st(true, 'bereit')) : st(false, 'aus'))
+        row('pg:claude', 'Claude und Kosten', c.aKey ? 'Modell automatisch, diesen Monat ' + usd(sum) + (lim > 0 ? ' von ' + usd(lim) : '') : 'Noch kein Schlüssel', c.aKey ? (lim > 0 && sum >= lim ? st(false, 'Grenze') : lim > 0 && sum >= lim * .8 ? st('w', '80 %') : st(true, 'bereit')) : st(false, 'aus'))
       ]) +
       grp('Zusatzfunktionen', [row('pg:ski', 'Skitouren', 'Vorschläge fürs Wochenende mit Lawinenlage', c.skiOn !== false ? st(true, 'an') : st('w', 'aus'))]) +
       grp('App', (CAPN ? [
@@ -509,8 +510,7 @@
       (lst.length ? '<table class="wu-tb">' + lst.slice(-6).reverse().map(function (x) { return '<tr><td>' + new Date(x.ts).toLocaleString('de-AT', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' }) + ', ' + (MODELS[x.model] ? MODELS[x.model].n : x.model) + '<br><small class="wu-mu">Anfrage ' + (x.i || 0).toLocaleString('de-AT') + ', Antwort ' + (x.o || 0).toLocaleString('de-AT') + ' Tokens</small></td><td>' + usd(x.usd) + '<br><small class="wu-mu">' + usd(((x.i || 0) * (MODELS[x.model] || MODELS['claude-sonnet-5-5']).i) / 1e6) + ' + ' + usd(((x.o || 0) * (MODELS[x.model] || MODELS['claude-sonnet-5-5']).o) / 1e6) + '</small></td></tr>'; }).join('') + '</table>' : '') +
       fld('wu-limit', 'Monatsgrenze in $ (0 = keine)', c.limit != null ? c.limit : 3, 'text', '3') +
       '<p class="wu-mu">Berechnet aus dem gemeldeten Verbrauch und der Preisliste. Maßgeblich ist die Abrechnung in der Anthropic Console.</p></div>' +
-      '<div class="wu-c"><h3 style="margin-top:0">Modell</h3><label for="wu-model">Für jede Planung</label><select id="wu-model">' + Object.keys(MODELS).map(function (k) { var M = MODELS[k]; return '<option value="' + k + '"' + ((c.model || 'claude-sonnet-5-5') === k ? ' selected' : '') + '>' + M.n + ' (' + String(M.i).replace('.', ',') + ' $ / ' + String(M.o).replace('.', ',') + ' $ pro Mio. Tokens)</option>'; }).join('') + '</select>' +
-      '<label for="wu-once">Nur die nächste Planung gründlicher</label><select id="wu-once"><option value="">Nein, Standardmodell</option><option value="claude-opus-5-5"' + (c.once === 'claude-opus-5-5' ? ' selected' : '') + '>Ja, mit Opus 5.5</option><option value="claude-fable-5-2"' + (c.once === 'claude-fable-5-2' ? ' selected' : '') + '>Ja, mit Fable 5.2</option></select></div>' +
+      '<div class="wu-c"><h3 style="margin-top:0">Modell</h3><p style="margin:0">Wird automatisch gewählt: <b>Wochenplanung</b> mit ' + MODELS[AUTO.plan].n + ', <b>Coach</b> mit dem günstigeren ' + MODELS[AUTO.coach].n + '.</p></div>' +
       '<details class="wu-c"' + (c.aKey ? '' : ' open') + '><summary>API-Schlüssel ' + (c.aKey ? st(true, 'hinterlegt') : st(false, 'fehlt')) + '</summary>' + fld('wu-aKey', 'Beginnt mit sk-ant-', c.aKey, 'password') + '</details>' + saveBtn();
   }
   function pageNotif() {
@@ -556,9 +556,8 @@
     function v(id) { var e = document.getElementById(id); return e ? e.value.trim() : undefined; }
     function cb(id) { var e = document.getElementById(id); return e ? e.checked : undefined; }
     var p = {};
-    [['wu-stId', 'stId'], ['wu-stSec', 'stSec'], ['wu-gId', 'gId'], ['wu-gSec', 'gSec'], ['wu-aKey', 'aKey'], ['wu-model', 'model'], ['wu-pushUrl', 'pushUrl'], ['wu-ivKey', 'ivKey']].forEach(function (x) { var val = v(x[0]); if (val !== undefined) p[x[1]] = val; });
+    [['wu-stId', 'stId'], ['wu-stSec', 'stSec'], ['wu-gId', 'gId'], ['wu-gSec', 'gSec'], ['wu-aKey', 'aKey'], ['wu-pushUrl', 'pushUrl'], ['wu-ivKey', 'ivKey']].forEach(function (x) { var val = v(x[0]); if (val !== undefined) p[x[1]] = val; });
     if (v('wu-cal') !== undefined) p.cal = v('wu-cal') || CAL0;
-    if (v('wu-once') !== undefined) p.once = v('wu-once') || null;
     if (document.getElementById('wu-skiOn')) { var was = cfg().skiOn !== false, now2 = cb('wu-skiOn'); p.skiOn = now2; if (was !== now2 && FM && cfg().pushTopic) { try { if (now2) FM.subscribeToTopic({ topic: cfg().pushTopic + '_ski' }); else FM.unsubscribeFromTopic({ topic: cfg().pushTopic + '_ski' }); } catch (e) { } } }
     if (document.getElementById('wu-ivOn')) { p.ivOn = cb('wu-ivOn'); p.ivAdj = cb('wu-ivAdj'); p.ivSetOn = cb('wu-ivSetOn'); if (p.ivSetOn !== (cfg().ivSetOn !== false)) p.ivSetSig = ''; if (p.ivAdj !== (cfg().ivAdj !== false) || p.ivOn !== (cfg().ivOn !== false)) p.ivSig = ''; }
     if (v('wu-ivKey') !== undefined && v('wu-ivKey') !== (cfg().ivKey || '')) p.ivSig = '';
