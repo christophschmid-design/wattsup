@@ -74,8 +74,15 @@
     var tk = await stToken(), d = o.start, p2 = function (n) { return ('0' + n).slice(-2); };
     var loc = d.getFullYear() + '-' + p2(d.getMonth() + 1) + '-' + p2(d.getDate()) + 'T' + p2(d.getHours()) + ':' + p2(d.getMinutes()) + ':00';
     var body = qs({ name: o.name, sport_type: o.sport_type || 'WeightTraining', type: 'Workout', start_date_local: loc, elapsed_time: Math.round(o.sec), description: o.desc || '' });
-    try { return await http(SV + '/api/v3/activities', { method: 'POST', headers: { Authorization: 'Bearer ' + tk, 'Content-Type': 'application/x-www-form-urlencoded' }, body: body }); }
+    var r;
+    try { r = await http(SV + '/api/v3/activities', { method: 'POST', headers: { Authorization: 'Bearer ' + tk, 'Content-Type': 'application/x-www-form-urlencoded' }, body: body }); }
     catch (e) { if (e && (e.status === 401 || e.status === 403)) throw new Error('Berechtigung activity:write fehlt (' + e.status + ')'); throw e; }
+    /* Für Follower ausblenden (nicht im Feed, im Profil weiter sichtbar) */
+    if (r && r.id) {
+      try { await http(SV + '/api/v3/activities/' + r.id, { method: 'PUT', headers: { Authorization: 'Bearer ' + tk, 'Content-Type': 'application/x-www-form-urlencoded' }, body: qs({ hide_from_home: 'true' }) }); r.hidden = true; }
+      catch (e2) { r.hidden = false; }
+    }
+    return r;
   };
   var athP = null;
   function athlete() { if (!athP) { athP = sv('/athlete').catch(function (e) { athP = null; throw e; }); } return athP; }
