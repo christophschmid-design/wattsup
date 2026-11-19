@@ -729,9 +729,9 @@ body.tabdev nav{top:calc(4px + env(safe-area-inset-top,0px));bottom:auto}body.ta
 .co #co-s{background:#e3b257;color:#1a1407;border-color:#e3b257}
 .co .co-chips button{border-color:rgba(227,178,87,.45)}
 .co-cost{margin:8px 2px 0}
+#co-dbg{display:none;font-size:.66rem;margin:4px 0 0}.kb-open #co-dbg,#copanel[style*="height"] #co-dbg{display:block}
 /* Tastatur offen: Coach endet über der Tastatur */
-body:not(.co-wide) #copanel{bottom:var(--kb,0px);transition:bottom .12s}
-.kb-open body:not(.co-wide) #copanel :is(.co-chips,.co-cost,.comem){display:none}
+.kb-open body:not(.co-wide) #copanel :is(.co-chips,.co-cost,.comem),#copanel[style*="height"] :is(.co-chips,.co-cost){display:none}
 /* Coach: nie breiter als der Bildschirm */
 #copanel .cop-body{overflow-x:hidden}.co,.co-log,.co-in{min-width:0;max-width:100%}.co-log>*{max-width:100%;box-sizing:border-box}.co .cm{overflow-wrap:anywhere;word-break:normal;min-width:0}.co .cm *{max-width:100%}.co table{display:block;overflow-x:auto}.co pre,.co code{white-space:pre-wrap;overflow-wrap:anywhere}.co-row{min-width:0}.co-row textarea{min-width:0}.cb,.cb-h,.cb-l{min-width:0;max-width:100%}.cb-h{flex-wrap:wrap}
 .hero2.hfuse{padding-bottom:0;overflow:hidden}
@@ -2651,6 +2651,14 @@ function hFuse(){var c=$('hd-b');if(!c||DOFF)return;var hero=c.querySelector('.h
  var mm=c.querySelectorAll(':scope>.hmini');if(mm.length===2){var w=document.createElement('div');w.className='hpair';mm[0].parentNode.insertBefore(w,mm[0]);w.appendChild(mm[0]);w.appendChild(mm[1])}}
 var _rHF=rH;rH=function(){_rHF();try{hFuse()}catch(e){}};
 window.addEventListener('wu-kb',function(){if(document.getElementById('copanel')&&!document.body.classList.contains('co-wide')){try{window.scrollTo(0,0)}catch(e){}setTimeout(coScroll,60)}});
+/* Coach am Handy an den sichtbaren Bereich anpassen (Tastatur): visualViewport, sonst Tastaturhöhe vom Plugin */
+function coFit(){var p=document.getElementById('copanel');if(!p)return;if(document.body.classList.contains('co-wide')||window.innerWidth>=900){p.style.top=p.style.height=p.style.bottom='';return}
+ var vv=window.visualViewport,kb=parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--kb'))||0,ih=window.innerHeight,mode='voll';
+ if(vv&&(vv.height<ih-80||vv.offsetTop>1)){p.style.top=vv.offsetTop+'px';p.style.height=vv.height+'px';p.style.bottom='auto';mode='vv'}
+ else if(kb>0){p.style.top='0px';p.style.height=Math.max(200,ih-kb)+'px';p.style.bottom='auto';mode='kb'}
+ else{p.style.top=p.style.height=p.style.bottom=''}
+ var d=document.getElementById('co-dbg'),ci=p.querySelector('.co-in');if(!d&&ci){d=document.createElement('p');d.className='mu';d.id='co-dbg';ci.appendChild(d)}if(d)d.textContent='Anzeige: '+mode+' · Fenster '+ih+' · sichtbar '+(vv?Math.round(vv.height)+'/'+Math.round(vv.offsetTop):'–')+' · Tastatur '+kb+' · Coach '+Math.round(p.getBoundingClientRect().top)+'–'+Math.round(p.getBoundingClientRect().bottom)}
+(function(){var vv=window.visualViewport;function f(){coFit();if(document.activeElement&&document.activeElement.id==='co-t')setTimeout(coScroll,30)}if(vv){vv.addEventListener('resize',f);vv.addEventListener('scroll',f)}window.addEventListener('resize',f);window.addEventListener('wu-kb',f);document.addEventListener('focusin',function(e){if(e.target&&e.target.id==='co-t'){setTimeout(f,150);setTimeout(f,450)}});document.addEventListener('focusout',function(e){if(e.target&&e.target.id==='co-t')setTimeout(f,300)})})();
 /* Kontext für den Coach */
 function coCtx(){var t=tod(),X=window.ACT||[],n=S?S.ct.length:0,ph=phaseOf(t),bw=bodyAt(t),kg=bw?bw.kg:W;
  var ak=X.filter(function(a){return a.day>=addD(t,-21)}).map(function(a){var p=PM[a.day],q=LOG[a.id]||{};return{datum:a.day,name:a.name,sport:sn(a.sp),minuten:Math.round(a.sec/60),km:a.km>0?Math.round(a.km):null,hm:a.hm>0?Math.round(a.hm):null,tss:Math.round(a.tss),np:a.np?Math.round(a.np):null,puls:a.ah||null,if:a.iff?Math.round(a.iff*100)/100:null,entkopplung_prozent:a.dc==null?null:a.dc,geplant:p?p[2]:null,rpe:q.rpe||null,notiz:q.note||null,kraempfe:q.kr&&q.kr.s?krSum(q.kr):null}});
