@@ -29,12 +29,12 @@ public class MainActivity extends BridgeActivity {
         final int bars = WindowInsetsCompat.Type.systemBars() | WindowInsetsCompat.Type.displayCutout();
         ViewCompat.setOnApplyWindowInsetsListener(host, (v, insets) -> {
             Insets b = insets.getInsets(bars);
-            Insets ime = insets.getInsets(WindowInsetsCompat.Type.ime());
-            v.setPadding(b.left, b.top, b.right, Math.max(b.bottom, ime.bottom));
-            // Leisten und Tastatur sind hier über das Padding erledigt. Die Tastatur nicht
-            // zusätzlich an die Webansicht weiterreichen, sonst zieht sie ihre Höhe ein
-            // zweites Mal ab (Fenster nur noch ca. 140 px hoch, Coach-Eingabe verschwindet).
-            return new WindowInsetsCompat.Builder(insets).setInsets(bars | WindowInsetsCompat.Type.ime(), Insets.NONE).build();
+            // Nur die Leisten hier als Abstand. Die Tastatur verkleinert das Fenster bereits
+            // selbst (adjustResize); sie zusätzlich als Abstand abzuziehen halbierte die
+            // Webansicht auf ca. 140 px (Coach-Eingabe verschwand). Tastatur-Infos gehen an
+            // die Webansicht weiter, die Web-Seite gleicht notfalls über visualViewport aus.
+            v.setPadding(b.left, b.top, b.right, b.bottom);
+            return new WindowInsetsCompat.Builder(insets).setInsets(bars, Insets.NONE).build();
         });
         ViewCompat.requestApplyInsets(host);
     }
