@@ -316,7 +316,7 @@
     var c = cfg(); opts = opts || {};
     if (!c.aKey) throw fail('not_granted', 'Kein Schlüssel für die Claude-Schnittstelle eingetragen');
     /* Modell automatisch: Coach (Chat und Meldungen) günstig mit Haiku, Wochenplanung gründlich mit Sonnet */
-    var model = AUTO[opts.tag === 'coach' ? 'coach' : 'plan'], M = MODELS[model];
+    var model = opts._model || AUTO[opts.tag === 'coach' ? 'coach' : 'plan'], M = MODELS[model];
     var lim = Number(c.limit || 0), ms = monthSum();
     if (lim > 0 && ms >= lim && !c.over) throw fail('rate_limited', 'Monatsgrenze von ' + usd(lim) + ' erreicht. Unter Einstellungen → Claude und Kosten anpassen.');
     var msgs = typeof input === 'string' ? [{ role: 'user', content: input }] : input;
@@ -341,7 +341,14 @@
     try { window.dispatchEvent(new CustomEvent('wu-cost', { detail: { usd: cost, tag: opts.tag || 'plan', model: model } })); } catch (e) { }
     if (!opts.quiet) toast('Planung mit ' + M.n + ': ' + usd(cost) + (lim > 0 ? ', Monat ' + usd(monthSum()) + ' von ' + usd(lim) : ', Monat ' + usd(monthSum())));
     if (lim > 0 && monthSum() >= lim * 0.8 && monthSum() < lim) setTimeout(function () { toast('Achtung: 80 % der Monatsgrenze erreicht.'); }, 4200);
-    return (j.content || []).filter(function (b) { return b.type === 'text'; }).map(function (b) { return b.text; }).join('');
+    var txt = (j.content || []).filter(function (b) { return b.type === 'text'; }).map(function (b) { return b.text; }).join('');
+    if (!txt.trim()) {
+      /* Leere Antwort (z. B. Denkbudget aufgebraucht): einmal mit Sonnet und mehr Spielraum wiederholen */
+      try { console.warn('Claude: leere Antwort', model, j.stop_reason, (j.content || []).map(function (b) { return b.type; })); } catch (e) { }
+      if (!opts._retry) return ask(input, Object.assign({}, opts, { _retry: 1, _model: AUTO.plan, maxTokens: Math.max(4000, opts.maxTokens || 0) }));
+      throw fail('leer', 'Claude hat eine leere Antwort geliefert (' + (j.stop_reason || '?') + ').');
+    }
+    return txt;
   }
   function parseJson(t) {
     t = String(t || '').trim().replace(/^```(?:json)?\s*/i, '').replace(/```\s*$/, '');
@@ -992,11 +999,11 @@
     try {
       var ok = await NAT.canInstall();
       if (!ok.allowed) { toast('Bitte erlauben, dass WattsUp Apps installieren darf, dann erneut tippen.'); await NAT.openInstallSettings(); return; }
-      var lab = el && el.querySelector('b'); if (lab) lab.textContent = 'Wird geladen …';
-      var h = await NAT.addListener('progress', function (e) { if (lab) lab.textContent = 'Wird geladen … ' + e.pct + ' %'; });
+      var lab = el && el.querySelector('b'); if (lab) lab.textContent = 'Wird geladen …'; toast('Neue Version wird geladen …');
+      var lp = -1, h = await NAT.addListener('progress', function (e) { if (lab) lab.textContent = 'Wird geladen … ' + e.pct + ' %'; if (e.pct - lp >= 10 || e.pct >= 100) { lp = e.pct; toast('Neue Version wird geladen … ' + e.pct + ' %'); } });
       await NAT.installApk({ url: APK });
       try { h.remove(); } catch (e) { }
-      if (lab) lab.textContent = 'Installation bestätigen';
+      if (lab) lab.textContent = 'Installation bestätigen'; toast('Bitte die Installation bestätigen.');
     } catch (e) { toast(e.message || 'Update fehlgeschlagen'); }
   }
   WU.checkUpdate = checkUpdate; WU.doUpdate = doUpdate;
