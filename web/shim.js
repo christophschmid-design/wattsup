@@ -45,16 +45,24 @@
   /* ---------- Strava ---------- */
   var SV = 'https://www.strava.com';
   function stTok() { return lg('wu_strava', null); }
+  /* Darf die App Einheiten hochladen? sc = beim Verbinden erteilte Rechte; w = Ergebnis des letzten Hochladens */
+  function stWr() {
+    var t = stTok() || {};
+    if (t.w === 0) return st(false, 'Hochladen nicht erlaubt') + ' <span class="wu-mu">Strava hat das letzte Hochladen abgelehnt. Bitte neu verbinden und alle Häkchen setzen.</span>';
+    if (/activity:write/.test(t.sc || '') || t.w === 1) return st(true, 'Hochladen erlaubt') + (t.at ? ' <span class="wu-mu">seit ' + new Date(t.at).toLocaleDateString('de-AT') + '</span>' : '');
+    return st(false, 'Hochladen noch nicht erlaubt') + ' <span class="wu-mu">Die Verbindung stammt von vor der Umstellung. Einmal „Neu verbinden“ und alle Häkchen setzen.</span>';
+  }
+  function stMark(ok) { var t = stTok(); if (t) { t.w = ok ? 1 : 0; ls('wu_strava', t); } }
   function stOk() { var c = cfg(); return !!(c.stId && c.stSec && stTok()); }
   function stConnect() {
     var c = cfg();
     if (!c.stId || !c.stSec) { WU.open('Bitte zuerst Client-ID und Client-Secret von Strava eintragen.'); return; }
     location.href = SV + '/oauth/authorize?' + qs({ client_id: c.stId, redirect_uri: HOME, response_type: 'code', approval_prompt: 'auto', scope: 'read,activity:read_all,activity:write,profile:read_all', state: 'strava' });
   }
-  async function stExchange(code) {
+  async function stExchange(code, sc) {
     var c = cfg();
     var j = await http(SV + '/oauth/token', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ client_id: c.stId, client_secret: c.stSec, code: code, grant_type: 'authorization_code' }) });
-    ls('wu_strava', { a: j.access_token, r: j.refresh_token, x: j.expires_at, who: j.athlete && (j.athlete.firstname || '') });
+    ls('wu_strava', { a: j.access_token, r: j.refresh_token, x: j.expires_at, who: j.athlete && (j.athlete.firstname || ''), sc: sc || '', at: now() });
   }
   async function stToken() {
     var t = stTok(), c = cfg();
@@ -76,7 +84,8 @@
     var body = qs({ name: o.name, sport_type: o.sport_type || 'WeightTraining', type: 'Workout', start_date_local: loc, elapsed_time: Math.round(o.sec), description: o.desc || '' });
     var r;
     try { r = await http(SV + '/api/v3/activities', { method: 'POST', headers: { Authorization: 'Bearer ' + tk, 'Content-Type': 'application/x-www-form-urlencoded' }, body: body }); }
-    catch (e) { if (e && (e.status === 401 || e.status === 403)) throw new Error('Berechtigung activity:write fehlt (' + e.status + ')'); throw e; }
+    catch (e) { if (e && (e.status === 401 || e.status === 403)) { stMark(false); throw new Error('Berechtigung activity:write fehlt (' + e.status + ')'); } throw e; }
+    stMark(true);
     /* Für Follower ausblenden (nicht im Feed, im Profil weiter sichtbar) */
     if (r && r.id) {
       try { await http(SV + '/api/v3/activities/' + r.id, { method: 'PUT', headers: { Authorization: 'Bearer ' + tk, 'Content-Type': 'application/x-www-form-urlencoded' }, body: qs({ hide_from_home: 'true' }) }); r.hidden = true; }
@@ -387,10 +396,10 @@
 
   /* ---------- Anmelde-Rückkehr ---------- */
   var RET = (function () {
-    var p = new URLSearchParams(location.search), code = p.get('code'), st = p.get('state'), er = p.get('error');
+    var p = new URLSearchParams(location.search), code = p.get('code'), st = p.get('state'), er = p.get('error'), sc = p.get('scope');
     if (!st || (!code && !er)) return null;
     history.replaceState(null, '', HOME);
-    return { code: code, st: st, err: er };
+    return { code: code, st: st, err: er, sc: sc };
   })();
   async function handleReturn(r) {
     if (r.err) { toast('Anmeldung abgebrochen: ' + r.err); return; }
@@ -404,7 +413,7 @@
       return 'stop';
     }
     try {
-      if (r.st === 'strava') { await stExchange(r.code); toast('Strava ist verbunden.'); }
+      if (r.st === 'strava') { await stExchange(r.code, r.sc); toast(/activity:write/.test(r.sc || '') ? 'Strava ist verbunden, Hochladen ist erlaubt.' : 'Strava ist verbunden, aber ohne Erlaubnis zum Hochladen. Bitte beim Verbinden alle Häkchen setzen.'); }
       if (r.st === 'google') { await gExchange(r.code); syncP = null; await pull(); schedulePush(); toast('Google ist verbunden.'); }
     } catch (e) { toast('Verbinden fehlgeschlagen: ' + e.message); }
   }
@@ -470,7 +479,7 @@
   }
   function pageStrava() {
     var c = cfg();
-    return hdr('Strava', 'Liefert Aktivitäten, Leistung und Puls.') + '<div class="wu-c">' + '<p style="margin:0 0 4px">' + (stOk() ? st(true, 'verbunden') + ((stTok() || {}).who ? ' als ' + E(stTok().who) : '') : st(false, 'nicht verbunden')) + '</p>' +
+    return hdr('Strava', 'Liefert Aktivitäten, Leistung und Puls.') + '<div class="wu-c">' + '<p style="margin:0 0 4px">' + (stOk() ? st(true, 'verbunden') + ((stTok() || {}).who ? ' als ' + E(stTok().who) : '') : st(false, 'nicht verbunden')) + '</p>' + (stOk() ? '<p style="margin:0 0 8px">' + stWr() + '</p>' : '') +
       fld('wu-stId', 'Client-ID', c.stId) + fld('wu-stSec', 'Client-Secret', c.stSec, 'password') +
       '<button class="wu-b" data-wu="st">' + (stOk() ? 'Neu verbinden' : 'Mit Strava verbinden') + '</button>' + (stOk() ? '<button class="wu-b alt" data-wu="stx">Trennen</button>' : '') + '</div>' +
       '<details class="wu-c"><summary>Einstellungen bei Strava</summary><p class="wu-mu">Als „Authorization Callback Domain“ eintragen:<code class="wu-cp">' + E(location.host) + '</code></p></details>' + saveBtn();
