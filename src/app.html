@@ -729,6 +729,16 @@ body.tabdev nav{top:calc(4px + env(safe-area-inset-top,0px));bottom:auto}body.ta
 .co #co-s{background:#e3b257;color:#1a1407;border-color:#e3b257}
 .co .co-chips button{border-color:rgba(227,178,87,.45)}
 .co-cost{margin:8px 2px 0}
+.pace .pz{margin:6px 0 8px;font-size:.92rem}.pace .pz .ok{color:var(--ok)}.pace .pz .warn{color:var(--warn)}.pace .pz .bad{color:var(--bad)}
+.pchips{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+.pchips span{background:var(--bg2);border-radius:12px;padding:7px 8px;text-align:center}
+.pchips small{display:block;font-size:.68rem;color:var(--mu);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.pchips b{font-size:1rem}
+.pt{width:100%;border-collapse:collapse;font-size:.85rem;margin-top:6px}
+.pt th{text-align:left;font-size:.72rem;color:var(--mu);font-weight:600;padding:4px 4px 4px 0}
+.pt td{padding:6px 4px 2px 0;vertical-align:top}.pt td small{display:block;font-size:.72rem;color:var(--mu)}
+.pt td:last-child,.pt th:last-child{text-align:right}
+.pt tr.pn td{text-align:left!important;font-size:.76rem;color:var(--mu);padding:0 0 8px;border-bottom:1px solid var(--ln)}
+.pt tr.ps td{font-weight:700;border-top:1px solid var(--ln)}
 .kmpd{margin:10px 0 12px}.kmpd>summary{font-size:.88rem}.kmpd>summary b{font-weight:600}
 .kmpb,.kmpc{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0}
 .kmpd button{font:inherit;font-size:.82rem;padding:6px 11px;border-radius:99px;border:1px solid var(--ln);background:var(--bg2);color:var(--ink);cursor:pointer}
@@ -2573,6 +2583,29 @@ document.addEventListener('click',function(e){var b=e.target.closest&&e.target.c
  [].forEach.call(d.querySelectorAll('[data-krz]'),function(x){x.setAttribute('aria-pressed',String(k.z===x.getAttribute('data-krz')))});
  d.querySelector('.kmpx').hidden=!k.s;d.querySelector('.kmpsum').textContent=krSum(k);var m=d.querySelector('.kmpm');m.textContent='Speichere …';
  krSet(id,k).then(function(r){m.textContent=r==='db'?'Gespeichert.':'Nur auf diesem Gerät gespeichert.'})});
+/* Pacing-Plan Ötztaler (v43): Watt je Abschnitt, damit die Zielzeit mit den Zielwerten aufgeht.
+   Strecke grob: Kühtai 18,5 km/+1200 m, Brenner 39 km/+780 m, Jaufen 15,5 km/+1130 m, Timmelsjoch 28,7 km/+1820 m.
+   Physik (Steigung, Rollwiderstand, Luft, Höhe) geeicht an deinen Zeiten 2026; Abfahrten und Flachstücke wie 2026. */
+var OZSEG=[{k:'kuehtai',n:'Kühtai',km:18.5,hm:1200,top:2020,rel:1.02,cda:.36,t:'Erster Anstieg, Beine sind frisch: nicht überziehen. Oben bis 18 %, dort kurz drüber ist okay.'},
+ {k:'brenner',n:'Brenner',km:39,hm:780,top:1377,rel:.84,cda:.24,t:'Gruppe suchen und im Windschatten bleiben. Spart viel Kraft für später, nicht vorne im Wind arbeiten.'},
+ {k:'jaufen',n:'Jaufenpass',km:15.5,hm:1130,top:2090,rel:1,cda:.36,t:'Gleichmäßig durchziehen, essen nicht vergessen. Hier entscheidet sich, wie viel fürs Timmelsjoch bleibt.'},
+ {k:'timmel',n:'Timmelsjoch',km:28.7,hm:1820,top:2509,rel:.95,cda:.36,alt:.04,t:'Längster Anstieg, über 2000 m rund 4 % weniger Leistung. Kadenz hoch halten (75 und mehr) gegen Krämpfe, ab der Hälfte nicht mehr pushen.'}];
+function ozV(P,m,g,cda,rho){var lo=.5,hi=25,i,crr=.004,eff=.975;for(i=0;i<40;i++){var v=(lo+hi)/2,need=(m*9.81*(Math.sin(Math.atan(g))+crr*Math.cos(Math.atan(g)))+.5*rho*cda*v*v)*v/eff;if(need>P)hi=v;else lo=v}return(lo+hi)/2}
+function ozSegT(sg,P,m){var g=sg.hm/(sg.km*1000),rho=1.225*Math.exp(-((sg.top-sg.hm/2)/8500));return sg.km*1000/ozV(P*(1-(sg.alt||0)),m,g,sg.cda,rho)/60}
+var OZCAL=null;function ozCal(){if(OZCAL)return OZCAL;var m=OZ26.kg+Number(CF.bikeKg||10),c=0;OZSEG.forEach(function(sg){if(sg.k!=='brenner')c+=ozSegT(sg,OZ26.np*sg.rel,m)});var b=ozSegT(OZSEG[1],OZ26.np*OZSEG[1].rel,m);OZCAL={c:OZ26.climb/c,b:OZ26.brenner/b};return OZCAL}
+function ozPace(ftp,kg,stops,goal){var m=kg+Number(CF.bikeKg||10),cal=ozCal(),fix=OZ26.rest+stops;
+ function tot(f){var t=fix,seg=OZSEG.map(function(sg){var P=f*sg.rel*ftp,tt=ozSegT(sg,P,m)*(sg.k==='brenner'?cal.b:cal.c);t+=tt;return{sg:sg,P:P,t:tt}});return{t:t,seg:seg}}
+ var lo=.4,hi=1.1,i;for(i=0;i<40;i++){var md=(lo+hi)/2;if(tot(md).t>goal)lo=md;else hi=md}var f=(lo+hi)/2,r=tot(f);r.f=f;r.ok=f<=.78;r.fix=fix;return r}
+function paceHtml(){try{var ftp=Number(CF.ftpGoal),kg=Number(CF.kgGoal),st=Number(CF.raceStops),g=Number(CF.goalMin),r=ozPace(ftp,kg,st,g),r0=ozPace(FTP,W,st,g);
+ var lvl=r.f<=.72?['ok','gut machbar']:r.f<=.78?['warn','ambitioniert, aber machbar']:['bad','zu hoch für 9 bis 10 Stunden'];
+ var chips=r.seg.map(function(x){return'<span><small>'+x.sg.n+'</small><b>'+Math.round(x.P/5)*5+' W</b></span>'}).join('');
+ var rows=r.seg.map(function(x){return'<tr><td><b>'+x.sg.n+'</b><small>'+f1(x.sg.km)+' km · +'+x.sg.hm+' m</small></td><td>'+Math.round(x.P/5)*5+' W<small>'+f1(x.P/kg)+' W/kg · IF '+(Math.round(x.P/ftp*100)/100).toFixed(2).replace('.',',')+'</small></td><td>'+hmS(x.t)+'</td></tr><tr class="pn"><td colspan="3">'+E(x.sg.t)+'</td></tr>'}).join('');
+ return'<div class="card hc pace"><div class="hcl">⛰️ Pacing-Plan Ötztaler</div><p class="pz">Für <b>'+hmS(g)+' h</b> mit '+ftp+' W und '+kg+' kg: Anstiege mit rund <b>IF '+(Math.round(r.f*100)/100).toFixed(2).replace('.',',')+'</b> <span class="'+lvl[0]+'">('+lvl[1]+')</span></p><div class="pchips">'+chips+'</div>'
+ +'<details class="pd"><summary>Details je Anstieg</summary><table class="pt"><tr><th>Anstieg</th><th>Leistung</th><th>Zeit</th></tr>'+rows+'<tr><td>Abfahrten, Flachstücke</td><td></td><td>'+hmS(OZ26.rest)+'</td></tr><tr><td>Pausen</td><td></td><td>'+hmS(st)+'</td></tr><tr class="ps"><td>Gesamt</td><td></td><td>'+hmS(g)+'</td></tr></table>'
+ +'<p class="mu">Mit deiner jetzigen FTP ('+FTP+' W, '+Math.round(W)+' kg) bräuchtest du für dieselbe Zeit IF '+(Math.round(r0.f*100)/100).toFixed(2).replace('.',',')+(r0.f>.8?', das geht über so lange Zeit nicht':'')+'. Die Werte rechnen sich mit jeder Änderung von FTP, Gewicht oder Zielzeit neu.</p><p class="mu">Strecke und Steigungen sind gerundet, die Geschwindigkeit ist mit deinen Zeiten von 2026 geeicht. Richtwerte, kein Muss: Gefühl und Puls haben Vorrang.</p></details>'
+ +'<p class="coask"><span class="lnk" data-coask="Schau dir meinen Pacing-Plan für den Ötztaler an. Passt der so?" role="button" tabindex="0"><svg class="coi" aria-hidden="true"><use href="#ic-coach"/></svg> Coach dazu fragen</span></p></div>'}catch(e){return''}}
+var _rWegPace=rWeg;rWeg=function(){_rWegPace();var c=$('weg-b');if(!c||c.querySelector('.pace'))return;var h=paceHtml();if(!h)return;var m=c.querySelector('.hmore');if(m)m.insertAdjacentHTML('beforebegin',h);else c.insertAdjacentHTML('beforeend',h)};
+window.WU_PACE=function(){var r=ozPace(Number(CF.ftpGoal),Number(CF.kgGoal),Number(CF.raceStops),Number(CF.goalMin));return{if_anstiege:Math.round(r.f*100)/100,abschnitte:r.seg.map(function(x){return{name:x.sg.n,watt:Math.round(x.P),minuten:Math.round(x.t)}})}};
 /* Kontext für den Coach */
 function coCtx(){var t=tod(),X=window.ACT||[],n=S?S.ct.length:0,ph=phaseOf(t),bw=bodyAt(t),kg=bw?bw.kg:W;
  var ak=X.filter(function(a){return a.day>=addD(t,-21)}).map(function(a){var p=PM[a.day],q=LOG[a.id]||{};return{datum:a.day,name:a.name,sport:sn(a.sp),minuten:Math.round(a.sec/60),km:a.km>0?Math.round(a.km):null,hm:a.hm>0?Math.round(a.hm):null,tss:Math.round(a.tss),np:a.np?Math.round(a.np):null,puls:a.ah||null,if:a.iff?Math.round(a.iff*100)/100:null,entkopplung_prozent:a.dc==null?null:a.dc,geplant:p?p[2]:null,rpe:q.rpe||null,notiz:q.note||null,kraempfe:q.kr&&q.kr.s?krSum(q.kr):null}});
@@ -2678,7 +2711,7 @@ function coWhere(){var tab=document.body.getAttribute('data-tab')||'heute',sh=!$
   if(w.aid){var a2=coAct(w.aid);return{l:'Analyse '+(a2?a2.name+', '+lab(a2.day):''),d:'Aktivitäts-Analyse im Dashboard',x:{einheit:coActSum(a2)}}}return{l:'Dashboard „'+w.lay+'“',d:'Dashboard mit dem Layout '+w.lay}}
  if(tab==='heute'){var d=addD(tod(),DOFF||0),p=PM[d];return{l:'Heute'+(DOFF?' · '+dl(d):''),d:'Tagesansicht '+d,x:{tag:d,plan:p?{titel:p[2],beschreibung:p[3]||'',tss:p[1]}:null,einheiten:(window.ACT||[]).filter(function(a){return a.day===d}).map(coActSum)}}}
  if(tab==='plan'){var wk=wkOf(WOFF);return{l:'Woche ab '+lab(wk[0]),d:'Wochenansicht',x:{woche:wk.map(function(d){var p=PM[d];return{datum:d,plan:p?p[2]:'frei',tss:p?p[1]:0,erledigt:(window.ACT||[]).filter(function(a){return a.day===d}).map(function(a){return a.name+', '+Math.round(a.sec/60)+' min, TSS '+Math.round(a.tss)})}}),rueckblick:(PW8[wk[0]]||{}).rb||null}}}
- if(tab==='weg'){var P=season(),i=PHX==null?phCur():PHX,ph=P[Math.max(0,Math.min(P.length-1,i))];return{l:'Weg · Phase '+ph.n,d:'Weg zum Ziel mit Phase und Szenarien',x:{gezeigte_phase:{name:ph.n,von:ph.a,bis:ph.b,inhalt:ph.d},eigenes_szenario:SCN&&SCN.h!=null?{stunden_ab_fruehjahr:SCN.h,bloecke:SCN.b,ftp:SCN.f,zeit:hmS(SCN.t)}:null}}}
+ if(tab==='weg'){var P=season(),i=PHX==null?phCur():PHX,ph=P[Math.max(0,Math.min(P.length-1,i))];return{l:'Weg · Phase '+ph.n,d:'Weg zum Ziel mit Phase und Szenarien',x:{gezeigte_phase:{name:ph.n,von:ph.a,bis:ph.b,inhalt:ph.d},pacing_oetztaler:window.WU_PACE?WU_PACE():null,eigenes_szenario:SCN&&SCN.h!=null?{stunden_ab_fruehjahr:SCN.h,bloecke:SCN.b,ftp:SCN.f,zeit:hmS(SCN.t)}:null}}}
  if(tab==='analyse')return{l:'Analysen · '+({form:'Form & Belastung',leist:'Leistung',zon:'Zonen & Umfang',koerp:'Körper & Erholung'}[ATS]||ATS),d:'Analysen, Thema '+ATS};
  if(tab==='einheiten')return{l:'Alle Einheiten',d:'Archiv aller Einheiten'};if(tab==='saison')return{l:'Saison im Detail',d:'Saisonübersicht'};return{l:tab,d:tab}}
 function coWide(){return document.body.classList.contains('tabdev')&&window.innerWidth>=900}
