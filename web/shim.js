@@ -240,18 +240,28 @@
   function dbAll() { return lg(DBK, {}) || {}; }
   var syncP = null, pushT = null, SYNC = lg('wu_sync', { st: 'aus', ts: 0, msg: '' });
   function syncSt(st, msg) { SYNC = { st: st, ts: now(), msg: msg || '' }; ls('wu_sync', SYNC); }
-  async function dFind() {
-    var j = await gApi('https://www.googleapis.com/drive/v3/files?' + qs({ spaces: 'appDataFolder', q: "name='" + DFN + "'", fields: 'files(id,modifiedTime)' }));
-    return j.files && j.files[0] ? j.files[0].id : null;
+  /* Alle Abgleich-Dateien (es können durch gleichzeitiges Anlegen mehrere entstanden sein), älteste zuerst */
+  async function dList() {
+    var j = await gApi('https://www.googleapis.com/drive/v3/files?' + qs({ spaces: 'appDataFolder', q: "name='" + DFN + "' and trashed=false", fields: 'files(id,createdTime)', orderBy: 'createdTime', pageSize: 20 }));
+    return (j.files || []).map(function (f) { return f.id; });
+  }
+  async function dFind() { var L = await dList(); return L[0] || null; }
+  /* Alle Dateien holen und in den lokalen Stand einarbeiten; liefert die Liste der Datei-IDs */
+  async function dMergeAll() {
+    var L = await dList(), tk = await gToken(), before = JSON.stringify(dbAll()), mg = dbAll();
+    for (var i = 0; i < L.length; i++) {
+      var r = await fetch('https://www.googleapis.com/drive/v3/files/' + L[i] + '?alt=media', { headers: { Authorization: 'Bearer ' + tk } });
+      if (r.ok) { var rem = await r.json(); mg = merge(mg, (rem && rem.docs) || {}); }
+    }
+    ls(DBK, mg); lastPull = now(); ls('wu_dfid', L[0] || null);
+    if (JSON.stringify(mg) !== before) { try { window.dispatchEvent(new Event('wu-db-pulled')); } catch (e) { } }
+    return L;
   }
   function merge(a, b) { var o = {}; Object.keys(a).forEach(function (k) { o[k] = a[k]; }); Object.keys(b).forEach(function (k) { if (!o[k] || (b[k].ts || 0) > (o[k].ts || 0)) o[k] = b[k]; }); return o; }
   async function pull() {
     if (!gOk()) { syncSt('aus'); return; }
-    try {
-      var id = await dFind(); ls('wu_dfid', id);
-      if (id) { var tk = await gToken(); var r = await fetch('https://www.googleapis.com/drive/v3/files/' + id + '?alt=media', { headers: { Authorization: 'Bearer ' + tk } }); if (r.ok) { var rem = await r.json(), before = JSON.stringify(dbAll()), mg = merge(dbAll(), (rem && rem.docs) || {}); ls(DBK, mg); lastPull = now(); if (JSON.stringify(mg) !== before) { try { window.dispatchEvent(new Event('wu-db-pulled')); } catch (e) { } } } }
-      syncSt('ok');
-    } catch (e) { syncSt('err', e.message); }
+    try { var L = await dMergeAll(); if (L.length > 1) await push(); syncSt('ok'); }
+    catch (e) { syncSt('err', e.message); }
   }
   /* Vor dem Hochladen immer erst den Stand der anderen Geräte holen und zusammenführen.
      Früher hat ein Gerät die Datei mit seinem eigenen Stand überschrieben und so frische
@@ -265,12 +275,7 @@
   }
   async function push1() {
     try {
-      var id0 = lg('wu_dfid', null) || await dFind();
-      if (id0) {
-        var tk0 = await gToken(), r0 = await fetch('https://www.googleapis.com/drive/v3/files/' + id0 + '?alt=media', { headers: { Authorization: 'Bearer ' + tk0 } });
-        if (r0.ok) { var rem0 = await r0.json(), before0 = JSON.stringify(dbAll()), mg0 = merge(dbAll(), (rem0 && rem0.docs) || {}); ls(DBK, mg0); lastPull = now(); if (JSON.stringify(mg0) !== before0) { try { window.dispatchEvent(new Event('wu-db-pulled')); } catch (e) { } } }
-        else if (r0.status === 404) { ls('wu_dfid', null); id0 = await dFind(); }
-      }
+      var L0 = await dMergeAll(), id0 = L0[0] || null;
       var body = JSON.stringify({ v: 1, ts: now(), docs: dbAll() }), id = id0;
       if (id) await gApi('https://www.googleapis.com/upload/drive/v3/files/' + id + '?uploadType=media', { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: body });
       else {
@@ -278,6 +283,8 @@
         var j = await gApi('https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart', { method: 'POST', headers: { 'Content-Type': 'multipart/related; boundary=' + bd }, body: mp });
         ls('wu_dfid', j.id);
       }
+      /* Doppelte Dateien nach dem Zusammenführen entfernen */
+      for (var k = 1; k < L0.length; k++) { try { await gApi('https://www.googleapis.com/drive/v3/files/' + L0[k], { method: 'DELETE' }); } catch (e) { } }
       syncSt('ok');
     } catch (e) { syncSt('err', e.message); }
   }
