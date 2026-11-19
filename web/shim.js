@@ -99,7 +99,7 @@
   var athP = null;
   function athlete() { if (!athP) { athP = sv('/athlete').catch(function (e) { athP = null; throw e; }); } return athP; }
   function locSec(s) { /* lokale Zeit ohne Zone als Unix-Sekunden */ var d = new Date(String(s).replace(/Z$/, '')); return Math.floor(d.getTime() / 1000); }
-  var SKEY = { heart_rate: 'heartrate', location: 'latlng' };
+  var SKEY = { heart_rate: 'heartrate', location: 'latlng', speed: 'velocity_smooth' };
   function bucket(arr, n, mode) {
     if (!arr || !arr.length || !n || arr.length <= n) return arr;
     var out = [], L = arr.length;
@@ -136,6 +136,10 @@
       else acts.sort(function (a, b) { return a.start_local < b.start_local ? 1 : -1; });
       var more = arr.length === per;
       return { activities: acts, has_next_page: more, end_cursor: more ? String(page + 1) : null, value_units: { distance: 'kilometers', avg_speed: 'kilometers/hour' } };
+    },
+    get_activity_laps: async function (q) {
+      var L = await sv('/activities/' + encodeURIComponent(q.activity_id) + '/laps') || [];
+      return { laps: L.map(function (l) { return { i: l.lap_index, name: l.name, s: l.start_index, e: l.end_index, t: l.elapsed_time, mt: l.moving_time, km: l.distance ? Math.round(l.distance) / 1000 : 0, w: l.average_watts || null, hf: l.average_heartrate || null, hfx: l.max_heartrate || null, cad: l.average_cadence || null, hm: l.total_elevation_gain || 0, v: l.average_speed ? Math.round(l.average_speed * 36) / 10 : null }; }) };
     },
     get_activity_streams: async function (q) {
       var keys = (q.streams || []).map(function (s) { return SKEY[s] || s; });
@@ -403,7 +407,7 @@
     if (c !== false) CACHE[ck] = { p: p, t: now() };
     return { payload: p, cache: { storedAt: now() } };
   }
-  var MCP = { callTool: callTool, server: async function (name) { var o = {}; ['list_activities', 'get_activity_streams', 'get_athlete_zones', 'get_athlete_profile', 'get_athlete_best_efforts', 'get_active_streak', 'list_events', 'create_event', 'delete_event', 'widgets-daily-claude'].forEach(function (t) { o[t] = function (i) { return callTool(name, t, i).then(function (r) { return r.payload; }); }; }); return o; } };
+  var MCP = { callTool: callTool, server: async function (name) { var o = {}; ['list_activities', 'get_activity_streams', 'get_activity_laps', 'get_athlete_zones', 'get_athlete_profile', 'get_athlete_best_efforts', 'get_active_streak', 'list_events', 'create_event', 'delete_event', 'widgets-daily-claude'].forEach(function (t) { o[t] = function (i) { return callTool(name, t, i).then(function (r) { return r.payload; }); }; }); return o; } };
 
   /* ---------- Dateien speichern ---------- */
   function b64(u8) { var s = '', i, ch = 0x8000; for (i = 0; i < u8.length; i += ch) s += String.fromCharCode.apply(null, u8.subarray(i, i + ch)); return btoa(s); }
