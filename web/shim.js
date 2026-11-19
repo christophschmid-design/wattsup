@@ -695,7 +695,7 @@
   }
   window.WU_SYNC = function (st) {
     if (!CAPN) return;
-    var sig = JSON.stringify([st.day, st.lv, st.today, st.done, st.tomorrow, st.form, st.fit, st.md, st.wd, st.moodOn, st.mFrom, cfg().nMood, cfg().nPlan, cfg().nWeigh]);
+    var sig = JSON.stringify([st.day, st.lv, st.coach, st.time, st.today, st.done, st.tomorrow, st.form, st.fit, st.md, st.wd, st.moodOn, st.mFrom, cfg().nMood, cfg().nPlan, cfg().nWeigh]);
     if (sig === lastSig && now() - lastSync < 600000) return;
     lastSig = sig; lastSync = now();
     if (PREF) PREF.set({ key: 'wu_widget', value: JSON.stringify(st) }).then(function () { if (NAT) NAT.updateWidget(); }).catch(function () { });

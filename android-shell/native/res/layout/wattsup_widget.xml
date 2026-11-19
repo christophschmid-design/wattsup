@@ -52,4 +52,14 @@
         android:textSize="12sp"
         android:maxLines="2"
         android:ellipsize="end" />
+    <TextView
+        android:id="@+id/wu_coach"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="6dp"
+        android:textColor="#E3B257"
+        android:textSize="12sp"
+        android:textStyle="italic"
+        android:maxLines="2"
+        android:ellipsize="end" />
 </LinearLayout>

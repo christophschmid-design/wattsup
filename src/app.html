@@ -2079,7 +2079,8 @@ var _rall6=rall;rall=function(){_rall6();try{rIC()}catch(e){logErr('App','Diagra
 
 /* WattsUp: Zustand für Widget und Benachrichtigungen */
 function wuState(){var t=iso(new Date()),r=rdy(),p=PM[t],tm=PM[addD(t,1)],X=window.ACT||[],dn=X.filter(function(x){return x.day===t}),n=S?S.fm.length:0;
-return{ts:Date.now(),day:t,lv:r?r.lv:-1,amp:r?RL3[r.lv]:'',rec:r?r.rec:'',today:p?p[2]:'',tss:p?p[1]:0,done:dn.map(function(x){return x.name}).join(', '),tomorrow:tm?tm[2]:'',form:n?Math.round(S.fm[n-1]):null,fit:n?Math.round(S.ct[n-1]):null,md:Object.keys(MOOD).filter(function(d){return d>=t}),wd:Object.keys(WT).filter(function(d){return d>=t}),moodOn:CF.mood!==false,mFrom:Number(CF.mFrom)||5}}
+var wdN=new Date(t+'T12:00:00').getDay(),cs='';try{cs=typeof coSub==='function'?coSub():''}catch(e){}
+return{ts:Date.now(),day:t,lv:r?r.lv:-1,amp:r?RL3[r.lv]:'',rec:r?r.rec:'',today:p?p[2]:'',time:p&&p[1]>0?String((wdN===0||wdN===6)?CF.we:CF.wd||''):'',coach:cs,tss:p?p[1]:0,done:dn.map(function(x){return x.name}).join(', '),tomorrow:tm?tm[2]:'',form:n?Math.round(S.fm[n-1]):null,fit:n?Math.round(S.ct[n-1]):null,md:Object.keys(MOOD).filter(function(d){return d>=t}),wd:Object.keys(WT).filter(function(d){return d>=t}),moodOn:CF.mood!==false,mFrom:Number(CF.mFrom)||5}}
 /* Andere Sportart als geplant: Titel in Plan und Kalender anpassen */
 var SPC={Run:'run',TrailRun:'run',VirtualRun:'run',Ride:'ride',VirtualRide:'ride',GravelRide:'ride',MountainBikeRide:'ride',EBikeRide:'ride',Hike:'hike',Walk:'hike',BackcountrySki:'ski',NordicSki:'ski',WeightTraining:'kraft',Workout:'kraft',Swim:'swim'};
 var SPN={VirtualRide:'Zwift',Ride:'Rennrad',GravelRide:'Gravel',MountainBikeRide:'Mountainbike',EBikeRide:'E-Bike',Run:'Lauf',TrailRun:'Traillauf',VirtualRun:'Laufband',Hike:'Wanderung',Walk:'Spaziergang',BackcountrySki:'Skitour',NordicSki:'Langlauf',WeightTraining:'Kraft',Workout:'Training',Swim:'Schwimmen'};
