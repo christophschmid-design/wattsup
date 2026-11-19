@@ -1006,6 +1006,14 @@
     var r = await http(base + '/notify', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ a: id, t: String(title || '').slice(0, 60), b: String(body || '').slice(0, 220), k: k || 'coach' }) });
     return !!(r && r.ok);
   };
+  /* Stand für den Coach bei geschlossener App an den Worker; Schlüssel aus dem Claude-Schlüssel abgeleitet, damit alle Geräte denselben haben */
+  window.WU_SRV = async function (snap) {
+    var base = pushBase(), c = cfg(); if (!/^https:\/\//.test(base) || !c.aKey) return false;
+    var id = String(c.pushTopic || '').split('_')[1]; if (!id) { try { id = String((await athlete()).id); } catch (e) { return false; } }
+    var h = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(c.aKey + '|wattsup-coach'));
+    var sec = Array.prototype.map.call(new Uint8Array(h), function (x) { return ('0' + x.toString(16)).slice(-2); }).join('').slice(0, 32);
+    try { var r = await http(base + '/coach-sync', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(Object.assign({ a: id, s: sec }, snap)) }); return !!(r && r.ok); } catch (e) { return false; }
+  };
   async function pushTest() {
     var c = cfg(), id = String(c.pushTopic || '').split('_')[1];
     var r = await http(pushBase() + '/test?athlete=' + encodeURIComponent(id));

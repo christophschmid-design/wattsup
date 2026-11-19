@@ -1,6 +1,55 @@
 import { skiCheck, skiText } from './ski.js';
+/* ---------- Coach bei geschlossener App (v43) ----------
+   Die App schickt beim Öffnen einen kleinen Stand (Plan der nächsten 14 Tage, erledigte Tage, Rennen).
+   Strava meldet neue Aktivitäten. Stündlich prüft der Worker ein paar Regeln und schickt höchstens
+   eine Nachricht pro Tag. Gespeichert wird nur dieser Stand, im Durable Object des Sportlers. */
+import { DurableObject } from 'cloudflare:workers';
+export class CoachDO extends DurableObject {
+  async get() {
+    const [snap, sec, acts, sent] = await Promise.all(['snap', 'sec', 'acts', 'sent'].map(k => this.ctx.storage.get(k)));
+    return { snap: snap || null, sec: sec || null, acts: acts || [], sent: sent || {} };
+  }
+  async sync(j) {
+    const sec = await this.ctx.storage.get('sec');
+    if (sec && sec !== j.s) return { ok: false, error: 'secret' };
+    if (!sec) await this.ctx.storage.put('sec', j.s);
+    await this.ctx.storage.put('snap', { on: j.on !== false, open: Number(j.open) || Date.now(), plan: (j.plan || []).slice(0, 21), done: (j.done || []).slice(-14), next: !!j.next, races: (j.races || []).slice(0, 4), ts: Date.now() });
+    return { ok: true };
+  }
+  async act(day) {
+    const a = (await this.ctx.storage.get('acts')) || [];
+    if (a.indexOf(day) < 0) { a.push(day); await this.ctx.storage.put('acts', a.slice(-30)); }
+  }
+  async mark(day, k) {
+    const s = (await this.ctx.storage.get('sent')) || {};
+    s[day] = k; const keys = Object.keys(s).sort(); while (keys.length > 40) delete s[keys.shift()];
+    await this.ctx.storage.put('sent', s);
+  }
+}
+function vie(d) {
+  const p = {}; new Intl.DateTimeFormat('en-CA', { timeZone: 'Europe/Vienna', year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', hour12: false, weekday: 'short' }).formatToParts(d).forEach(x => p[x.type] = x.value);
+  return { day: p.year + '-' + p.month + '-' + p.day, h: Number(p.hour) % 24, wd: p.weekday };
+}
+function ddiff(a, b) { return Math.round((Date.parse(b + 'T12:00:00Z') - Date.parse(a + 'T12:00:00Z')) / 864e5); }
+function pick(l, seed) { let h = 0; for (const c of seed) h = (h * 31 + c.charCodeAt(0)) >>> 0; return l[h % l.length]; }
+function coachRule(st, now) {
+  const s = st.snap; if (!s || !s.on) return null;
+  const L = vie(now), t = L.day, p = (s.plan || []).find(x => x.d === t), done = (s.done || []).indexOf(t) >= 0 || st.acts.indexOf(t) >= 0;
+  if (st.sent[t]) return null;
+  const r = (s.races || []).map(x => ({ n: x.n, d: x.d, in: ddiff(t, x.d) })).filter(x => x.in >= 0).sort((a, b) => a.in - b.in)[0];
+  if (L.h === 7) {
+    if (r && r.in === 0) return { k: 'race', t: r.n + ': heit is da Tog', b: pick(['Gib Gas und speib erst im Ziel. Pacing-Plan im Kopf, Riegel im Trikot.', 'Heit wird obgrechnet. Locker oofonga, hintn raus Gas.'], t) };
+    if (r && [100, 50, 30, 14, 7, 3, 1].indexOf(r.in) >= 0) return { k: 'count', t: 'No ' + r.in + (r.in === 1 ? ' Tog' : ' Tog') + ' bis ' + r.n, b: pick(['Jeda Tog zöd, a de foin.', 'Jetzt nur net deppat wern.', 'S\'Timmelsjoch wart net af Hosnscheißer.'], t) };
+    if (p && (p.k === 'hard' || p.k === 'long')) return { k: 'am', t: 'Heit: ' + p.t, b: (p.time ? p.time + ' Uhr. ' : '') + (p.k === 'hard' ? 'Heit duats weh. Vorher kurz s\'Morgengefühl eintragen, dann passt da Coach an.' : 'Lange Einheit. Vagiss s\'Essn net und d\'Sitzcreme a net.') };
+  }
+  if (L.h === 21 && p && p.tss > 0 && !done) return { k: 'miss', t: p.t + ' ausglassn?', b: 'Passiert. Sag ma kurz, wos los woa, dann plan i um.' };
+  if (L.h === 18 && L.wd === 'Sun' && !s.next) return { k: 'plan', t: 'Wochenplanung steht an', b: 'Fia nächste Woch is no nix plant. Zwoa Minutn, dann passt des.' };
+  if (L.h === 12 && now - (s.open || 0) > 4 * 864e5) return { k: 'away', t: 'Lebst no?', b: 'Seit ' + Math.floor((now - s.open) / 864e5) + ' Tog nix vo dir ghört. Schau kurz eine, dann passt da Plan wieda.' };
+  return null;
+}
+
 // WattsUp Push: empfängt Meldungen von Strava und schickt eine Push-Nachricht ans Handy.
-// Keine Speicherung: Das Handy hört auf das Thema "wattsup_<Strava-Athleten-ID>".
+// Das Handy hört auf das Thema "wattsup_<Strava-Athleten-ID>". Gespeichert wird nur der Coach-Stand (siehe CoachDO).
 
 const VERIFY = 'wattsup';
 
@@ -58,8 +107,17 @@ async function push(env, athlete, title, body, data) {
 export default {
   // Freitags: Skitour-Vorschlag fürs Wochenende (nur Dezember bis April)
   async scheduled(event, env, ctx) {
-    const m = new Date().getUTCMonth() + 1;
+    const m = new Date().getUTCMonth() + 1, now = new Date(event.scheduledTime || Date.now());
     if (!env.ATHLETE) return;
+    // Coach-Regeln (stündlich)
+    if (env.COACH) ctx.waitUntil((async () => {
+      const stub = env.COACH.get(env.COACH.idFromName(env.ATHLETE)), st = await stub.get(), r = coachRule(st, now.getTime());
+      if (!r) return;
+      await push(env, env.ATHLETE, r.t, r.b, { k: 'coach' });
+      await stub.mark(vie(now).day, r.k);
+    })().catch(e => console.log('coach', e.message)));
+    // Skitour nur freitags 17 Uhr UTC
+    if (!(now.getUTCDay() === 5 && now.getUTCHours() === 17)) return;
     ctx.waitUntil((async () => {
       const r = await skiCheck();
       if (!r.lagebericht && m > 4 && m < 12) return; // außerhalb der Saison ohne Lagebericht keine Nachricht
@@ -101,6 +159,16 @@ export default {
       return new Response('method', { status: 405 });
     }
 
+    // Stand für den Coach bei geschlossener App
+    if (url.pathname === '/coach-sync') {
+      if (req.method === 'OPTIONS') return new Response(null, { headers: Object.assign({ 'Access-Control-Allow-Methods': 'POST', 'Access-Control-Allow-Headers': 'Content-Type' }, cors) });
+      if (req.method !== 'POST' || !env.COACH) return new Response('nein', { status: 405, headers: cors });
+      const j = await req.json().catch(() => ({}));
+      if (String(j.a) !== String(env.ATHLETE) || !/^[0-9a-f]{32}$/.test(String(j.s || ''))) return new Response('bad', { status: 400, headers: cors });
+      const r = await env.COACH.get(env.COACH.idFromName(env.ATHLETE)).sync(j);
+      return Response.json(r, { status: r.ok ? 200 : 403, headers: cors });
+    }
+
     // Nachricht aus der App an das Handy (Coach, Wochenrückblick)
     if (url.pathname === '/notify') {
       if (req.method === 'OPTIONS') return new Response(null, { headers: Object.assign({ 'Access-Control-Allow-Methods': 'POST', 'Access-Control-Allow-Headers': 'Content-Type' }, cors) });
@@ -117,6 +185,9 @@ export default {
     // Meldung von Strava
     if (req.method === 'POST') {
       const ev = await req.json().catch(() => null);
+      if (ev && ev.object_type === 'activity' && ev.aspect_type === 'create' && ev.owner_id && env.COACH && String(ev.owner_id) === String(env.ATHLETE)) {
+        ctx.waitUntil(env.COACH.get(env.COACH.idFromName(env.ATHLETE)).act(vie(new Date((ev.event_time || Date.now() / 1000) * 1000)).day).catch(e => console.log(e.message)));
+      }
       if (ev && ev.object_type === 'activity' && ev.aspect_type === 'create' && ev.owner_id) {
         ctx.waitUntil(push(env, ev.owner_id, 'Neue Aktivität auf Strava', 'Kurz in WattsUp bewerten?', { k: 'act', id: String(ev.object_id) }).catch(e => console.log(e.message)));
       }

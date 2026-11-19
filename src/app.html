@@ -729,6 +729,7 @@ body.tabdev nav{top:calc(4px + env(safe-area-inset-top,0px));bottom:auto}body.ta
 .co #co-s{background:#e3b257;color:#1a1407;border-color:#e3b257}
 .co .co-chips button{border-color:rgba(227,178,87,.45)}
 .co-cost{margin:8px 2px 0}
+.co-srv{display:block;font-size:.8rem;margin:10px 2px 4px}.co-srv small{display:block;margin-left:24px}
 .pace .pz{margin:6px 0 8px;font-size:.92rem}.pace .pz .ok{color:var(--ok)}.pace .pz .warn{color:var(--warn)}.pace .pz .bad{color:var(--bad)}
 .pchips{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
 .pchips span{background:var(--bg2);border-radius:12px;padding:7px 8px;text-align:center}
@@ -2606,6 +2607,19 @@ function paceHtml(){try{var ftp=Number(CF.ftpGoal),kg=Number(CF.kgGoal),st=Numbe
  +'<p class="coask"><span class="lnk" data-coask="Schau dir meinen Pacing-Plan für den Ötztaler an. Passt der so?" role="button" tabindex="0"><svg class="coi" aria-hidden="true"><use href="#ic-coach"/></svg> Coach dazu fragen</span></p></div>'}catch(e){return''}}
 var _rWegPace=rWeg;rWeg=function(){_rWegPace();var c=$('weg-b');if(!c||c.querySelector('.pace'))return;var h=paceHtml();if(!h)return;var m=c.querySelector('.hmore');if(m)m.insertAdjacentHTML('beforebegin',h);else c.insertAdjacentHTML('beforeend',h)};
 window.WU_PACE=function(){var r=ozPace(Number(CF.ftpGoal),Number(CF.kgGoal),Number(CF.raceStops),Number(CF.goalMin));return{if_anstiege:Math.round(r.f*100)/100,abschnitte:r.seg.map(function(x){return{name:x.sg.n,watt:Math.round(x.P),minuten:Math.round(x.t)}})}};
+/* Coach bei geschlossener App (v43): Stand an den Worker, der stündlich prüft und höchstens einmal am Tag meldet */
+var COSRV=(function(){try{return localStorage.getItem('cosrv')!=='0'}catch(e){return true}})(),COSRVT=0;
+function srvKind(t){t=String(t||'');return/vo2|schwelle|intervall|30\/30|sweet|ftp|test|4×4|4x4|tempo|sprint/i.test(t)?'hard':/lang|ausfahrt|rennrad|gravel|tour/i.test(t)?'long':'easy'}
+function srvSync(force){if(!window.WU_SRV||!S)return;if(!force&&Date.now()-COSRVT<6e5)return;COSRVT=Date.now();
+ try{var t=tod(),plan=[],i;for(i=0;i<14;i++){var d=addD(t,i),p=PM[d];if(p&&p[1]>0){var wd=new Date(d+'T12:00:00').getDay();plan.push({d:d,t:String(p[2]).slice(0,60),tss:Math.round(p[1]),k:srvKind(p[2]),time:String((wd===0||wd===6)?CF.we:CF.wd||'')})}}
+ var X=window.ACT||[],done=[];X.forEach(function(a){if(a.day>=addD(t,-14)&&done.indexOf(a.day)<0)done.push(a.day)});
+ var nw=wkOf(1),q=PW8[nw[0]]||{},next=!!(q.acc||q.prop)||nw.some(function(d){return PM[d]&&PM[d][1]>0});
+ WU_SRV({on:COSRV,open:Date.now(),plan:plan,done:done,next:next,races:[{n:'Ötztaler',d:String(CF.race2||'')},{n:'Mondsee',d:String(CF.race||'')}].filter(function(r){return/^\d{4}-\d{2}-\d{2}$/.test(r.d)})})}catch(e){}}
+setTimeout(function(){srvSync(true)},25000);
+document.addEventListener('visibilitychange',function(){if(!document.hidden)srvSync(false)});
+window.addEventListener('wu-db-pulled',function(){srvSync(false)});
+document.addEventListener('change',function(e){if(e.target&&e.target.id==='co-srv'){COSRV=e.target.checked;try{localStorage.setItem('cosrv',COSRV?'1':'0')}catch(x){}srvSync(true)}});
+setTimeout(function(){var _coInS=IN['coach'];IN['coach']=function(){var o=_coInS(),tg='<label class="co-srv"><input type="checkbox" id="co-srv"'+(COSRV?' checked':'')+'> Auch bei geschlossener App melden <small class="mu">(höchstens einmal am Tag: Einheit heute, ausgelassen, Wochenplanung, Countdown)</small></label>';if(o.h.slice(-12)==='</div></div>')o.h=o.h.slice(0,-12)+tg+'</div></div>';return o};},0);
 /* Kontext für den Coach */
 function coCtx(){var t=tod(),X=window.ACT||[],n=S?S.ct.length:0,ph=phaseOf(t),bw=bodyAt(t),kg=bw?bw.kg:W;
  var ak=X.filter(function(a){return a.day>=addD(t,-21)}).map(function(a){var p=PM[a.day],q=LOG[a.id]||{};return{datum:a.day,name:a.name,sport:sn(a.sp),minuten:Math.round(a.sec/60),km:a.km>0?Math.round(a.km):null,hm:a.hm>0?Math.round(a.hm):null,tss:Math.round(a.tss),np:a.np?Math.round(a.np):null,puls:a.ah||null,if:a.iff?Math.round(a.iff*100)/100:null,entkopplung_prozent:a.dc==null?null:a.dc,geplant:p?p[2]:null,rpe:q.rpe||null,notiz:q.note||null,kraempfe:q.kr&&q.kr.s?krSum(q.kr):null}});
