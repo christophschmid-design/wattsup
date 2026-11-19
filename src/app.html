@@ -2401,7 +2401,7 @@ new MutationObserver(function(){var els=document.querySelectorAll('.wumap-auto:n
 /* Kraft: Dauer und RPE erfassen, auf Wunsch als Strava-Eintrag */
 function krDone(d){var r=KR[d]||{},L=krList(d),R=krRounds(d),mi=r.st&&r.fin?Math.max(5,Math.round((r.fin-r.st)/60000)):Math.round(L.length*R*2.5+5);
 return'<div class="krdone" id="krdone"><h3>Kraft abschließen</h3><label class="mu" for="kr-min">Dauer in Minuten</label><input id="kr-min" type="number" min="5" max="180" inputmode="numeric" value="'+(r.min||mi)+'"><p class="mu" style="margin:10px 0 4px">Gefühlte Belastung (RPE)</p><div class="rpe" role="group" aria-label="RPE">'+[1,2,3,4,5,6,7,8,9,10].map(function(n){return'<button type="button" class="q'+n+'" data-krr="'+n+'" aria-pressed="'+(r.rpe===n)+'">'+n+'</button>'}).join('')+'</div>'+
-(r.sv?'<p class="ok" style="margin-top:10px">✓ In Strava eingetragen'+(r.sva?' ('+E(r.sva)+')':'')+'</p>':'<div class="row2" style="margin-top:12px">'+(window.WU_STRAVA_ADD?'<button type="button" class="pbtn sm" data-krs="'+d+'">In Strava eintragen</button>':'')+'<button type="button" class="pbtn sm alt" data-krk="'+d+'">Nur speichern</button></div><p class="mu" id="kr-msg">Strava bekommt Dauer, Uhrzeit und RPE in der Beschreibung. Puls wird nicht übertragen.</p>')+'</div>'}
+(r.sv?'<p class="ok" style="margin-top:10px">✓ In Strava eingetragen'+(r.sva?' ('+E(r.sva)+')':'')+'</p>':'<div class="row2" style="margin-top:12px">'+(window.WU_STRAVA_ADD?'<button type="button" class="pbtn sm" data-krs="'+d+'">In Strava eintragen</button>':'')+'<button type="button" class="pbtn sm alt" data-krk="'+d+'">Nur speichern</button></div><p class="mu" id="kr-msg">Strava bekommt nur Titel, Dauer und Uhrzeit. Puls wird nicht übertragen.</p>')+'</div>'}
 var _krBuild2=krBuild;krBuild=function(d){var o=_krBuild2(d),r=KR[d]||{};if(r.fin)o.h+=krDone(d);return o};
 document.addEventListener('click',async function(e){var t=e.target.closest&&e.target.closest('[data-kd],[data-krr],[data-krs],[data-krk],[data-kf]');if(!t)return;
 if(t.hasAttribute('data-kd')){var d0=t.getAttribute('data-kd').split('|')[0],r0=KR[d0]=KR[d0]||{s:[]};if(!r0.st){r0.st=Date.now();r0._dirty=1;krSave()}return}
@@ -2413,7 +2413,7 @@ if(t.hasAttribute('data-krk')){if(msg)msg.textContent='Gespeichert.';hToast('Kra
 if(!r.rpe){if(msg)msg.textContent='Bitte zuerst die RPE wählen.';return}
 t.disabled=true;if(msg)msg.textContent='Wird an Strava gesendet …';
 var st=new Date(r.st||((r.fin||Date.now())-mi*60000)),L=krList(dd0),nm='Kraft · WattsUp';
-try{var res=await window.WU_STRAVA_ADD({name:nm,sport_type:'WeightTraining',start:st,sec:mi*60,desc:'RPE '+r.rpe+'/10 · '+L.map(function(x){return x[0]}).join(', ')+' · erfasst mit WattsUp'});
+try{var res=await window.WU_STRAVA_ADD({name:nm,sport_type:'WeightTraining',start:st,sec:mi*60,desc:''});
 r.sv=res&&res.id?String(res.id):'1';r.sva=lab(dd0)+' '+String(st.getHours()).padStart(2,'0')+':'+String(st.getMinutes()).padStart(2,'0');r._dirty=1;krSave();
 if(res&&res.id){try{await saveLog(res.id,{day:dd0,name:nm,sec:mi*60,tss:0},r.rpe,'')}catch(x){}}
 var hd=res&&res.hidden;if(msg)msg.textContent='In Strava eingetragen'+(hd?', für Follower ausgeblendet.':'.');hToast('Kraft in Strava eingetragen'+(hd?' · für Follower ausgeblendet':''));setTimeout(function(){try{H.live&&H.live()}catch(x){}},1500)}
