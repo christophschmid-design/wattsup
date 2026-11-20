@@ -28,8 +28,18 @@ if (!m.includes('android:scheme="wattsup"')) {
 for (const p of ['android.permission.REQUEST_INSTALL_PACKAGES', 'android.permission.POST_NOTIFICATIONS']) {
   if (!m.includes(p)) m = m.replace('</manifest>', `    <uses-permission android:name="${p}" />\n</manifest>`);
 }
+if (!m.includes('WattsUpWeekWidget')) {
+  m = m.replace('</application>', `    <receiver android:name=".WattsUpWeekWidget" android:exported="false" android:label="WattsUp Woche">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data android:name="android.appwidget.provider" android:resource="@xml/wattsup_week_info" />
+        </receiver>
+    </application>`);
+}
+m = m.replace('android:name=".WattsUpWidget" android:exported="false" android:label="WattsUp"', 'android:name=".WattsUpWidget" android:exported="false" android:label="WattsUp Heute"');
 fs.writeFileSync(man, m);
-must(m.includes('WattsUpWidget') && m.includes('REQUEST_INSTALL_PACKAGES'), 'Manifest');
+must(m.includes('WattsUpWidget') && m.includes('WattsUpWeekWidget') && m.includes('REQUEST_INSTALL_PACKAGES'), 'Manifest');
 
 // Gradle: Signatur, Version, Hintergrund-Plugin
 const g = `${A}/build.gradle`;

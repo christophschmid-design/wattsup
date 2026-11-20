@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/ww_root" android:layout_width="match_parent" android:layout_height="match_parent"
+    android:orientation="vertical" android:padding="12dp" android:background="@drawable/wu_widget_bg">
+    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_vertical">
+        <TextView android:id="@+id/ww_kw" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Woche" android:textColor="#FFFFFF" android:textSize="15sp" android:textStyle="bold" />
+        <TextView android:id="@+id/ww_ph" android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content" android:layout_marginStart="8dp" android:textColor="#9FB3C8" android:textSize="12sp" android:maxLines="1" android:ellipsize="end" />
+        <TextView android:id="@+id/ww_tss" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textColor="#9FB3C8" android:textSize="12sp" />
+    </LinearLayout>
+    <ProgressBar android:id="@+id/ww_bar" style="?android:attr/progressBarStyleHorizontal" android:layout_width="match_parent" android:layout_height="6dp" android:layout_marginTop="6dp" android:max="100" android:progress="0" android:progressDrawable="@drawable/wu_bar" />
+    <LinearLayout android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="1" android:layout_marginTop="8dp" android:orientation="horizontal">
+        <LinearLayout android:id="@+id/wd1" android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" android:layout_marginEnd="4dp" android:orientation="vertical" android:gravity="center" android:background="@drawable/wu_cell">
+            <TextView android:id="@+id/wl1" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textColor="#9FB3C8" android:textSize="11sp" />
+            <TextView android:id="@+id/ws1" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="2dp" android:textColor="#FFFFFF" android:textSize="13sp" android:textStyle="bold" android:maxLines="1" />
+        </LinearLayout>
+        <LinearLayout android:id="@+id/wd2" android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" android:layout_marginEnd="4dp" android:orientation="vertical" android:gravity="center" android:background="@drawable/wu_cell">
+            <TextView android:id="@+id/wl2" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textColor="#9FB3C8" android:textSize="11sp" />
+            <TextView android:id="@+id/ws2" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="2dp" android:textColor="#FFFFFF" android:textSize="13sp" android:textStyle="bold" android:maxLines="1" />
+        </LinearLayout>
+        <LinearLayout android:id="@+id/wd3" android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" android:layout_marginEnd="4dp" android:orientation="vertical" android:gravity="center" android:background="@drawable/wu_cell">
+            <TextView android:id="@+id/wl3" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textColor="#9FB3C8" android:textSize="11sp" />
+            <TextView android:id="@+id/ws3" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="2dp" android:textColor="#FFFFFF" android:textSize="13sp" android:textStyle="bold" android:maxLines="1" />
+        </LinearLayout>
+        <LinearLayout android:id="@+id/wd4" android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" android:layout_marginEnd="4dp" android:orientation="vertical" android:gravity="center" android:background="@drawable/wu_cell">
+            <TextView android:id="@+id/wl4" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textColor="#9FB3C8" android:textSize="11sp" />
+            <TextView android:id="@+id/ws4" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="2dp" android:textColor="#FFFFFF" android:textSize="13sp" android:textStyle="bold" android:maxLines="1" />
+        </LinearLayout>
+        <LinearLayout android:id="@+id/wd5" android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" android:layout_marginEnd="4dp" android:orientation="vertical" android:gravity="center" android:background="@drawable/wu_cell">
+            <TextView android:id="@+id/wl5" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textColor="#9FB3C8" android:textSize="11sp" />
+            <TextView android:id="@+id/ws5" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="2dp" android:textColor="#FFFFFF" android:textSize="13sp" android:textStyle="bold" android:maxLines="1" />
+        </LinearLayout>
+        <LinearLayout android:id="@+id/wd6" android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" android:layout_marginEnd="4dp" android:orientation="vertical" android:gravity="center" android:background="@drawable/wu_cell">
+            <TextView android:id="@+id/wl6" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textColor="#9FB3C8" android:textSize="11sp" />
+            <TextView android:id="@+id/ws6" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="2dp" android:textColor="#FFFFFF" android:textSize="13sp" android:textStyle="bold" android:maxLines="1" />
+        </LinearLayout>
+        <LinearLayout android:id="@+id/wd7" android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1"  android:orientation="vertical" android:gravity="center" android:background="@drawable/wu_cell">
+            <TextView android:id="@+id/wl7" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textColor="#9FB3C8" android:textSize="11sp" />
+            <TextView android:id="@+id/ws7" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="2dp" android:textColor="#FFFFFF" android:textSize="13sp" android:textStyle="bold" android:maxLines="1" />
+        </LinearLayout>
+    </LinearLayout>
+</LinearLayout>

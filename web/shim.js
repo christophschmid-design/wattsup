@@ -459,6 +459,7 @@
     PL.App.addListener('appUrlOpen', async function (ev) {
       try {
         var u = new URL(ev.url), code = u.searchParams.get('code');
+        if (/^wattsup:/.test(ev.url) && (u.host === 'go' || u.pathname.replace(/\//g, '') === 'go')) { var gk = u.searchParams.get('k'); if (gk && window.WU_GO) window.WU_GO({ k: gk }); return; }
         if (code) { if (PL.Browser) try { await PL.Browser.close(); } catch (e) { } await gExchange(code); syncP = null; await pull(); schedulePush(); toast('Google ist verbunden. WattsUp lädt neu …'); setTimeout(function () { location.reload(); }, 1200); }
       } catch (e) { toast('Google-Anmeldung fehlgeschlagen: ' + e.message); }
     });
@@ -845,13 +846,28 @@
   }
   window.WU_SYNC = function (st) {
     if (!CAPN) return;
-    var sig = JSON.stringify([st.day, st.lv, st.coach, st.time, st.today, st.done, st.tomorrow, st.form, st.fit, st.md, st.wd, st.moodOn, st.mFrom, cfg().nMood, cfg().nPlan, cfg().nWeigh]);
+    var sig = JSON.stringify([Object.assign({}, st, { ts: 0 }), cfg().nMood, cfg().nPlan, cfg().nWeigh]);
     if (sig === lastSig && now() - lastSync < 600000) return;
     lastSig = sig; lastSync = now();
     if (PREF) PREF.set({ key: 'wu_widget', value: JSON.stringify(st) }).then(function () { if (NAT) NAT.updateWidget(); }).catch(function () { });
     schedule(st);
     runnerCfg();
   };
+  /* Eingaben aus dem Widget (Morgengefühl, gefühlte Belastung) übernehmen */
+  async function wgIn() {
+    if (!PREF) return;
+    var r = null; try { r = await PREF.get({ key: 'wu_widget_in' }); } catch (e) { return; }
+    if (!r || !r.value) return;
+    var o = null; try { o = JSON.parse(r.value); } catch (e) { try { await PREF.remove({ key: 'wu_widget_in' }); } catch (x) { } return; }
+    for (var n = 0; n < 40; n++) {
+      if (window.WU_WIN && window.WU_WIN(o)) {
+        try { var r2 = await PREF.get({ key: 'wu_widget_in' }); if (r2 && r2.value === r.value) await PREF.remove({ key: 'wu_widget_in' }); else if (r2 && r2.value) setTimeout(wgIn, 500); } catch (e) { }
+        lastSig = ''; return;
+      }
+      await new Promise(function (res) { setTimeout(res, 1500); });
+    }
+  }
+  if (CAPN) { setTimeout(wgIn, 2500); document.addEventListener('visibilitychange', function () { if (document.visibilityState === 'visible') setTimeout(wgIn, 800); }); }
   if (CAPN && LN) {
     LN.addListener('localNotificationActionPerformed', function (e) { var x = (e && e.notification && e.notification.extra) || {}; goFrom({ k: x.k }); });
   }
@@ -1067,6 +1083,8 @@
 
   /* Sprung aus einer Benachrichtigung direkt in den passenden Dialog */
   var T0 = now();
+  window.WU_GO = function (o) { if (o.k === 'woche') { try { WU.close(); } catch (e) { } location.hash = '#plan'; return; } if (o.k === 'coach' && window.WU_OPEN && window.WU_STATE) { try { WU.close(); } catch (e) { } window.WU_OPEN('coach'); return; } if (o.k === 'coach' || o.k === 'plan') { try { sessionStorage.setItem('wu_go', JSON.stringify({ k: o.k, t: now() })); } catch (e) { } goRun(); return; } goFrom(o); };
+  if (CAPN && PL.App && PL.App.getLaunchUrl) setTimeout(function () { PL.App.getLaunchUrl().then(function (r) { var u = r && r.url; if (u && /^wattsup:\/\/go/.test(u)) { var m = /[?&]k=([a-z]+)/.exec(u); if (m) window.WU_GO({ k: m[1] }); } }).catch(function () { }); }, 1500);
   function goFrom(o) {
     if (!o || (o.k !== 'mood' && o.k !== 'act' && o.k !== 'plan' && o.k !== 'ski' && o.k !== 'coach')) { if (now() - T0 > 8000) location.reload(); return; }
     try { sessionStorage.setItem('wu_go', JSON.stringify({ k: o.k, id: o.id || null, t: now() })); } catch (e) { }
