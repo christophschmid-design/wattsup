@@ -4,6 +4,12 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
 import android.provider.Settings;
+import android.speech.RecognizerIntent;
+import android.speech.tts.TextToSpeech;
+import androidx.activity.result.ActivityResult;
+import com.getcapacitor.annotation.ActivityCallback;
+import java.util.ArrayList;
+import java.util.Locale;
 import androidx.core.content.FileProvider;
 import com.getcapacitor.JSObject;
 import com.getcapacitor.Plugin;
@@ -99,5 +105,65 @@ public class WattsUpNative extends Plugin {
                 call.reject("Download fehlgeschlagen: " + e.getMessage());
             }
         }).start();
+    }
+
+    /* ---------- Sprechen statt tippen: Diktat über die Google-Spracheingabe, Vorlesen über Android ---------- */
+    @PluginMethod
+    public void listen(PluginCall call) {
+        try {
+            Intent i = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
+            i.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
+            i.putExtra(RecognizerIntent.EXTRA_LANGUAGE, "de-AT");
+            i.putExtra(RecognizerIntent.EXTRA_PROMPT, "Nachricht an den Coach");
+            startActivityForResult(call, i, "listenResult");
+        } catch (Exception e) {
+            call.reject("Spracheingabe nicht verfügbar: " + e.getMessage());
+        }
+    }
+
+    @ActivityCallback
+    private void listenResult(PluginCall call, ActivityResult result) {
+        if (call == null) return;
+        JSObject r = new JSObject();
+        String txt = "";
+        if (result.getResultCode() == android.app.Activity.RESULT_OK && result.getData() != null) {
+            ArrayList<String> L = result.getData().getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
+            if (L != null && !L.isEmpty()) txt = L.get(0);
+        }
+        r.put("text", txt);
+        call.resolve(r);
+    }
+
+    private TextToSpeech tts;
+    private boolean ttsReady = false;
+
+    @PluginMethod
+    public void speak(PluginCall call) {
+        final String text = call.getString("text", "");
+        if (text.isEmpty()) { call.resolve(); return; }
+        if (tts != null && ttsReady) { say(text); call.resolve(); return; }
+        tts = new TextToSpeech(getContext(), status -> {
+            ttsReady = status == TextToSpeech.SUCCESS;
+            if (ttsReady) {
+                int r = tts.setLanguage(new Locale("de", "AT"));
+                if (r == TextToSpeech.LANG_MISSING_DATA || r == TextToSpeech.LANG_NOT_SUPPORTED) tts.setLanguage(Locale.GERMAN);
+                say(text);
+                call.resolve();
+            } else call.reject("Vorlesen nicht verfügbar");
+        });
+    }
+
+    private void say(String text) {
+        tts.stop();
+        int max = TextToSpeech.getMaxSpeechInputLength();
+        for (int p = 0; p < text.length(); p += max) {
+            tts.speak(text.substring(p, Math.min(text.length(), p + max)), p == 0 ? TextToSpeech.QUEUE_FLUSH : TextToSpeech.QUEUE_ADD, null, "wu" + p);
+        }
+    }
+
+    @PluginMethod
+    public void stopSpeak(PluginCall call) {
+        if (tts != null) tts.stop();
+        call.resolve();
     }
 }
