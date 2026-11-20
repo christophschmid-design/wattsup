@@ -565,7 +565,7 @@ body:not([data-tab="analyse"]) .hero .kp{display:none}
 
 .atop-off,.atop-hide{display:none!important}
 .atabs{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:0 0 14px}.atabs button{display:flex;align-items:center;gap:8px;border:1px solid var(--ln);background:var(--card);color:var(--ink);border-radius:16px;padding:12px;font:700 .86rem/1.2 inherit;text-align:left;cursor:pointer;box-shadow:var(--sh)}.atabs button span{font-size:1.2rem}.atabs button[aria-selected="true"]{background:var(--ac);color:var(--onac);border-color:var(--ac)}
-.phx>li:not(.on):not(.op)>div>p,.phx>li:not(.on):not(.op) .phk{display:none}.phx>li:not(.on){cursor:pointer}.phx>li:not(.on)>div>b::after{content:' ›';color:var(--mu)}.phx>li.op>div>b::after{content:' ‹'}.phc{font-size:.85rem}
+.phx>li:not(.op)>div>p,.phx>li:not(.op) .phk,.phx>li:not(.op) .phc{display:none}.phx>li{cursor:pointer}.phx>li>div>b::after{content:' ›';color:var(--mu)}.phx>li.op>div>b::after{content:' ‹'}.phc{font-size:.85rem}
 .hwarn{border-color:var(--warn)}
 
 .why{margin-top:12px}.whyb{display:flex;height:10px;border-radius:6px;overflow:hidden;gap:2px;background:var(--ln)}.whyb i{display:block}
@@ -894,7 +894,7 @@ nav a.cnav{position:relative}.cnb{position:absolute;top:2px;right:2px;min-width:
 </section>
 
 <section id="saison" hidden>
-<div class="subh"><span class="lnk" data-go="weg" role="button" tabindex="0">‹ Saison</span><b>Phasen und Rennen</b></div>
+<div class="subh"><span class="lnk" data-go="weg" role="button" tabindex="0">‹ Saison</span><b>Rennen und Phasen</b></div>
 <div id="p-jrl" class="jrl0" hidden></div>
 <div class="card" id="p-season"><h2>Saison 2027</h2></div>
 <div class="card" id="p-wt"><h2>Gewicht und Watt pro Kilo</h2></div>
@@ -904,7 +904,6 @@ nav a.cnav{position:relative}.cnb{position:absolute;top:2px;right:2px;min-width:
 <div class="card" id="p-phases"><h2>Phasen und Wochenziele</h2></div>
 <div class="card" id="p-cramp"><h2>Krämpfe vermeiden</h2></div>
 <div class="card" id="p-report"><h2>Phasenbericht</h2></div>
-<div class="card" id="p-abz"><h2>Abzeichen</h2></div>
 <div class="card" id="p-ftp"></div>
 </section>
 <div id="legacy" hidden><div id="p-goal"></div><div id="liste"></div><div id="kp2"></div><div id="f-top"></div><div id="f-best"></div><div id="f-run"></div><div id="m-kpi"></div><div id="m-volb"></div><div id="m-bestb"></div><div id="p-wx"></div><div id="pw-wxb"></div><div id="pl-act"><div id="pl-acb"></div></div><div id="pl-nx"></div><div id="pvb"></div><div id="pl-rdy"></div></div>
@@ -1809,7 +1808,7 @@ return'<div class="rcs'+(r.length<2?' one':'')+'">'+o+'</div>'}
 function rSeason(){var e=$('p-season');if(!e)return;var t=iso(new Date()),ph=phaseOf(t);
 var tk=CF.ticket||'offen',seg='<div class="seg" role="group" aria-label="Ötztaler-Ticket">'+[['offen','offen'],['ja','ja'],['nein','nein']].map(function(x){return'<button type="button" data-tk="'+x[0]+'" aria-pressed="'+(tk===x[0])+'">'+x[1]+'</button>'}).join('')+'</div>';
 var note=tk==='offen'?'Die Zusage kommt zwischen Mitte Februar und Anfang April. Bis Ende April ist der Aufbau für beide Varianten gleich, geplant wird vorerst mit dem Ötztaler als Hauptrennen.':tk==='ja'?'Ötztaler ist das Hauptrennen, Mondsee das Vorbereitungsrennen mit kurzem Tapering.':'Ohne Ötztaler-Ticket ist Mondsee das Hauptrennen, mit vollem Tapering und Höhepunkt im Juni.';
-e.innerHTML='<h2>Saison 2027</h2><div class="tkr"><span>Ötztaler-Ticket</span>'+seg+'</div><p class="mu tkn">'+note+'</p>'+(S?raceCards():'')+((mode()==='A'&&S)?goalHtml():'')+'<p class="nowph"><i style="background:'+PHC[ph.k]+'"></i><span>Jetzt: <b>'+E(ph.n)+'</b>, bis '+dd(ph.b)+'</span></p>'+tlHtml();
+e.innerHTML='<h2>Ticket und Rennen</h2><div class="tkr"><span>Ötztaler-Ticket</span>'+seg+'</div><p class="mu tkn">'+note+'</p>'+(S?raceCards():'')+'';
 var c=$('p-curve');if(c)c.innerHTML='<h2>Fitness bis zu den Rennen</h2>'+(S?curveSvg():'<p class="mu">Wird nach dem Laden der Strava-Daten berechnet.</p>')+'<p class="mu xpl">Die Zielkurve steigt in den Aufbauphasen, jede vierte Woche bleibt sie zur Entlastung flach. Die graue Linie ist deine Saison 2026, verschoben auf denselben Abstand zum Ötztaler (30.8.2026 auf 29.8.2027). Fitness aus den Strava-Rohdaten berechnet, der Startwert Anfang April 2026 ist geschätzt.</p><p class="mu xpl">'+E(($('adv')||{}).textContent||'')+'</p>';
 if(c)c.insertAdjacentHTML('beforeend','<p class="mu xpl">Zeitprognose: Die Anstiege (Kühtai, Jaufen, Timmelsjoch, 333 min im Jahr 2026) werden mit Systemgewicht durch Leistung skaliert, der Brenner zur Hälfte, Abfahrten und Flachstücke bleiben gleich. Basis ist deine Fahrt 2026 mit NP 184 W bei FTP 250 W und 78 kg. Eine Faustregel, kein exaktes Modell.</p>');
 var f=$('p-formc');if(f)f.innerHTML='<h2>Formziel je Phase</h2>'+(S?formSvg():'')+'<p class="mu xpl">Die farbigen Bänder zeigen das Formziel (TSB) der jeweiligen Phase nach TrainingPeaks und Joe Friel. Vor Mondsee nur kurz frisch (0 bis +10), vor dem Ötztaler +10 bis +20. 2026 bist du mit +39 in den Ötztaler gestartet, also deutlich frischer als nötig.</p>';
@@ -2419,7 +2418,7 @@ var cr=$('p-cramp');if(cr)cr.classList.add('atop-off');var kp=$('a-kpi');if(kp)k
 var sh=an.querySelector('.subh');if(sh)sh.insertAdjacentHTML('afterend','<div class="atabs" role="tablist" aria-label="Themen">'+ATOP.map(function(x){return'<button type="button" role="tab" data-atop="'+x[0]+'"><span>'+x[2]+'</span>'+x[1]+'</button>'}).join('')+'</div>');
 aTop(ATS)})();
 function aTop(k){ATS=k;try{localStorage.setItem('atop',k)}catch(e){}ATOP.forEach(function(x){x[3].forEach(function(id){var e=$(id);if(e)e.classList.toggle('atop-hide',x[0]!==k)})});[].forEach.call(document.querySelectorAll('[data-atop]'),function(b){b.setAttribute('aria-selected',String(b.getAttribute('data-atop')===k))});try{if(window.Chart)window.dispatchEvent(new Event('resize'))}catch(e){}}
-document.addEventListener('click',function(e){var b=e.target.closest&&e.target.closest('[data-atop]');if(b){aTop(b.getAttribute('data-atop'));return}var li=e.target.closest&&e.target.closest('.phx>li');if(li&&!li.classList.contains('on'))li.classList.toggle('op')});
+document.addEventListener('click',function(e){var b=e.target.closest&&e.target.closest('[data-atop]');if(b){aTop(b.getAttribute('data-atop'));return}var li=e.target.closest&&e.target.closest('.phx>li');if(li)li.classList.toggle('op')});
 
 /* ---------- Neuaufbau v32 ---------- */
 function whyIc(t){return/Schlaf/i.test(t)?'☾':/HRV/i.test(t)?'♡':/Ruhepuls|Puls/i.test(t)?'❤':/Gefühl|Stimmung|Morgen|Energie/i.test(t)?'☺':/Beine|Muskel/i.test(t)?'🦵':/Form|TSB/i.test(t)?'⚡':/Belastung|TSS|Ermüdung|Training/i.test(t)?'🔥':/krank|Erkält|Infekt/i.test(t)?'🤒':'•'}
@@ -3001,7 +3000,7 @@ function saiOz(){var g=Number(CF.goalMin),now=ozPred(FTP,W,Number(CF.raceStops))
  return'<div class="card hc"><div class="hcl">Ötztaler '+dd(CF.race2)+'</div><div class="hbig">'+hmS(now.t)+' h <small class="'+(now.t<=g?'ok':'wa')+'">Ziel unter '+hmS(g)+' h</small></div><p class="hsm">Mit '+FTP+' W und '+f1(W)+' kg. Für '+hmS(g)+' h bei '+kgG+' kg nötig: '+need+' W ('+f1(need/kgG)+' W/kg).</p>'
   +gl('FTP',FTP+' W',fg+' W',(FTP-230)/(fg-230)*100,'var(--ac)')+gl('Gewicht',f1(kg)+' kg',kgG+' kg',(OZ26.kg+2-kg)/(OZ26.kg+2-kgG)*100,'var(--ok)')+gl('Fitness',Math.round(ctl),c1+(tg!=null?' · Soll heute '+Math.round(tg):''),ctl/c1*100,'var(--warn)')+'</div>'}
 function saiTiles(){var ab='';try{var L=abzList();ab=L.filter(function(b){return b.d}).length+'/'+L.length}catch(e){}
- return'<div class="stiles"><div data-go="analyse" role="button" tabindex="0"><i>📊</i>Analysen</div><div data-go="einheiten" role="button" tabindex="0"><i>🗂</i>Einheiten</div><div data-go="saison" role="button" tabindex="0"><i>🗓</i>Phasen</div><div data-k="abz" role="button" tabindex="0"><i>🏅</i>Abzeichen'+(ab?'<small>'+ab+'</small>':'')+'</div></div>'}
+ return'<div class="stiles"><div data-go="analyse" role="button" tabindex="0"><i>📊</i>Analysen</div><div data-go="einheiten" role="button" tabindex="0"><i>🗂</i>Einheiten</div><div data-go="saison" role="button" tabindex="0"><i>🏁</i>Rennen & Phasen</div><div data-k="abz" role="button" tabindex="0"><i>🏅</i>Abzeichen'+(ab?'<small>'+ab+'</small>':'')+'</div></div>'}
 function saiBar(){var P=season(),t=tod(),a0=P[0].a,b0=P[P.length-1].b,span=dd2(a0,b0)||1,pos=function(d){return Math.max(0,Math.min(100,dd2(a0,d)/span*100))},sel=PHX==null?phCur():PHX;
  return'<div class="sbar sbar2">'+P.map(function(p,i){return'<i data-phi="'+i+'" role="button" tabindex="0" title="'+E(p.n)+'" class="'+(i===sel?'on':'')+'" style="flex:'+Math.max(1,dd2(p.a,p.b)+1)+';background:'+(PHC[p.k]||'#888')+'"></i>'}).join('')+'<span class="snow" style="left:'+pos(t)+'%"></span><span class="sfl" style="left:'+pos(CF.race)+'%">🏁</span><span class="sfl" style="left:100%">🏔</span></div><div class="sdt"><span>Heute</span><span>🏁 Mondsee '+lab(CF.race)+' · 🏔 Ötztaler '+lab(CF.race2)+'</span></div>'}
 function saiPhase(){return'<div class="card hc hphase hph2" style="border-color:'+phColor()+'"><div class="hcl">Saison</div><div id="sai-bar">'+saiBar()+'</div><div class="phbox">'+phInner(false)+'</div></div>'}
@@ -3011,7 +3010,7 @@ document.addEventListener('click',function(e){if(e.target.closest&&e.target.clos
 function saiScn(){scCalc();var R=scRows(),hit=R.map(function(r){return r.h===SCN.h&&r.b===SCN.b});
  return'<div class="card hc" id="w-scn"><div class="hcl">Szenarien Ötztaler</div><div class="schips">'+R.map(function(r,i){return'<button type="button" data-scp="'+i+'"'+(hit[i]?' class="on"':'')+'>'+r.n+'</button>'}).join('')+'</div>'
   +'<div class="scs"><label><span>Stunden pro Woche ab '+lab(CF.spring)+' <b id="sc-hv">'+SCN.h+' h</b></span><input type="range" min="4" max="18" step="1" value="'+SCN.h+'" data-sc="h"></label><label><span>Mehrtägige Blöcke <b id="sc-bv">'+SCN.b+'</b></span><input type="range" min="0" max="6" step="1" value="'+SCN.b+'" data-sc="b"></label></div><div id="sc-out">'+scOut()+'</div>'
-  +'<details class="pd"><summary>Wie wird das gerechnet?</summary><p class="mu">Faustregel aus Trainingsstudien für ambitionierte Hobbysportler: mehr Stunden, Intensität und Blöcke bringen mehr FTP, mit abnehmendem Zuwachs. Die Zeit rechnet mit deinem Ötztaler 2026 als Basis. „Eingestellt“ sind deine Werte aus den Einstellungen.</p>'+scTable(false)+'</details></div>'}
+  +'<details class="pd"><summary>Wie wird das gerechnet?</summary><p class="mu">Faustregel aus Trainingsstudien für ambitionierte Hobbysportler: mehr Stunden, Intensität und Blöcke bringen mehr FTP, mit abnehmendem Zuwachs. Die Zeit rechnet mit deinem Ötztaler 2026 als Basis. „Wie bisher“ und „Eingestellt“ kommen aus deinen Einstellungen, Blöcke sind mehrtägige Trainingsblöcke wie ein Radurlaub.</p></details></div>'}
 function saiChips(){var R=scRows();[].forEach.call(document.querySelectorAll('[data-scp]'),function(b){var r=R[+b.getAttribute('data-scp')];b.classList.toggle('on',r.h===SCN.h&&r.b===SCN.b)})}
 document.addEventListener('click',function(e){var b=e.target.closest&&e.target.closest('[data-scp]');if(!b)return;e.preventDefault();var r=scRows()[+b.getAttribute('data-scp')];scCalc();SCN.h=r.h;SCN.b=r.b;SCN.f=scFtp(SCN.h,SCN.b);SCN.t=scTime(SCN.f);
  [].forEach.call(document.querySelectorAll('[data-sc]'),function(x){var k=x.getAttribute('data-sc');x.value=k==='h'?SCN.h:k==='b'?SCN.b:k==='f'?SCN.f:Math.round(SCN.t/5)*5});
@@ -3023,9 +3022,7 @@ rWeg=function(){var c=$('weg-b');if(!c||!S)return;var h='';[saiOz,saiTiles,saiPh
 /* Abzeichen: kompakt in Phasen und Rennen, alle 15 im eigenen Blatt */
 function abzTile(b){return'<div class="abz'+(b.d?' on':'')+'"><span class="abzi">'+b.ic+'</span><b>'+E(b.n)+'</b><small>'+E(b.was)+'</small>'+(b.d?'<i>„'+E(b.spr)+'“</i>':'<span class="abzb"><span style="width:'+Math.round(b.p*100)+'%"></span></span>')+'<small class="abzp">'+E(abzProg(b))+'</small></div>'}
 function abzSort(L){return L.slice().sort(function(a,b){return(!!b.d-!!a.d)||(a.d&&b.d?(a.d<b.d?1:-1):b.p-a.p)})}
-rAbz=function(){var e=$('p-abz');if(!e||!window.ACT)return;var L=abzList(),G=abzSort(L),got=G.filter(function(b){return b.d}),nx=G.filter(function(b){return!b.d}).slice(0,3);
- e.innerHTML='<h2>Abzeichen <small class="mu">'+got.length+' von '+L.length+'</small></h2>'+(got.length?'<div class="abzg">'+got.map(abzTile).join('')+'</div>':'')+(nx.length?'<h3>Als Nächstes</h3><div class="abzg">'+nx.map(abzTile).join('')+'</div>':'')+'<p class="amore"><span class="lnk" data-k="abz" role="button" tabindex="0">Alle '+L.length+' Abzeichen ›</span></p><p class="mu xpl">Wird aus deinen Einheiten, dem Plan, der Intervall-Auswertung und dem Gewicht berechnet. Neue Abzeichen meldet die Glocke.</p>';
- abzNote(L)};
+rAbz=function(){if(!window.ACT||!window.ACT.length)return;abzNote(abzList())};
 IN['abz']=function(){var L=abzList();return{t:'Abzeichen',h:'<p class="mu">'+L.filter(function(b){return b.d}).length+' von '+L.length+' verdient.</p><div class="abzg">'+abzSort(L).map(abzTile).join('')+'</div>'}};
 /* Fitness bis zu den Rennen und Formziel je Phase: eine Karte mit Umschalter (nur unter Phasen und Rennen) */
 var SAIF=0;
@@ -3141,7 +3138,7 @@ function coWhere(){var tab=document.body.getAttribute('data-tab')||'heute',sh=!$
  if(tab==='plan'){var wk=wkOf(WOFF);return{l:'Woche ab '+lab(wk[0]),d:'Wochenansicht',x:{woche:wk.map(function(d){var p=PM[d];return{datum:d,plan:p?p[2]:'frei',tss:p?p[1]:0,erledigt:(window.ACT||[]).filter(function(a){return a.day===d}).map(function(a){return a.name+', '+Math.round(a.sec/60)+' min, TSS '+Math.round(a.tss)})}}),rueckblick:(PW8[wk[0]]||{}).rb||null}}}
  if(tab==='weg'){var P=season(),i=PHX==null?phCur():PHX,ph=P[Math.max(0,Math.min(P.length-1,i))];return{l:'Weg · Phase '+ph.n,d:'Weg zum Ziel mit Phase und Szenarien',x:{gezeigte_phase:{name:ph.n,von:ph.a,bis:ph.b,inhalt:ph.d},pacing_oetztaler:window.WU_PACE?WU_PACE():null,eigenes_szenario:SCN&&SCN.h!=null?{stunden_ab_fruehjahr:SCN.h,bloecke:SCN.b,ftp:SCN.f,zeit:hmS(SCN.t)}:null}}}
  if(tab==='analyse')return{l:'Analysen · '+({form:'Form & Belastung',leist:'Leistung',zon:'Zonen & Umfang',koerp:'Körper & Erholung'}[ATS]||ATS),d:'Analysen, Thema '+ATS};
- if(tab==='einheiten')return{l:'Alle Einheiten',d:'Archiv aller Einheiten'};if(tab==='saison')return{l:'Phasen und Rennen',d:'Phasen, Rennen, Fitnessziele, Abzeichen'};return{l:tab,d:tab}}
+ if(tab==='einheiten')return{l:'Alle Einheiten',d:'Archiv aller Einheiten'};if(tab==='saison')return{l:'Rennen und Phasen',d:'Ticket, Rennen, Phasen, Fitnessziele, Phasenbericht'};return{l:tab,d:tab}}
 function coWide(){return document.body.classList.contains('tabdev')&&window.innerWidth>=900}
 function coOpen(q){var loc=coWhere();CO.loc=loc;if(!document.getElementById('copanel'))coPanel(true);coLocShow();if(q)coSend(q,loc);setTimeout(function(){var t=document.getElementById('co-t');if(t&&!q&&coWide())t.focus()},60)}
 function coPanel(on){var p=document.getElementById('copanel');if(on){if(!p){p=document.createElement('aside');p.id='copanel';p.setAttribute('aria-label','Coach');document.body.appendChild(p)}var o=IN['coach']();p.innerHTML='<div class="cop-top"><svg class="ic coic" aria-hidden="true"><use href="#ic-coach"/></svg><div class="cop-tt"><b>Coach</b><small id="co-sub">'+E(coSub())+'</small></div><span class="mu" id="co-loc" hidden></span><button type="button" class="dbtn" id="co-x" aria-label="Coach schließen">✕</button></div><div class="cop-body">'+o.h+'</div>';document.body.classList.add('co-open');document.body.classList.toggle('co-wide',coWide());if(o.f)o.f()}
@@ -3166,7 +3163,7 @@ var _propC=propHtml;propHtml=function(pr,w){return _propC(pr,w)+'<p class="coask
 var CATS=[['Kompakt',[['k-ready','Bereitschaft'],['k-sess','Einheit heute'],['k-check','Dein Tag'],['k-wx','Wetter zur Trainingszeit'],['k-week','Woche kompakt'],['k-morgen','Morgen'],['k-last','Letzte Einheit kompakt'],['k-list','Alle Einheiten (Liste)'],['k-form','Fitness · Ermüdung · Form'],['k-prog','Ötztaler-Prognose'],['k-goals','Ziele'],['k-season','Saison und Phase'],['k-ftp','FTP und W/kg'],['k-scn','Szenarien Ötztaler'],['k-coach','Coach'],['k-pace','Pacing Ötztaler'],['k-rb','Wochenrückblick'],['k-cramp','Krämpfe (Auswertung)'],['k-phase','Phasen zum Blättern'],['k-best','Bestleistungen'],['k-wt','Gewicht und W/kg']]],
 ['Heute und Plan',[['hd-b','Heute komplett'],['pl-wk','Woche komplett'],['d-last','Letzte Einheit mit Karte'],['weg-b','Weg zum Ziel'],['neu','Alle Einheiten']]],
 ['Analyse',[['a-form','Fitness, Ermüdung, Form (Verlauf)'],['a-kpi','Kennzahlen'],['a-load','Tägliche Belastung'],['a-vol','Wochenumfang'],['a-pdc','Leistungskurve'],['a-zw','Zonenverteilung'],['a-ef','Grundlage-Fortschritt'],['a-dur','Durability'],['a-best','Bestleistungen'],['a-iva','Intervall-Verlauf'],['m-int','Intervalle'],['m-zones','Zonen und Schwellen'],['a-fuel','Verpflegung und Schweiß']]],
-['Saison und Körper',[['p-season','Saison 2027'],['p-curve','Fitness bis zu den Rennen'],['p-formc','Formziel je Phase'],['p-phases','Phasen und Wochenziele'],['p-report','Phasenbericht'],['p-ftp','FTP-Test'],['p-wt','Gewicht und W/kg'],['p-rec','Erholung'],['p-cramp','Krämpfe vermeiden'],['p-abz','Abzeichen']]]];
+['Saison und Körper',[['p-season','Ticket und Rennen'],['p-curve','Fitness bis zu den Rennen'],['p-formc','Formziel je Phase'],['p-phases','Phasen und Wochenziele'],['p-report','Phasenbericht'],['p-ftp','FTP-Test'],['p-wt','Gewicht und W/kg'],['p-rec','Erholung'],['p-cramp','Krämpfe vermeiden']]]];
 var XCATS=[['Aktivität',[['x-head','Kopf und Werte'],['x-map','Karte'],['x-pro','Höhenprofil'],['x-sx','Verlauf'],['x-iv','Intervalle'],['x-fb','Bewertung und Feedback'],['x-fu','Verpflegung und Schweiß']]]];
 var NM={};CATS.concat(XCATS).forEach(function(c){c[1].forEach(function(x){NM[x[0]]=x[1]})});
 function it(id,w,h){return{id:id,w:w,h:h}}
