@@ -20,7 +20,15 @@
 
   /* ---------- Speicher ---------- */
   function lg(k, d) { try { var v = localStorage.getItem(k); return v == null ? d : JSON.parse(v); } catch (e) { return d; } }
-  function ls(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) { } }
+  var LSFULL = 0;
+  function ls(k, v) {
+    var str = JSON.stringify(v);
+    try { localStorage.setItem(k, str); return; } catch (e) { }
+    /* Speicher voll: zuerst Zwischenspeicher freigeben, die sich neu laden lassen, dann noch einmal versuchen */
+    ['act2', 'ski1', 'wx1', 'wxa1', 'tss2'].forEach(function (x) { if (x !== k) try { localStorage.removeItem(x); } catch (e) { } });
+    try { localStorage.setItem(k, str); return; } catch (e) { }
+    if (now() - LSFULL > 3600000) { LSFULL = now(); try { if (window.WU_ERRADD) window.WU_ERRADD('Speicher', 'Gerätespeicher der App ist voll, „' + k + '“ konnte nicht gespeichert werden'); toast('Der App-Speicher am Gerät ist voll. Bitte im Menü unter Sicherung und Diagnose melden.'); } catch (e) { } }
+  }
   function cfg() { return lg('wu_cfg', {}) || {}; }
   function setCfg(p) { var c = cfg(); Object.keys(p).forEach(function (k) { c[k] = p[k]; }); ls('wu_cfg', c); return c; }
   function fail(code, msg, extra) { var e = new Error(msg); e.code = code; if (extra) Object.keys(extra).forEach(function (k) { e[k] = extra[k]; }); return e; }
@@ -252,19 +260,22 @@
   async function dFind() { var L = await dList(); return L[0] || null; }
   /* Alle Dateien holen und in den lokalen Stand einarbeiten; liefert die Liste der Datei-IDs */
   async function dMergeAll() {
-    var L = await dList(), tk = await gToken(), before = JSON.stringify(dbAll()), mg = dbAll();
+    var L = await dList(), tk = await gToken(), before = JSON.stringify(dbAll()), mg = dbAll(), remAll = {};
     for (var i = 0; i < L.length; i++) {
       var r = await fetch('https://www.googleapis.com/drive/v3/files/' + L[i] + '?alt=media', { headers: { Authorization: 'Bearer ' + tk } });
-      if (r.ok) { var rem = await r.json(); mg = merge(mg, (rem && rem.docs) || {}); }
+      if (r.ok) { var rem = await r.json(); remAll = merge(remAll, (rem && rem.docs) || {}); mg = merge(mg, (rem && rem.docs) || {}); }
     }
+    /* Lokale Einträge, die noch nicht in Drive sind (z. B. weil die App vor dem verzögerten Hochladen neu geladen hat), merken */
+    dbAhead = Object.keys(mg).some(function (k) { return !remAll[k] || (mg[k].ts || 0) > (remAll[k].ts || 0); });
     ls(DBK, mg); lastPull = now(); ls('wu_dfid', L[0] || null);
-    if (JSON.stringify(mg) !== before) { try { window.dispatchEvent(new Event('wu-db-pulled')); } catch (e) { } }
+    if (JSON.stringify(mg) !== before) { try { window.dispatchEvent(new Event('wu-db-pulled')); } catch (e) { } try { inbPull(); } catch (e) { } }
     return L;
   }
+  var dbAhead = false;
   function merge(a, b) { var o = {}; Object.keys(a).forEach(function (k) { o[k] = a[k]; }); Object.keys(b).forEach(function (k) { if (!o[k] || (b[k].ts || 0) > (o[k].ts || 0)) o[k] = b[k]; }); return o; }
   async function pull() {
     if (!gOk()) { syncSt('aus'); return; }
-    try { var L = await dMergeAll(); if (L.length > 1) await push(); syncSt('ok'); }
+    try { var L = await dMergeAll(); if (L.length > 1 || dbAhead) await push(); syncSt('ok'); }
     catch (e) { syncSt('err', e.message); }
   }
   /* Vor dem Hochladen immer erst den Stand der anderen Geräte holen und zusammenführen.
@@ -713,6 +724,7 @@
     L.push('Claude: ' + (c.aKey ? 'Schlüssel vorhanden' : 'kein Schlüssel') + (lg('wu_nocredit', 0) ? ', Guthaben leer gemeldet' : '') + ' · Budget ' + (c.limit || '–') + ' $');
     L.push('Health Connect: ' + (CAPN ? (c.hcOk ? 'verbunden, zuletzt ' + (c.hcLast ? new Date(c.hcLast).toLocaleString('de-AT') : '–') : 'nicht verbunden') : 'nur in der Android-App'));
     L.push('intervals.icu: ' + (c.ivKey || c.icuKey ? 'Schlüssel vorhanden' : 'nicht eingerichtet') + ' · Push: ' + (c.pushTopic ? 'eingerichtet' : 'nicht eingerichtet'));
+    try { var tot = 0; for (var si = 0; si < localStorage.length; si++) { var sk = localStorage.key(si); tot += sk.length + (localStorage.getItem(sk) || '').length; } L.push('Gerätespeicher der App: ' + Math.round(tot / 1024) + ' KB von etwa 5000 KB'); } catch (e) { }
     L.push('Offene Erinnerungen: ' + (window.WU_INBOX ? WU_INBOX.count() : '–'));
     try { var E2 = window.WU_ERRLOG ? WU_ERRLOG() : []; L.push('Fehlerprotokoll (letzte ' + Math.min(15, E2.length) + '):'); E2.slice(-15).forEach(function (x) { L.push('- ' + x); }); } catch (e) { }
     return L.join('\n');

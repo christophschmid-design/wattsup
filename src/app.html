@@ -928,6 +928,7 @@ var ELOG=[];try{ELOG=JSON.parse(localStorage.getItem('err1')||'[]')||[]}catch(e)
 function srcKey(s){return s==='Strava'?'strava':/AccuWeather/.test(s)?'wetter':s==='Google Calendar'?'kalender':String(s)}
 function srcUpd(){clearTimeout(srcUpd.t);srcUpd.t=setTimeout(function(){try{document.dispatchEvent(new Event('srcupd'))}catch(e){}},80)}
 window.WU_ERRLOG=function(){return ELOG.slice().reverse().map(function(x){return new Date(x.ts).toLocaleString('de-AT',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'})+' '+x.src+' · '+x.act+(x.code?' ['+x.code+']':'')+(x.msg?': '+x.msg:'')})};
+window.WU_ERRADD=function(src,msg){try{logErr(src,msg,{code:'speicher',message:msg})}catch(e){}};
 function logErr(src,act,e){var c=e&&(e.code||e.name)||'',m=e&&(e.message||(typeof e==='string'?e:''))||'';ELOG.unshift({ts:Date.now(),src:String(src),act:String(act||''),code:String(c).slice(0,60),msg:String(m).slice(0,240)});if(ELOG.length>60)ELOG.length=60;try{localStorage.setItem('err1',JSON.stringify(ELOG))}catch(x){}srcUpd()}
 function srcStart(k){var s=SRC[k]||(SRC[k]={n:k});s.run=(s.run||0)+1;srcUpd()}
 function srcMark(k,ok,act,e,stored,quiet){var s=SRC[k]||(SRC[k]={n:k});s.run=Math.max(0,(s.run||0)-1);if(ok){s.ok=Date.now();s.st='ok';s.stored=stored||s.ok}else if(!quiet){s.err=Date.now();s.st='err';s.code=(e&&e.code)||'fehler';logErr(s.n,act,e)}srcUpd()}
@@ -3284,6 +3285,8 @@ document.addEventListener('click',function(e){var b=e.target.closest&&e.target.c
 var _wgWeekPt=wgWeek;wgWeek=function(){var o=_wgWeekPt();try{o.d.forEach(function(x){var p=PM[x.d],q=ptOf(x.d);x.k=!!(p&&isKey(p[2]));if(q)x.c=q.c==='g'?0:q.c==='y'?4:q.c==='r'?3:2;if(q&&q.c==='n')x.s='○'})}catch(e){}return o};
 var _rallKP=rall;rall=function(){_rallKP();amphNote();try{keyScan()}catch(e){logErr('App','Schlüsseleinheiten',e)}if(!PVLD)setTimeout(pvLoad,5500);if(!OMLD)setTimeout(omitLoad,6000)};
 var _dActKey=dAct;dAct=function(k){var o=_dActKey(k);try{var id=k.slice(2),m=CO.m.filter(function(x){return x.kid===String(id)}).slice(-1)[0];if(m&&o&&o.h)o.h+='<div class="cosays"><b><svg class="coi" aria-hidden="true"><use href="#ic-coach"/></svg> Coach sagt</b><p>'+E(m.t)+'</p></div>'}catch(e){}return o};
+/* Neue Daten anderer Geräte während der Sitzung übernehmen (FTP-Historie, Anpassungen, Ausschlüsse, Vorschau, Gründe) */
+window.addEventListener('wu-db-pulled',function(){FHCHK=false;NXLD=false;QXLD=false;PVLD=false;OMLD=false;setTimeout(function(){fhCheck();nxLoad();qxLoad();pvLoad();omitLoad()},800)});
 /* Kontext für den Coach */
 function coCtx(){var t=tod(),X=window.ACT||[],n=S?S.ct.length:0,ph=phaseOf(t),bw=bodyAt(t),kg=bw?bw.kg:W;
  var ak=X.filter(function(a){return a.day>=addD(t,-21)}).map(function(a){var p=PM[a.day],q=LOG[a.id]||{};return{datum:a.day,name:a.name,sport:sn(a.sp),minuten:Math.round(a.sec/60),km:a.km>0?Math.round(a.km):null,hm:a.hm>0?Math.round(a.hm):null,tss:Math.round(a.tss),np:a.np?Math.round(a.np):null,puls:a.ah||null,if:a.iff?Math.round(a.iff*100)/100:null,entkopplung_prozent:a.dc==null?null:a.dc,geplant:p?p[2]:null,rpe:q.rpe||null,notiz:q.note||null,kraempfe:q.kr&&q.kr.s?krSum(q.kr):null}});
