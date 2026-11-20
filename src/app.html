@@ -736,6 +736,10 @@ body.tabdev nav{top:calc(4px + env(safe-area-inset-top,0px));bottom:auto}body.ta
 .aseg{display:inline-flex;gap:4px;background:var(--bg2);border-radius:20px;padding:3px;margin:0 0 10px}.aseg button{border:0;background:none;color:var(--mu);font:inherit;font-size:13px;font-weight:600;padding:5px 12px;border-radius:16px;cursor:pointer}.aseg button.on{background:var(--ac);color:#fff}
 #a-form.asv1>#c1,#a-form.asv1>#a-gauge,#a-form.asv1>#fnote{display:none}#a-form:not(.asv1)>#c2{display:none}#a-zw.asv1>*:not(h2):not(.kern):not(.aseg):not(#zw-volh){display:none}#a-zw:not(.asv1)>#zw-volh{display:none}
 .amore{margin:10px 0 0;font-size:14px}.ivr{display:flex;justify-content:space-between;gap:10px;padding:8px 0;border-top:1px solid var(--ln);font-size:14px}.ivr>span{display:flex;flex-direction:column}.ivr>span:last-child{text-align:right;align-items:flex-end}.ivr small{color:var(--mu);font-size:12px}.ivtag{display:inline-block;margin-left:6px;font-size:12px;padding:0 6px;border-radius:6px;background:var(--bg2)}
+.stiles{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:0 0 12px}.stiles>div{background:var(--card);border:1px solid var(--ln);border-radius:14px;padding:10px 2px;text-align:center;font-size:12.5px;font-weight:600;cursor:pointer}.stiles i{display:block;font-style:normal;font-size:22px;margin-bottom:2px}.stiles small{display:block;color:#e3b257;font-size:11px}
+.hph2 .phb{display:none}.hph2 .phnav{justify-content:flex-start}.hph2 .sbar2{margin:20px 0 8px}.sbar2 i{cursor:pointer}.sbar2 i.on{outline:2px solid var(--ink);outline-offset:1px}
+.schips{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;margin:8px 0 6px}.schips button{border:0;font:inherit;font-size:12px;padding:7px 2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;border-radius:20px;background:var(--bg2);color:var(--ink);cursor:pointer}.schips button.on{background:var(--ac);color:#fff}
+#saison .sf-off{display:none!important}
 .abzg{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px;margin-top:8px}.abz{border:1px solid var(--ln);border-radius:12px;padding:10px;display:flex;flex-direction:column;gap:3px;opacity:.72}.abz.on{opacity:1;border-color:#e3b257;background:color-mix(in srgb,#e3b257 10%,transparent)}.abzi{font-size:26px;filter:grayscale(1)}.abz.on .abzi{filter:none}.abz b{font-size:14px}.abz small{color:var(--mu);font-size:12px;line-height:1.3}.abz i{font-size:12.5px;color:#e3b257;line-height:1.35}.abz .abzp{margin-top:auto}.abzb{height:5px;border-radius:3px;background:var(--ln);overflow:hidden;margin:4px 0 2px}.abzb span{display:block;height:100%;background:#e3b257;opacity:.6}
 .hcnow{font-size:.78rem;font-weight:600;margin-left:8px;white-space:nowrap}
 .ivty{margin:2px 0 6px;font-size:.88rem}.ivty select{font:inherit;padding:3px 6px;border-radius:8px;border:1px solid var(--ln);background:var(--bg2);color:var(--ink)}.ivty small.wa{color:var(--warn)}.ivat{overflow-x:auto;margin:6px 0}.ivat .t{font-size:.8rem;white-space:nowrap}.ivat .iva-p td{color:var(--mu)}.ivat small.ok{color:var(--ok)}.ivat small.wa{color:var(--warn)}.ivat small.ba{color:var(--bad)}
@@ -844,7 +848,7 @@ nav a.cnav{position:relative}.cnb{position:absolute;top:2px;right:2px;min-width:
 <a href="#dash" data-t="dash" class="dnav"><svg class="ic" aria-hidden="true"><use href="#ic-grid"/></svg><span>Dashboard</span></a>
 <a href="#heute" data-t="heute"><svg class="ic" aria-hidden="true"><use href="#ic-gauge"/></svg><span>Heute</span></a>
 <a href="#plan" data-t="plan"><svg class="ic" aria-hidden="true"><use href="#ic-cal"/></svg><span>Woche</span></a>
-<a href="#weg" data-t="weg"><svg class="ic" aria-hidden="true"><use href="#ic-trend"/></svg><span>Weg</span></a>
+<a href="#weg" data-t="weg"><svg class="ic" aria-hidden="true"><use href="#ic-trend"/></svg><span>Saison</span></a>
 <a href="#coach" data-t="coach" class="cnav" aria-label="Coach"><svg class="ic" aria-hidden="true"><use href="#ic-coach"/></svg><span>Coach</span><i class="cnb" hidden></i></a>
 </nav>
 <div id="qr" hidden></div>
@@ -865,12 +869,12 @@ nav a.cnav{position:relative}.cnb{position:absolute;top:2px;right:2px;min-width:
 </section>
 
 <section id="einheiten" hidden>
-<div class="subh"><span class="lnk" data-go="weg" role="button" tabindex="0">‹ Weg</span><b>Alle Einheiten</b></div>
+<div class="subh"><span class="lnk" data-go="weg" role="button" tabindex="0">‹ Saison</span><b>Alle Einheiten</b></div>
 <div id="neu"><p class="mu">Livedaten werden geladen …</p></div>
 </section>
 
 <section id="analyse" hidden>
-<div class="subh"><span class="lnk" data-go="weg" role="button" tabindex="0">‹ Weg</span><b>Analysen</b></div>
+<div class="subh"><span class="lnk" data-go="weg" role="button" tabindex="0">‹ Saison</span><b>Analysen</b></div>
 <div class="card" id="a-form"><h2>Fitness, Ermüdung und Form</h2><div id="a-gauge"></div><div id="c1"></div>
 <p class="mu" id="fnote" style="margin-top:8px"></p>
 <p class="mu xpl">Alle Werte sind eigene Berechnungen aus den Strava-Daten, keine Strava-Kennzahlen. TSS entsteht aus der normalisierten Leistung und deiner FTP, ohne Leistungsdaten aus dem Puls. Einheiten ganz ohne Daten sind pauschal mit 35 TSS pro Stunde geschätzt.</p>
@@ -890,7 +894,7 @@ nav a.cnav{position:relative}.cnb{position:absolute;top:2px;right:2px;min-width:
 </section>
 
 <section id="saison" hidden>
-<div class="subh"><span class="lnk" data-go="weg" role="button" tabindex="0">‹ Weg</span><b>Saison im Detail</b></div>
+<div class="subh"><span class="lnk" data-go="weg" role="button" tabindex="0">‹ Saison</span><b>Phasen und Rennen</b></div>
 <div id="p-jrl" class="jrl0" hidden></div>
 <div class="card" id="p-season"><h2>Saison 2027</h2></div>
 <div class="card" id="p-wt"><h2>Gewicht und Watt pro Kilo</h2></div>
@@ -1661,7 +1665,7 @@ IN['cfg']=function(){var o={};try{o=JSON.parse(localStorage.getItem('cfg1')||'{}
  var h=CFG_G.map(function(g,gi){return'<div class="cfh" role="heading" aria-level="3">'+g[0]+'</div><div class="cfg">'+g[1].filter(function(k){return F[k]}).map(function(k){return fld(F[k])}).join('')+(gi===0?tick:'')+'</div>'}).join('');
  var rest=CFF.filter(function(f){return!seen[f[0]]});
  h+='<details class="cfx"><summary>Für Fortgeschrittene</summary><p class="mu">Fitness-Ziele, Belastungsgrenze, Formbereiche der Phasen und Rennprognose. Nur ändern, wenn du weißt, was du tust.</p><div class="cfg">'+rest.map(fld).join('')+'<label class="ck"><input type="checkbox" id="cf-mood"'+(CF.mood?' checked':'')+'><span>Morgengefühl beim ersten Öffnen abfragen</span></label></div></details>';
- return{t:'Training und Ziele',h:'<p class="mu">Gilt für Berechnungen, Planung und Kalender. Nach dem Speichern lädt die App neu.</p>'+h+'<div class="row2"><button type="button" class="pbtn" id="cf-sv">Speichern</button><button type="button" class="pbtn sm ghost" id="cf-rs">Standardwerte</button><span class="mu" id="cf-m" role="status"></span></div><p class="mu" style="margin-top:14px"><span class="lnk" data-k="zones" role="button" tabindex="0">Zonen und Schwellenwerte ›</span><br><span class="lnk" data-k="src" role="button" tabindex="0">Datenquellen und Fehlerprotokoll ›</span></p>'}};
+ return{t:'Training und Ziele',h:'<p class="mu">Gilt für Berechnungen, Planung und Kalender. Nach dem Speichern lädt die App neu.</p>'+h+'<div class="row2"><button type="button" class="pbtn" id="cf-sv">Speichern</button><button type="button" class="pbtn sm ghost" id="cf-rs">Standardwerte</button><span class="mu" id="cf-m" role="status"></span></div><p class="mu" style="margin-top:14px"><span class="lnk" data-k="zon" role="button" tabindex="0">Zonen und Schwellenwerte ›</span><br><span class="lnk" data-k="src" role="button" tabindex="0">Datenquellen und Fehlerprotokoll ›</span></p>'}};
 async function cfgSave(reset){var o={},bad=[],m=$('cf-m');
 if(!reset)CFF.forEach(function(f){var v=($('cf-'+f[0]).value||'').trim();if(f[2]==='number'){if(v===''){o[f[0]]=f[0]==='ftp'||f[0]==='weight'?null:CFD[f[0]];return}var n=Number(v.replace(',','.'));if(!isFinite(n)||n<f[4]||n>f[5])bad.push(f[1]);else o[f[0]]=n}else{if(!v&&f[2]!=='date')v=CFD[f[0]];if(f[2]==='date'&&!/^\d{4}-\d{2}-\d{2}$/.test(v))bad.push(f[1]);o[f[0]]=v}});
 else Object.keys(CFD).forEach(function(k){o[k]=CFD[k]});
@@ -2908,7 +2912,7 @@ function rAbz(){var e=$('p-abz');if(!e||!window.ACT)return;var L=abzList(),n=L.f
  e.innerHTML='<h2>Abzeichen <small class="mu">'+n+' von '+L.length+'</small></h2><div class="abzg">'+L.slice().sort(function(a,b){return(!!b.d-!!a.d)||(a.d&&b.d?(a.d<b.d?1:-1):b.p-a.p)}).map(function(b){return'<div class="abz'+(b.d?' on':'')+'"><span class="abzi">'+b.ic+'</span><b>'+E(b.n)+'</b><small>'+E(b.was)+'</small>'+(b.d?'<i>„'+E(b.spr)+'“</i>':'<span class="abzb"><span style="width:'+Math.round(b.p*100)+'%"></span></span>')+'<small class="abzp">'+E(abzProg(b))+'</small></div>'}).join('')+'</div><p class="mu xpl">Wird aus deinen Einheiten, dem Plan, der Intervall-Auswertung und dem Gewicht berechnet. Neue Abzeichen meldet die Glocke.</p>';
  abzNote(L)}
 function abzNote(L){if(!window.WU_INBOX)return;var s=null;try{s=JSON.parse(localStorage.getItem('abz_seen')||'null')}catch(e){}var got=L.filter(function(b){return b.d});
- if(!s){s={};got.forEach(function(b){s[b.k]=1});try{localStorage.setItem('abz_seen',JSON.stringify(s))}catch(e){}if(got.length)WU_INBOX.add({id:'abz-start',ic:'🏅',t:got.length+(got.length===1?' Abzeichen':' Abzeichen')+' schon verdient',b:got.map(function(b){return b.n}).join(', ')+'. Alle unter Weg › Saison im Detail › Abzeichen.',a:[['Passt','ok']]});return}
+ if(!s){s={};got.forEach(function(b){s[b.k]=1});try{localStorage.setItem('abz_seen',JSON.stringify(s))}catch(e){}if(got.length)WU_INBOX.add({id:'abz-start',ic:'🏅',t:got.length+(got.length===1?' Abzeichen':' Abzeichen')+' schon verdient',b:got.map(function(b){return b.n}).join(', ')+'. Alle unter Saison › Abzeichen.',a:[['Passt','ok']]});return}
  var nw=got.filter(function(b){return!s[b.k]});if(!nw.length)return;nw.forEach(function(b){s[b.k]=1;WU_INBOX.add({id:'abz-'+b.k,ic:'🏅',t:'Neues Abzeichen: '+b.n,b:b.spr,a:[['Passt','ok']]})});try{localStorage.setItem('abz_seen',JSON.stringify(s))}catch(e){}}
 window.WU_ABZCTX=function(){try{return abzList().map(function(b){return b.d?b.n+' (seit '+b.d+')':b.n+': '+abzProg(b)})}catch(e){return null}};
 var _rallAbz=rall;rall=function(){_rallAbz();try{rAbz()}catch(e){logErr('App','Abzeichen',e)}};
@@ -2976,7 +2980,6 @@ function anaPdcKern(){var e=$('a-pdc');if(!e)return;var t=tod(),A=pdc(addD(t,-90
  var tx=lo.length?lo.map(function(x){return x[0]}).join(', ').replace(/, ([^,]*)$/,' und $1')+(lo.length===1?' liegt':' liegen')+' noch unter dem, was für '+hmS(Number(CF.goalMin))+' h nötig ist ('+lo.map(function(x){return x[1]+' statt '+x[2]+' W'}).join(', ')+').':'In den letzten 90 Tagen erreichst du bei allen Dauern das Niveau für '+hmS(Number(CF.goalMin))+' h.';
  var h=e.querySelector('h2');if(!h)return;h.insertAdjacentHTML('afterend','<p class="kern'+(lo.length?' w':'')+'">'+E(tx)+'</p>');e.insertAdjacentHTML('beforeend','<p class="amore"><span class="lnk" data-k="best" role="button" tabindex="0">Bestleistungen mit W/kg und Datum ›</span></p>')}
 IN['best']=function(){var b=$('a-bestb');return{t:'Bestleistungen',h:b?b.innerHTML:''}};
-IN['zones']=function(){return{t:'Zonen und Schwellenwerte',h:typeof zonesHtml==='function'?zonesHtml():($('m-zonesb')||{}).innerHTML||''}};
 function anaZwKern(){var e=$('a-zw');if(!e)return;var t=tod(),X=(window.ACT||[]).filter(function(a){return a.day>addD(t,-28)&&a.day<=t}),h=X.reduce(function(s,a){return s+a.sec},0)/3600,v=[0,0,0,0],tot=0;X.forEach(function(a){var g=zg(a);if(!g)return;var s=g.reduce(function(x,y){return x+y},0)||1;for(var j=0;j<4;j++){v[j]+=g[j]/s*a.sec;tot+=g[j]/s*a.sec}});
  var ph=phaseOf(t),so=(ZSOLL[ph.k]||ZSOLL.erh)[0],lk=tot?Math.round(v[0]/tot*100):null,d=lk==null?0:lk-so;
  var tx='Ø '+f1(h/4)+' h pro Woche in den letzten 4 Wochen'+(lk!=null?', '+lk+' % locker (Soll '+so+' %). '+(Math.abs(d)<=5?'Passt zur Phase '+ph.n+'.':d<0?'Zu viel im mittleren und harten Bereich.':'Etwas mehr Intensität wäre drin.'):'.');
@@ -2992,6 +2995,45 @@ var _rallAna=rall;rall=function(){_rallAna();[anaFormKern,rIvv,anaMerge].forEach
 var _rZwA=rZw;rZw=function(){_rZwA();try{anaZwKern();anaMerge()}catch(e){}};
 var _rPdcA=rPdc;rPdc=function(){_rPdcA();try{anaPdcKern()}catch(e){}};
 window.addEventListener('hashchange',function(){setTimeout(function(){try{anaMerge()}catch(e){}},0)});
+/* Reiter Saison (v48, bisher „Weg“): Ötztaler-Karte mit Zielen, Kachelreihe, Phase mit Saisonbalken, schlanke Szenarien, Pacing-Plan */
+function saiOz(){var g=Number(CF.goalMin),now=ozPred(FTP,W,Number(CF.raceStops)),kgG=Number(CF.kgGoal),need=ozNeed(kgG,Number(CF.raceStops)),n=S.ct.length,ctl=S.ct[n-1],t=tod(),bw=bodyAt(t),kg=bw?bw.kg:W,fg=Number(CF.ftpGoal),c1=Number(CF.race2Ctl),tg=typeof tgtAt==='function'?tgtAt(t):null;
+ var gl=function(n2,v,goal,pc,cl){return'<div class="goal2"><div class="hrow3"><b>'+n2+'</b><span><b>'+v+'</b> <span class="mu">→ '+goal+'</span></span></div><div class="bar"><i style="width:'+Math.max(2,Math.min(100,pc))+'%;background:'+cl+'"></i></div></div>'};
+ return'<div class="card hc"><div class="hcl">Ötztaler '+dd(CF.race2)+'</div><div class="hbig">'+hmS(now.t)+' h <small class="'+(now.t<=g?'ok':'wa')+'">Ziel unter '+hmS(g)+' h</small></div><p class="hsm">Mit '+FTP+' W und '+f1(W)+' kg. Für '+hmS(g)+' h bei '+kgG+' kg nötig: '+need+' W ('+f1(need/kgG)+' W/kg).</p>'
+  +gl('FTP',FTP+' W',fg+' W',(FTP-230)/(fg-230)*100,'var(--ac)')+gl('Gewicht',f1(kg)+' kg',kgG+' kg',(OZ26.kg+2-kg)/(OZ26.kg+2-kgG)*100,'var(--ok)')+gl('Fitness',Math.round(ctl),c1+(tg!=null?' · Soll heute '+Math.round(tg):''),ctl/c1*100,'var(--warn)')+'</div>'}
+function saiTiles(){var ab='';try{var L=abzList();ab=L.filter(function(b){return b.d}).length+'/'+L.length}catch(e){}
+ return'<div class="stiles"><div data-go="analyse" role="button" tabindex="0"><i>📊</i>Analysen</div><div data-go="einheiten" role="button" tabindex="0"><i>🗂</i>Einheiten</div><div data-go="saison" role="button" tabindex="0"><i>🗓</i>Phasen</div><div data-k="abz" role="button" tabindex="0"><i>🏅</i>Abzeichen'+(ab?'<small>'+ab+'</small>':'')+'</div></div>'}
+function saiBar(){var P=season(),t=tod(),a0=P[0].a,b0=P[P.length-1].b,span=dd2(a0,b0)||1,pos=function(d){return Math.max(0,Math.min(100,dd2(a0,d)/span*100))},sel=PHX==null?phCur():PHX;
+ return'<div class="sbar sbar2">'+P.map(function(p,i){return'<i data-phi="'+i+'" role="button" tabindex="0" title="'+E(p.n)+'" class="'+(i===sel?'on':'')+'" style="flex:'+Math.max(1,dd2(p.a,p.b)+1)+';background:'+(PHC[p.k]||'#888')+'"></i>'}).join('')+'<span class="snow" style="left:'+pos(t)+'%"></span><span class="sfl" style="left:'+pos(CF.race)+'%">🏁</span><span class="sfl" style="left:100%">🏔</span></div><div class="sdt"><span>Heute</span><span>🏁 Mondsee '+lab(CF.race)+' · 🏔 Ötztaler '+lab(CF.race2)+'</span></div>'}
+function saiPhase(){return'<div class="card hc hphase hph2" style="border-color:'+phColor()+'"><div class="hcl">Saison</div><div id="sai-bar">'+saiBar()+'</div><div class="phbox">'+phInner(false)+'</div></div>'}
+document.addEventListener('click',function(e){var b=e.target.closest&&e.target.closest('[data-phi]');if(!b)return;e.preventDefault();var i=Number(b.getAttribute('data-phi'));PHX=i===phCur()?null:i;
+ [].forEach.call(document.querySelectorAll('.phbox'),function(x){x.innerHTML=phInner(x.getAttribute('data-compact')==='1');var c=x.closest('.hphase');if(c)c.style.borderColor=phColor()});var sb=$('sai-bar');if(sb)sb.innerHTML=saiBar()});
+document.addEventListener('click',function(e){if(e.target.closest&&e.target.closest('[data-phs]'))setTimeout(function(){var sb=$('sai-bar');if(sb)sb.innerHTML=saiBar()},0)},true);
+function saiScn(){scCalc();var R=scRows(),hit=R.map(function(r){return r.h===SCN.h&&r.b===SCN.b});
+ return'<div class="card hc" id="w-scn"><div class="hcl">Szenarien Ötztaler</div><div class="schips">'+R.map(function(r,i){return'<button type="button" data-scp="'+i+'"'+(hit[i]?' class="on"':'')+'>'+r.n+'</button>'}).join('')+'</div>'
+  +'<div class="scs"><label><span>Stunden pro Woche ab '+lab(CF.spring)+' <b id="sc-hv">'+SCN.h+' h</b></span><input type="range" min="4" max="18" step="1" value="'+SCN.h+'" data-sc="h"></label><label><span>Mehrtägige Blöcke <b id="sc-bv">'+SCN.b+'</b></span><input type="range" min="0" max="6" step="1" value="'+SCN.b+'" data-sc="b"></label></div><div id="sc-out">'+scOut()+'</div>'
+  +'<details class="pd"><summary>Wie wird das gerechnet?</summary><p class="mu">Faustregel aus Trainingsstudien für ambitionierte Hobbysportler: mehr Stunden, Intensität und Blöcke bringen mehr FTP, mit abnehmendem Zuwachs. Die Zeit rechnet mit deinem Ötztaler 2026 als Basis. „Eingestellt“ sind deine Werte aus den Einstellungen.</p>'+scTable(false)+'</details></div>'}
+function saiChips(){var R=scRows();[].forEach.call(document.querySelectorAll('[data-scp]'),function(b){var r=R[+b.getAttribute('data-scp')];b.classList.toggle('on',r.h===SCN.h&&r.b===SCN.b)})}
+document.addEventListener('click',function(e){var b=e.target.closest&&e.target.closest('[data-scp]');if(!b)return;e.preventDefault();var r=scRows()[+b.getAttribute('data-scp')];scCalc();SCN.h=r.h;SCN.b=r.b;SCN.f=scFtp(SCN.h,SCN.b);SCN.t=scTime(SCN.f);
+ [].forEach.call(document.querySelectorAll('[data-sc]'),function(x){var k=x.getAttribute('data-sc');x.value=k==='h'?SCN.h:k==='b'?SCN.b:k==='f'?SCN.f:Math.round(SCN.t/5)*5});
+ var set=function(id,t){[].forEach.call(document.querySelectorAll('#'+id),function(x){x.textContent=t})};set('sc-hv',SCN.h+' h');set('sc-bv',String(SCN.b));set('sc-fv',SCN.f+' W');set('sc-tv',hmS(SCN.t)+' h');
+ [].forEach.call(document.querySelectorAll('#sc-out'),function(x){x.innerHTML=scOut()});saiChips()});
+document.addEventListener('input',function(e){if(e.target.closest&&e.target.closest('[data-sc]'))setTimeout(saiChips,0)});
+function saiPace(){var h=paceHtml();if(!h)return'';return h.replace('⛰️ Pacing-Plan Ötztaler','⛰️ Pacing-Plan').replace('<summary>Details je Anstieg</summary>','<summary>Details je Anstieg ›</summary>').replace(' Coach dazu fragen</span>',' Coach fragen ›</span>')}
+rWeg=function(){var c=$('weg-b');if(!c||!S)return;var h='';[saiOz,saiTiles,saiPhase,saiScn,saiPace].forEach(function(f){try{h+=f()}catch(e){logErr('App','Saison '+f.name,e)}});var op=c.querySelector('.pd[open]');c.innerHTML=h};
+/* Abzeichen: kompakt in Phasen und Rennen, alle 15 im eigenen Blatt */
+function abzTile(b){return'<div class="abz'+(b.d?' on':'')+'"><span class="abzi">'+b.ic+'</span><b>'+E(b.n)+'</b><small>'+E(b.was)+'</small>'+(b.d?'<i>„'+E(b.spr)+'“</i>':'<span class="abzb"><span style="width:'+Math.round(b.p*100)+'%"></span></span>')+'<small class="abzp">'+E(abzProg(b))+'</small></div>'}
+function abzSort(L){return L.slice().sort(function(a,b){return(!!b.d-!!a.d)||(a.d&&b.d?(a.d<b.d?1:-1):b.p-a.p)})}
+rAbz=function(){var e=$('p-abz');if(!e||!window.ACT)return;var L=abzList(),G=abzSort(L),got=G.filter(function(b){return b.d}),nx=G.filter(function(b){return!b.d}).slice(0,3);
+ e.innerHTML='<h2>Abzeichen <small class="mu">'+got.length+' von '+L.length+'</small></h2>'+(got.length?'<div class="abzg">'+got.map(abzTile).join('')+'</div>':'')+(nx.length?'<h3>Als Nächstes</h3><div class="abzg">'+nx.map(abzTile).join('')+'</div>':'')+'<p class="amore"><span class="lnk" data-k="abz" role="button" tabindex="0">Alle '+L.length+' Abzeichen ›</span></p><p class="mu xpl">Wird aus deinen Einheiten, dem Plan, der Intervall-Auswertung und dem Gewicht berechnet. Neue Abzeichen meldet die Glocke.</p>';
+ abzNote(L)};
+IN['abz']=function(){var L=abzList();return{t:'Abzeichen',h:'<p class="mu">'+L.filter(function(b){return b.d}).length+' von '+L.length+' verdient.</p><div class="abzg">'+abzSort(L).map(abzTile).join('')+'</div>'}};
+/* Fitness bis zu den Rennen und Formziel je Phase: eine Karte mit Umschalter (nur unter Phasen und Rennen) */
+var SAIF=0;
+function saiCF(){var c=$('p-curve'),f=$('p-formc');if(!c||!f)return;[[c,0],[f,1]].forEach(function(x){var e=x[0],h=e.querySelector('h2');if(!h)return;h.textContent='Fitness und Form bis zu den Rennen';if(!e.querySelector('.aseg'))h.insertAdjacentHTML('afterend','<div class="aseg sfseg"><button type="button" data-sfv="0"'+(SAIF===0?' class="on"':'')+'>Fitness</button><button type="button" data-sfv="1"'+(SAIF===1?' class="on"':'')+'>Formziel je Phase</button></div>');e.classList.toggle('sf-off',SAIF!==x[1])})}
+document.addEventListener('click',function(e){var b=e.target.closest&&e.target.closest('[data-sfv]');if(!b)return;SAIF=+b.getAttribute('data-sfv');[].forEach.call(document.querySelectorAll('[data-sfv]'),function(x){x.classList.toggle('on',+x.getAttribute('data-sfv')===SAIF)});saiCF()});
+var _rSeasonSai=rSeason;rSeason=function(){_rSeasonSai();try{saiCF()}catch(e){}};
+/* Skitouren jetzt im Reiter Woche */
+var _rpSki=rp;rp=function(){_rpSki();try{var c=$('pl-wk'),m=new Date().getMonth();if(!c||!skiOn()||(m>4&&m<10)||c.querySelector('.wkski'))return;c.insertAdjacentHTML('beforeend','<p class="amore wkski"><span class="lnk" data-k="ski" role="button" tabindex="0">⛷ Skitouren-Vorschläge fürs Wochenende ›</span></p>')}catch(e){}};
 /* Kontext für den Coach */
 function coCtx(){var t=tod(),X=window.ACT||[],n=S?S.ct.length:0,ph=phaseOf(t),bw=bodyAt(t),kg=bw?bw.kg:W;
  var ak=X.filter(function(a){return a.day>=addD(t,-21)}).map(function(a){var p=PM[a.day],q=LOG[a.id]||{};return{datum:a.day,name:a.name,sport:sn(a.sp),minuten:Math.round(a.sec/60),km:a.km>0?Math.round(a.km):null,hm:a.hm>0?Math.round(a.hm):null,tss:Math.round(a.tss),np:a.np?Math.round(a.np):null,puls:a.ah||null,if:a.iff?Math.round(a.iff*100)/100:null,entkopplung_prozent:a.dc==null?null:a.dc,geplant:p?p[2]:null,rpe:q.rpe||null,notiz:q.note||null,kraempfe:q.kr&&q.kr.s?krSum(q.kr):null}});
@@ -3099,7 +3141,7 @@ function coWhere(){var tab=document.body.getAttribute('data-tab')||'heute',sh=!$
  if(tab==='plan'){var wk=wkOf(WOFF);return{l:'Woche ab '+lab(wk[0]),d:'Wochenansicht',x:{woche:wk.map(function(d){var p=PM[d];return{datum:d,plan:p?p[2]:'frei',tss:p?p[1]:0,erledigt:(window.ACT||[]).filter(function(a){return a.day===d}).map(function(a){return a.name+', '+Math.round(a.sec/60)+' min, TSS '+Math.round(a.tss)})}}),rueckblick:(PW8[wk[0]]||{}).rb||null}}}
  if(tab==='weg'){var P=season(),i=PHX==null?phCur():PHX,ph=P[Math.max(0,Math.min(P.length-1,i))];return{l:'Weg · Phase '+ph.n,d:'Weg zum Ziel mit Phase und Szenarien',x:{gezeigte_phase:{name:ph.n,von:ph.a,bis:ph.b,inhalt:ph.d},pacing_oetztaler:window.WU_PACE?WU_PACE():null,eigenes_szenario:SCN&&SCN.h!=null?{stunden_ab_fruehjahr:SCN.h,bloecke:SCN.b,ftp:SCN.f,zeit:hmS(SCN.t)}:null}}}
  if(tab==='analyse')return{l:'Analysen · '+({form:'Form & Belastung',leist:'Leistung',zon:'Zonen & Umfang',koerp:'Körper & Erholung'}[ATS]||ATS),d:'Analysen, Thema '+ATS};
- if(tab==='einheiten')return{l:'Alle Einheiten',d:'Archiv aller Einheiten'};if(tab==='saison')return{l:'Saison im Detail',d:'Saisonübersicht'};return{l:tab,d:tab}}
+ if(tab==='einheiten')return{l:'Alle Einheiten',d:'Archiv aller Einheiten'};if(tab==='saison')return{l:'Phasen und Rennen',d:'Phasen, Rennen, Fitnessziele, Abzeichen'};return{l:tab,d:tab}}
 function coWide(){return document.body.classList.contains('tabdev')&&window.innerWidth>=900}
 function coOpen(q){var loc=coWhere();CO.loc=loc;if(!document.getElementById('copanel'))coPanel(true);coLocShow();if(q)coSend(q,loc);setTimeout(function(){var t=document.getElementById('co-t');if(t&&!q&&coWide())t.focus()},60)}
 function coPanel(on){var p=document.getElementById('copanel');if(on){if(!p){p=document.createElement('aside');p.id='copanel';p.setAttribute('aria-label','Coach');document.body.appendChild(p)}var o=IN['coach']();p.innerHTML='<div class="cop-top"><svg class="ic coic" aria-hidden="true"><use href="#ic-coach"/></svg><div class="cop-tt"><b>Coach</b><small id="co-sub">'+E(coSub())+'</small></div><span class="mu" id="co-loc" hidden></span><button type="button" class="dbtn" id="co-x" aria-label="Coach schließen">✕</button></div><div class="cop-body">'+o.h+'</div>';document.body.classList.add('co-open');document.body.classList.toggle('co-wide',coWide());if(o.f)o.f()}
