@@ -649,6 +649,7 @@
     else if (key === 'upd') { WU.close(); doUpdate(null); return; }
     else if (key === 'updx') { ls('wu_updskip', UPD && UPD.latest); WU_INBOX.done(id); }
     else if (key === 'st') { WU.close(); stConnect(); return; }
+    else if (key.indexOf('o-') === 0) { WU_INBOX.done(id); WU.close(); if (window.WU_OPEN) window.WU_OPEN(key.slice(2)); return; }
     else if (key === 'bill') { WU_INBOX.done(id); window.open('https://platform.claude.com/settings/billing', '_blank'); }
     else WU_INBOX.done(id);
     WU.open(null, 'inbox');

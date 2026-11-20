@@ -129,6 +129,7 @@ async function runtimeCheck() {
   await open('a:' + A[A.length - 1].id, 'Einheit im Detail');
   await open('coach', 'Coach');
   await open('cfg', 'Einstellungen Training und Ziele');
+  await open('jr', 'Jahresrückblick');
   // Tablet-Dashboard
   await pg.setViewportSize({ width: 1280, height: 800 });
   await pg.evaluate(() => { location.hash = '#dash'; }); await pg.waitForTimeout(1500);
