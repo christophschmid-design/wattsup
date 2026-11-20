@@ -510,7 +510,7 @@
         row('pg:notif', 'Benachrichtigungen', nOnN + ' von 4 aktiv' + (c.pushOk ? ', Push aktiv' : ''), c.pushOk ? '' : st('w', 'Push aus')),
         row('pg:app', 'App-Version', UPD ? '1.' + UPD.cur + (UPD.newer ? ', neu: 1.' + UPD.latest : ', aktuell') : 'Version und Updates', UPD && UPD.newer ? st('w', 'Update') : '')
       ] : []).concat([
-        row('pg:data', 'Daten sichern und übernehmen', 'Sicherung, Import aus der Claude-Version'),
+        row('pg:data', 'Sicherung und Diagnose', 'Sicherung in Google Drive' + (lg('wu_bklast', 0) ? ' vom ' + new Date(lg('wu_bklast', 0)).toLocaleDateString('de-AT') : '') + ', Datei, Diagnose für Claude'),
         row('app:src', 'Datenquellen und Fehlerprotokoll', se.length ? 'Problem bei ' + se.join(', ') : 'Status aller Dienste', se.length ? st(false, 'Fehler') : '')
       ])) +
       '<p class="wu-mu" style="margin-top:16px">Alle Schlüssel bleiben nur auf diesem Gerät. <a href="https://github.com/christophschmid-design/wattsup/blob/main/docs/EINRICHTUNG.md" target="_blank" rel="noopener">Anleitung zur Einrichtung</a><br>WattsUp ' + VER + (CAPN ? ', Android' : ', Browser') + '</p>';
@@ -562,7 +562,9 @@
       '<p class="wu-mu">Inhalt und Funktionen kommen automatisch beim nächsten Start. Ein Update ist nur für Widget, Benachrichtigungen und Berechtigungen nötig.</p>';
   }
   function pageData() {
-    return hdr('Daten sichern und übernehmen') + '<div class="wu-c"><h3 style="margin-top:0">Sicherung</h3><p class="wu-mu">Bewertungen, Pläne, Morgengefühl, Gewicht und Einstellungen als Datei. Schlüssel sind nicht enthalten.</p><button class="wu-b alt" data-wu="exp">Sicherung exportieren</button></div>' +
+    setTimeout(bkHtml, 50);
+    return hdr('Daten sichern und übernehmen') + '<div class="wu-c"><h3 style="margin-top:0">Automatische Sicherung in Google Drive</h3><p class="wu-mu">Jeden Sonntag automatisch im versteckten WattsUp-Ordner deines Google Drive, die letzten 10 bleiben. Schlüssel und Passwörter werden nicht mitgesichert. Wiederherstellen setzt die gesicherten Einträge auf den Stand der Sicherung zurück, später Hinzugekommenes bleibt erhalten.</p>' + (gOk() ? '<button class="wu-b" data-wu="bkn">Jetzt sichern</button><div id="wu-bk" style="margin-top:10px"><p class="wu-mu">Lade …</p></div>' : '<p>' + st(false, 'Google nicht verbunden') + '</p>') + '</div>' +
+      '<div class="wu-c"><h3 style="margin-top:0">Diagnose für Claude</h3><p class="wu-mu">Fasst Versionen, Verbindungen, Abgleich und die letzten Fehler zusammen. Kopieren und im Chat mit Claude einfügen, das ersetzt Screenshots.</p><button class="wu-b" data-wu="diag">Diagnose erstellen und kopieren</button><textarea id="wu-diag" readonly rows="8" style="width:100%;margin-top:10px;font:12px/1.4 ui-monospace,monospace"></textarea></div>' + '<div class="wu-c"><h3 style="margin-top:0">Sicherung als Datei</h3><p class="wu-mu">Bewertungen, Pläne, Morgengefühl, Gewicht und Einstellungen als Datei. Schlüssel sind nicht enthalten.</p><button class="wu-b alt" data-wu="exp">Sicherung exportieren</button></div>' +
       '<div class="wu-c"><h3 style="margin-top:0">Übernehmen</h3><p class="wu-mu">Eine Sicherung oder den Export aus der Claude-Version („Daten für WattsUp exportieren“) wählen.</p><input type="file" id="wu-imp" accept=".json,.txt,application/json,text/plain"></div>';
   }
   function pageSki() {
@@ -651,6 +653,61 @@
     else WU_INBOX.done(id);
     WU.open(null, 'inbox');
   }
+
+  /* ---------- Datensicherung (v48): jeden Sonntag bzw. nach 7 Tagen eine Sicherung im versteckten Drive-Ordner, die letzten 10 bleiben ---------- */
+  var BKN = 'wattsup-sicherung-', SECRET = /^(aKey|stSec|gSec|ivKey|icuKey|pushKey)$/;
+  function bkLocal() { var o = {}; for (var i = 0; i < localStorage.length; i++) { var k = localStorage.key(i); if (/^wu_(strava|google|dfid|inbox|nocredit|updskip|cfg)$/.test(k)) continue; if (k === DBK) continue; try { o[k] = localStorage.getItem(k); } catch (e) { } } return o; }
+  async function bkList() { var j = await gApi('https://www.googleapis.com/drive/v3/files?' + qs({ spaces: 'appDataFolder', q: "name contains '" + BKN + "' and trashed=false", fields: 'files(id,name,createdTime,size)', orderBy: 'createdTime desc', pageSize: 30 })); return j.files || []; }
+  async function bkMake(manual) {
+    if (!gOk()) { if (manual) toast('Für die Sicherung zuerst Google verbinden.'); return false; }
+    try {
+      var c = cfg(), cf = {}; Object.keys(c).forEach(function (k) { if (!SECRET.test(k)) cf[k] = c[k]; });
+      var d = new Date(), name = BKN + d.toISOString().slice(0, 10) + '.json', body = JSON.stringify({ v: 1, ts: now(), docs: dbAll(), local: bkLocal(), cfg: cf });
+      var bd = 'bk' + now(), mp = '--' + bd + '\r\nContent-Type: application/json; charset=UTF-8\r\n\r\n' + JSON.stringify({ name: name, parents: ['appDataFolder'] }) + '\r\n--' + bd + '\r\nContent-Type: application/json\r\n\r\n' + body + '\r\n--' + bd + '--';
+      await gApi('https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart', { method: 'POST', headers: { 'Content-Type': 'multipart/related; boundary=' + bd }, body: mp });
+      ls('wu_bklast', now());
+      var L = await bkList(); for (var i = 10; i < L.length; i++) { try { await gApi('https://www.googleapis.com/drive/v3/files/' + L[i].id, { method: 'DELETE' }); } catch (e) { } }
+      if (manual) toast('Sicherung erstellt (' + Math.round(body.length / 1024) + ' KB).');
+      return true;
+    } catch (e) { if (manual) toast('Sicherung fehlgeschlagen: ' + (e.message || e)); return false; }
+  }
+  async function bkRestore(id) {
+    var tk = await gToken(), r = await fetch('https://www.googleapis.com/drive/v3/files/' + id + '?alt=media', { headers: { Authorization: 'Bearer ' + tk } });
+    if (!r.ok) throw fail('tool_error', 'Sicherung nicht lesbar (' + r.status + ')');
+    var j = await r.json(), docs = j.docs || {}, cur = dbAll(), t = now();
+    /* Einträge der Sicherung gewinnen (Zeitstempel jetzt), was nach der Sicherung neu dazukam, bleibt erhalten */
+    Object.keys(docs).forEach(function (k) { var x = JSON.parse(JSON.stringify(docs[k])); x.ts = t; cur[k] = x; });
+    ls(DBK, cur);
+    Object.keys(j.local || {}).forEach(function (k) { try { localStorage.setItem(k, j.local[k]); } catch (e) { } });
+    if (j.cfg) { var c = cfg(); Object.keys(j.cfg).forEach(function (k) { if (!SECRET.test(k)) c[k] = j.cfg[k]; }); setCfg(c); }
+    await push();
+    return Object.keys(docs).length;
+  }
+  setTimeout(function () { var last = Number(lg('wu_bklast', 0)) || 0, d = new Date(); if (gOk() && (now() - last > 7 * 864e5 || (d.getDay() === 0 && now() - last > 20 * 3600000))) bkMake(false); }, 45000);
+  window.WU_BACKUP = bkMake;
+  async function bkHtml() {
+    var box = document.getElementById('wu-bk'); if (!box) return;
+    try { var L = await bkList(); box.innerHTML = L.length ? '<table class="wu-tb">' + L.map(function (f) { return '<tr><td>' + new Date(f.createdTime).toLocaleString('de-AT', { weekday: 'short', day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' }) + '</td><td>' + Math.round((f.size || 0) / 1024) + ' KB</td><td><button class="wu-b alt" data-wu="bkr:' + E(f.id) + '">Wiederherstellen</button></td></tr>'; }).join('') + '</table>' : '<p class="wu-mu">Noch keine Sicherung.</p>'; }
+    catch (e) { box.innerHTML = '<p class="wu-mu">Liste nicht lesbar: ' + E(e.message || e) + '</p>'; }
+  }
+  /* ---------- Diagnose-Bericht (v48): alles Wichtige als Text zum Kopieren für Claude ---------- */
+  async function diagText() {
+    var c = cfg(), L = [], t = new Date();
+    L.push('WattsUp Diagnose ' + t.toLocaleString('de-AT'));
+    try { if (CAPN && PL.App) { var info = await PL.App.getInfo(); L.push('App: Android 1.' + info.build); } else L.push('App: Browser ' + navigator.userAgent.replace(/\s+/g, ' ').slice(0, 120)); } catch (e) { }
+    L.push('Bildschirm: ' + innerWidth + '×' + innerHeight + ' · Gerät ' + (lg('wu_dev', '') || '–'));
+    L.push('Strava: ' + (stOk() ? 'verbunden' + ((stTok() || {}).w === 1 || /activity:write/.test((stTok() || {}).sc || '') ? ', Hochladen erlaubt' : ', Hochladen nicht bestätigt') : 'nicht verbunden'));
+    L.push('Google: ' + (gOk() ? 'verbunden, Abgleich ' + SYNC.st + (SYNC.ts ? ' ' + new Date(SYNC.ts).toLocaleTimeString('de-AT') : '') + (SYNC.msg ? ' (' + SYNC.msg + ')' : '') : 'nicht verbunden'));
+    try { if (gOk()) { var fl = await dList(); L.push('Abgleich-Dateien: ' + fl.length); } } catch (e) { L.push('Abgleich-Dateien: Fehler ' + (e.message || e)); }
+    L.push('Datenbank: ' + Object.keys(dbAll()).length + ' Einträge · letzte Sicherung ' + (lg('wu_bklast', 0) ? new Date(lg('wu_bklast', 0)).toLocaleDateString('de-AT') : 'keine'));
+    L.push('Claude: ' + (c.aKey ? 'Schlüssel vorhanden' : 'kein Schlüssel') + (lg('wu_nocredit', 0) ? ', Guthaben leer gemeldet' : '') + ' · Budget ' + (c.limit || '–') + ' $');
+    L.push('Health Connect: ' + (CAPN ? (c.hcOk ? 'verbunden, zuletzt ' + (c.hcLast ? new Date(c.hcLast).toLocaleString('de-AT') : '–') : 'nicht verbunden') : 'nur in der Android-App'));
+    L.push('intervals.icu: ' + (c.ivKey || c.icuKey ? 'Schlüssel vorhanden' : 'nicht eingerichtet') + ' · Push: ' + (c.pushTopic ? 'eingerichtet' : 'nicht eingerichtet'));
+    L.push('Offene Erinnerungen: ' + (window.WU_INBOX ? WU_INBOX.count() : '–'));
+    try { var E2 = window.WU_ERRLOG ? WU_ERRLOG() : []; L.push('Fehlerprotokoll (letzte ' + Math.min(15, E2.length) + '):'); E2.slice(-15).forEach(function (x) { L.push('- ' + x); }); } catch (e) { }
+    return L.join('\n');
+  }
+  window.WU_DIAG = diagText;
   var WU = {
     open: function (note, page) { if (page) PG = page; else if (note || !document.getElementById('wu-ov') || document.getElementById('wu-ov').hidden) PG = PG && document.getElementById('wu-ov') && !document.getElementById('wu-ov').hidden ? PG : 'home'; var sh = document.getElementById('sh'), sx = document.getElementById('shx'); if (sh && !sh.hidden && sx) sx.click(); addCss(); var o = document.getElementById('wu-ov'); if (!o) { o = document.createElement('div'); o.id = 'wu-ov'; o.className = 'wu-ov'; document.body.appendChild(o); o.addEventListener('click', onClick); o.addEventListener('change', onChange); } o.innerHTML = '<div class="wu-sh" role="dialog" aria-modal="true">' + render(note) + '</div>'; o.hidden = false; },
     close: function () { var o = document.getElementById('wu-ov'); if (o) o.hidden = true; },
@@ -673,10 +730,15 @@
       if (ev && ev.canGoBack) history.back(); else if (PL.App.minimizeApp) PL.App.minimizeApp(); else PL.App.exitApp();
     });
   }
+  /* Zweistufige Bestätigung ohne Browser-Dialog: erster Tipp fragt nach, zweiter führt aus */
+  function confirmLike(b) { if (b.getAttribute('data-sure') === '1') return true; b.setAttribute('data-sure', '1'); b.dataset.t = b.textContent; b.textContent = 'Sicher? Nochmal tippen'; setTimeout(function () { if (b.isConnected) { b.removeAttribute('data-sure'); b.textContent = b.dataset.t; } }, 4000); return false; }
   async function onClick(e) {
     if (e.target.id === 'wu-ov') { if (PG !== 'home') { saveForm(); WU.open(null, 'home'); } else { saveForm(); WU.close(); } return; }
     var b = e.target.closest('[data-wu]'); if (!b) return; var k = b.getAttribute('data-wu');
     if (k === 'close') { saveForm(); WU.close(); return; }
+    if (k === 'bkn') { await bkMake(true); bkHtml(); return; }
+    if (k.indexOf('bkr:') === 0) { if (!confirmLike(b)) return; try { var nb = await bkRestore(k.slice(4)); toast(nb + ' Einträge wiederhergestellt. Die App lädt neu.'); setTimeout(function () { location.reload(); }, 1500); } catch (e) { toast('Wiederherstellen fehlgeschlagen: ' + (e.message || e)); } return; }
+    if (k === 'diag') { var tx = await diagText(), box2 = document.getElementById('wu-diag'); if (box2) box2.value = tx; try { await navigator.clipboard.writeText(tx); toast('Diagnose kopiert. Einfach in den Chat mit Claude einfügen.'); } catch (e) { toast('Bitte den Text markieren und kopieren.'); } return; }
     if (k.indexOf('ib:') === 0) { var q = k.slice(3), ix = q.lastIndexOf(':'); await inbAct(q.slice(0, ix), q.slice(ix + 1)); return; }
     if (k.indexOf('ibs:') === 0) { var id2 = k.slice(4); if (INB[id2]) { INB[id2].sn = now() + 20 * 3600 * 1000; inbSave(); } WU.open(null, 'inbox'); return; }
     if (k.indexOf('pg:') === 0) { saveForm(); PG = k.slice(3); WU.open(null, PG); var sh0 = document.querySelector('.wu-sh'); if (sh0) sh0.scrollTop = 0; return; }

@@ -904,6 +904,7 @@ var SRC={strava:{n:'Strava'},wetter:{n:'Wetter'},kalender:{n:'Kalender'},claude:
 var ELOG=[];try{ELOG=JSON.parse(localStorage.getItem('err1')||'[]')||[]}catch(e){}
 function srcKey(s){return s==='Strava'?'strava':/AccuWeather/.test(s)?'wetter':s==='Google Calendar'?'kalender':String(s)}
 function srcUpd(){clearTimeout(srcUpd.t);srcUpd.t=setTimeout(function(){try{document.dispatchEvent(new Event('srcupd'))}catch(e){}},80)}
+window.WU_ERRLOG=function(){return ELOG.slice().reverse().map(function(x){return new Date(x.ts).toLocaleString('de-AT',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'})+' '+x.src+' · '+x.act+(x.code?' ['+x.code+']':'')+(x.msg?': '+x.msg:'')})};
 function logErr(src,act,e){var c=e&&(e.code||e.name)||'',m=e&&(e.message||(typeof e==='string'?e:''))||'';ELOG.unshift({ts:Date.now(),src:String(src),act:String(act||''),code:String(c).slice(0,60),msg:String(m).slice(0,240)});if(ELOG.length>60)ELOG.length=60;try{localStorage.setItem('err1',JSON.stringify(ELOG))}catch(x){}srcUpd()}
 function srcStart(k){var s=SRC[k]||(SRC[k]={n:k});s.run=(s.run||0)+1;srcUpd()}
 function srcMark(k,ok,act,e,stored,quiet){var s=SRC[k]||(SRC[k]={n:k});s.run=Math.max(0,(s.run||0)-1);if(ok){s.ok=Date.now();s.st='ok';s.stored=stored||s.ok}else if(!quiet){s.err=Date.now();s.st='err';s.code=(e&&e.code)||'fehler';logErr(s.n,act,e)}srcUpd()}
