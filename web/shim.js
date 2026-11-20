@@ -799,6 +799,14 @@
   /* Gewicht aus Health Connect (Google Health, Renpho) */
   var HC = PL.Health, hcBusy = false;
   function dayOf(iso) { var d = new Date(iso); return d.getFullYear() + '-' + ('0' + (d.getMonth() + 1)).slice(-2) + '-' + ('0' + d.getDate()).slice(-2); }
+  /* Herkunft eines Health-Connect-Werts (App, die ihn geschrieben hat), lesbar gemacht */
+  function hcOrigin(x) {
+    var o = x && (x.sourceName || x.source || x.dataOrigin || x.sourceBundleId || x.packageName || (x.metadata && x.metadata.dataOrigin)) || '';
+    if (typeof o === 'object') o = o.packageName || o.name || '';
+    o = String(o); var M = { 'com.qingniu.renpho': 'Renpho', 'com.renpho': 'Renpho', 'com.google.android.apps.fitness': 'Google Fit', 'com.google.android.apps.healthdata': 'Health Connect', 'com.samsung.android.app.health': 'Samsung Health', 'com.garmin.android.apps.connectmobile': 'Garmin Connect', 'com.withings.wiscale2': 'Withings', 'com.ouraring.oura': 'Oura', 'com.fitbit.FitbitMobile': 'Fitbit', 'com.google.android.apps.health': 'Google Health' };
+    for (var k in M) if (o.indexOf(k) === 0) return M[k];
+    return o.replace(/^com\.|^de\.|^at\./, '').split('.').slice(0, 2).join('.') || '';
+  }
   async function hcSync(force) {
     if (!CAPN || hcBusy) return;
     var c = cfg();
@@ -821,12 +829,12 @@
       }
       var r = await HC.readSamples({ dataType: 'weight', startDate: new Date(now() - 30 * 864e5).toISOString(), endDate: new Date().toISOString(), limit: 300, ascending: true });
       var by = {}, bf = {};
-      (r && r.samples || []).forEach(function (x) { var d = dayOf(x.startDate), kg = x.unit === 'pound' ? x.value * 0.45359 : x.value; if (!by[d]) by[d] = kg; });
+      var orig = {}; (r && r.samples || []).forEach(function (x) { var d = dayOf(x.startDate), kg = x.unit === 'pound' ? x.value * 0.45359 : x.value; if (!by[d]) { by[d] = kg; orig[d] = hcOrigin(x); } });
       try {
         var r2 = await HC.readSamples({ dataType: 'bodyFat', startDate: new Date(now() - 30 * 864e5).toISOString(), endDate: new Date().toISOString(), limit: 300, ascending: true });
         (r2 && r2.samples || []).forEach(function (x) { var d = dayOf(x.startDate), v = x.value <= 1 ? x.value * 100 : x.value; if (bf[d] == null) bf[d] = v; });
       } catch (e) { }
-      var list = Object.keys(by).concat(Object.keys(bf)).filter(function (d, i, a) { return a.indexOf(d) === i; }).sort().map(function (d) { return [d, by[d] != null ? by[d] : null, bf[d] != null ? bf[d] : null]; });
+      var list = Object.keys(by).concat(Object.keys(bf)).filter(function (d, i, a) { return a.indexOf(d) === i; }).sort().map(function (d) { return [d, by[d] != null ? by[d] : null, bf[d] != null ? bf[d] : null, orig[d] || null]; });
       for (var i = 0; i < 50 && !window.WU_WT; i++) await new Promise(function (ok) { setTimeout(ok, 300); });
       var n = window.WU_WT ? await window.WU_WT(list) : 0;
       try { await recSync(); } catch (e) { }
