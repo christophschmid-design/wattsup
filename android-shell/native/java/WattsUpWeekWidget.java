@@ -53,18 +53,21 @@ public class WattsUpWeekWidget extends AppWidgetProvider {
             String lab = DN[k], sym = "–";
             int st = 2;
             boolean tdy = false;
+            boolean key = false;
             if (d != null && k < d.length()) {
                 JSONObject x = d.optJSONObject(k);
                 if (x != null) {
                     sym = x.optString("s", sym);
                     st = x.optInt("c", 2);
                     tdy = today.equals(x.optString("d"));
+                    key = x.optBoolean("k", false);
                 }
             }
             v.setTextViewText(LAB[k], lab);
             v.setTextViewText(SYM[k], sym);
-            v.setTextColor(SYM[k], st == 0 ? 0xFF3DDC97 : st == 3 ? 0xFFFF6B57 : st == 1 ? 0xFFFFFFFF : 0xFF8899AA);
-            v.setInt(CELL[k], "setBackgroundResource", tdy ? R.drawable.wu_cell_today : st == 0 ? R.drawable.wu_cell_done : R.drawable.wu_cell);
+            v.setTextColor(SYM[k], st == 0 ? 0xFF3DDC97 : st == 3 ? 0xFFFF6B57 : st == 4 ? 0xFFFFB547 : st == 1 ? 0xFFFFFFFF : 0xFF8899AA);
+            v.setTextViewText(LAB[k], key ? "\uD83D\uDD11" + lab : lab);
+            v.setInt(CELL[k], "setBackgroundResource", tdy ? R.drawable.wu_cell_today : key ? R.drawable.wu_cell_key : st == 0 ? R.drawable.wu_cell_done : R.drawable.wu_cell);
         }
         m.updateAppWidget(id, v);
     }
