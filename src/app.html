@@ -729,6 +729,7 @@ body.tabdev nav{top:calc(4px + env(safe-area-inset-top,0px));bottom:auto}body.ta
 .co #co-s{background:#e3b257;color:#1a1407;border-color:#e3b257}
 .co .co-chips button{border-color:rgba(227,178,87,.45)}
 .co-cost{margin:8px 2px 0}
+.hcnow{font-size:.78rem;font-weight:600;margin-left:8px;white-space:nowrap}
 .ivty{margin:2px 0 6px;font-size:.88rem}.ivty select{font:inherit;padding:3px 6px;border-radius:8px;border:1px solid var(--ln);background:var(--bg2);color:var(--ink)}.ivty small.wa{color:var(--warn)}.ivat{overflow-x:auto;margin:6px 0}.ivat .t{font-size:.8rem;white-space:nowrap}.ivat .iva-p td{color:var(--mu)}.ivat small.ok{color:var(--ok)}.ivat small.wa{color:var(--warn)}.ivat small.ba{color:var(--bad)}
 
 /* Tastatur offen: Coach endet über der Tastatur */
@@ -2772,6 +2773,13 @@ function ivaHtml(a,r){if(!r)return'<p class="mu">Keine Intervalle erkannt.</p>';
  var s=r.sum,hd=s?'<p><b>'+s.arbeitsbloecke+' Arbeitsblöcke</b> · Ø '+s.watt_mittel+' W ('+s.pct_ftp_mittel+' % FTP)'+(s.erreicht?' · Soll erreicht '+s.erreicht:'')+(s.abfall_pct!=null?' · Abfall '+(s.abfall_pct>0?'+':'')+s.abfall_pct+' %':'')+'</p>':'';
  var sh=r.bl.some(function(x){return x.soll_w}),kn={arbeit:'Arbeit',pause:'Pause',locker:'locker',einfahren:'Einfahren',ausfahren:'Ausfahren'};
  return th+hd+'<div class="ivat"><table class="t"><tr><th>Block</th><th>Dauer</th>'+(sh?'<th>Soll</th>':'')+'<th>Ø W</th><th>NP</th><th>% FTP</th><th>W/kg</th><th>Puls Ø/max</th><th>Kad.</th>'+(r.bl.some(function(x){return x.kmh&&x.kmh>0&&!/Virtual/.test(a.sp)})?'<th>km/h</th><th>Hm</th>':'')+'</tr>'+r.bl.map(function(x,i){var ar=x.k==='arbeit';return'<tr class="'+(ar?'iva-w':'iva-p')+'"><td>'+(kn[x.k]||x.k)+'</td><td>'+ivaD(x.dauer_s)+'</td>'+(sh?'<td>'+(x.soll_w||'–')+'</td>':'')+'<td><b>'+x.watt+'</b>'+(x.erfuellung_pct&&ar?' <small class="'+(x.erfuellung_pct>=97?'ok':x.erfuellung_pct>=92?'wa':'ba')+'">'+x.erfuellung_pct+' %</small>':'')+'</td><td>'+(x.np||'–')+'</td><td>'+x.pct_ftp+'</td><td>'+String(x.w_kg).replace('.',',')+'</td><td>'+(x.hf||'–')+'/'+(x.hf_max||'–')+(x.hf_erholung?' <small class="mu">−'+x.hf_erholung+'</small>':'')+'</td><td>'+(x.kadenz||'–')+'</td>'+(r.bl.some(function(y){return y.kmh&&y.kmh>0&&!/Virtual/.test(a.sp)})?'<td>'+(x.kmh||'–')+'</td><td>'+(x.hm||0)+'</td>':'')+'</tr>'}).join('')+'</table></div><p class="mu">Quelle: '+E(r.quelle)+(r.quelle==='Zwift-Plan'?' (geplanter Ablauf über die Aufzeichnung gelegt)':r.quelle==='Runden'?' (Runden aus der Aufzeichnung)':' (Abschnitte über 85 % FTP)')+'. Puls „−“ = Abfall in der Pause. <span class="lnk" data-ivre="'+E(String(a.id))+'" role="button" tabindex="0">Neu berechnen</span></p>'}
+/* „Jetzt holen“ für Gewicht und Schlaf (Health Connect am Handy, sonst Abgleich mit dem Handy) */
+function hcBtn(){return' <span class="lnk hcnow" data-hcnow role="button" tabindex="0" title="Gewicht und Schlaf jetzt aus Health Connect holen">↻ jetzt holen</span>'}
+document.addEventListener('click',function(e){var b=e.target.closest&&e.target.closest('[data-hcnow]');if(!b)return;e.preventDefault();e.stopPropagation();if(window.WU_HCNOW)WU_HCNOW()},true);
+window.addEventListener('wu-hc-done',function(){try{rall()}catch(e){}});
+var _rWtH=rWt;rWt=function(){_rWtH();var e=$('p-wt');if(e){var h=e.querySelector('h2');if(h&&!h.querySelector('.hcnow'))h.insertAdjacentHTML('beforeend',hcBtn())}};
+var _rRecH=rRec;rRec=function(){_rRecH();var e=$('p-rec');if(e){var h=e.querySelector('h2');if(h&&!h.querySelector('.hcnow'))h.insertAdjacentHTML('beforeend',hcBtn())}};
+var _whyHc=whyHtml;whyHtml=function(r,sc){return _whyHc(r,sc)+'<p class="mu" style="margin-top:6px">Schlaf, Ruhepuls und HRV aus Health Connect.'+hcBtn()+'</p>'};
 /* Kontext für den Coach */
 function coCtx(){var t=tod(),X=window.ACT||[],n=S?S.ct.length:0,ph=phaseOf(t),bw=bodyAt(t),kg=bw?bw.kg:W;
  var ak=X.filter(function(a){return a.day>=addD(t,-21)}).map(function(a){var p=PM[a.day],q=LOG[a.id]||{};return{datum:a.day,name:a.name,sport:sn(a.sp),minuten:Math.round(a.sec/60),km:a.km>0?Math.round(a.km):null,hm:a.hm>0?Math.round(a.hm):null,tss:Math.round(a.tss),np:a.np?Math.round(a.np):null,puls:a.ah||null,if:a.iff?Math.round(a.iff*100)/100:null,entkopplung_prozent:a.dc==null?null:a.dc,geplant:p?p[2]:null,rpe:q.rpe||null,notiz:q.note||null,kraempfe:q.kr&&q.kr.s?krSum(q.kr):null}});

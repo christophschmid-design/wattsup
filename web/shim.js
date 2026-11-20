@@ -804,7 +804,8 @@
     var c = cfg();
     if (!HC) { if (force) toast('Diese App-Version kann Health Connect noch nicht lesen. Bitte zuerst aktualisieren.'); return; }
     var d4 = new Date(); d4.setHours(4, 0, 0, 0); if (d4.getTime() > now()) d4.setDate(d4.getDate() - 1);
-    if (!force && (!c.hcOk || c.hcOn === false || (now() - (c.hcLast || 0) < 30 * 60000 && (c.hcLast || 0) > d4.getTime()))) return;
+    var quiet = force === 'q', now1 = force === 'now' || quiet; if (now1) { if (!c.hcOk || c.hcOn === false) { if (!quiet) toast('Health Connect ist noch nicht verbunden: Menü → Health Connect.'); return; } force = false; }
+    if (!now1 && !force && (!c.hcOk || c.hcOn === false || (now() - (c.hcLast || 0) < 10 * 60000 && (c.hcLast || 0) > d4.getTime()))) return;
     hcBusy = true;
     try {
       var av = await HC.isAvailable();
@@ -832,11 +833,15 @@
       var wl = list.filter(function (x) { return x[1] != null; }), last = wl.length ? wl[wl.length - 1] : null;
       setCfg({ hcLast: now(), hcVal: last ? { d: last[0], kg: Math.round(last[1] * 10) / 10 } : null });
       if (n) toast(n === 1 ? 'Neues Gewicht übernommen: ' + String(Math.round(last[1] * 10) / 10).replace('.', ',') + ' kg' : n + ' Gewichtswerte übernommen.');
-      else if (force) toast(list.length ? 'Gewicht ist aktuell.' : 'In den letzten 30 Tagen keine Gewichtswerte gefunden.');
-    } catch (e) { if (force) toast('Health Connect: ' + (e.message || e)); }
+      else if (force || (now1 && !quiet)) toast(list.length ? 'Health Connect gelesen: Gewicht und Schlaf sind auf dem Stand von Health Connect.' : 'In den letzten 30 Tagen keine Gewichtswerte gefunden.');
+      if (now1) { try { window.dispatchEvent(new Event('wu-hc-done')); } catch (e) { } }
+    } catch (e) { if (force || (now1 && !quiet)) toast('Health Connect: ' + (e.message || e)); }
     finally { hcBusy = false; }
   }
   WU.hcSync = hcSync;
+  /* Manuell: Gewicht und Schlaf sofort aus Health Connect holen (am Handy), sonst Stand vom Handy abgleichen */
+  window.WU_HCNOW = function () { if (CAPN) { if (hcBusy) { toast('Wird schon gelesen …'); return; } toast('Lese Health Connect …'); return hcSync('now'); } toast('Gewicht und Schlaf kommen vom Handy. Hole den letzten Stand …'); return pull(); };
+  document.addEventListener('click', function (e) { if (CAPN && e.target.closest && e.target.closest('#rf')) hcSync('q'); }, true);
   /* Prüfung: Was liefert Health Connect wirklich? */
   async function hcDiag() {
     var box = document.getElementById('wu-hcd'); if (!box) return;
