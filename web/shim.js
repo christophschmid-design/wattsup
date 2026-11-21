@@ -637,13 +637,13 @@
   function inbSave() { ls('wu_inbox', INB); inbBell(); }
   /* Erledigt-Status mit den anderen Geräten teilen, damit eine Entscheidung nicht doppelt gefragt wird */
   var INBP = 'data/users/me/inboxdone';
-  function inbShare() { try { var a = dbAll(), r = a[INBP], m = (r && r.d && r.d.m) || {}, t = now(); Object.keys(INB).forEach(function (k) { var x = INB[k]; if (x.done && (!m[k] || m[k].done < x.done)) m[k] = { done: x.done, dec: x.dec || '' }; }); Object.keys(m).forEach(function (k) { if (t - m[k].done > 14 * 864e5) delete m[k]; }); DB.doc(INBP).set({ m: m }); } catch (e) { } }
-  function inbPull() { try { var r = dbAll()[INBP], m = r && r.d && r.d.m, ch = false; if (!m) return; Object.keys(m).forEach(function (k) { var x = INB[k]; if (x && !x.done) { x.done = m[k].done; x.dec = m[k].dec || x.dec; x.sync = 1; ch = true; } }); if (ch) { ls('wu_inbox', INB); var ov = document.querySelector('.wu-ov:not([hidden])'); if (ov && ov.querySelector('.wu-ib')) WU.open(null, 'inbox'); } } catch (e) { } }
+  function inbShare() { try { var a = dbAll(), r = a[INBP], m = (r && r.d && r.d.m) || {}, t = now(); Object.keys(INB).forEach(function (k) { var x = INB[k]; if (/^upd-/.test(k)) return; if (x.done && (!m[k] || m[k].done < x.done)) m[k] = { done: x.done, dec: x.dec || '' }; }); Object.keys(m).forEach(function (k) { if (t - m[k].done > 14 * 864e5) delete m[k]; }); DB.doc(INBP).set({ m: m }); } catch (e) { } }
+  function inbPull() { try { var r = dbAll()[INBP], m = r && r.d && r.d.m, ch = false; if (!m) return; Object.keys(m).forEach(function (k) { var x = INB[k]; if (/^upd-/.test(k)) return; if (x && !x.done) { x.done = m[k].done; x.dec = m[k].dec || x.dec; x.sync = 1; ch = true; } }); if (ch) { ls('wu_inbox', INB); var ov = document.querySelector('.wu-ov:not([hidden])'); if (ov && ov.querySelector('.wu-ib')) WU.open(null, 'inbox'); } } catch (e) { } }
   function inbOpen() { var n = 0, t = now(); Object.keys(INB).forEach(function (k) { var x = INB[k]; if (!x.done && !(x.sn > t)) n++; }); return n; }
   window.WU_INBOX = {
     add: function (it) { var o = INB[it.id]; if (o && o.done) return; INB[it.id] = Object.assign({ ts: now() }, o || {}, it, { done: 0 }); inbSave(); },
     done: function (id, dec) { if (INB[id] && !INB[id].done) { INB[id].done = now(); if (dec) INB[id].dec = dec; inbSave(); inbShare(); } },
-    drop: function (pre) { var ch = false; Object.keys(INB).forEach(function (k) { if (k.indexOf(pre) === 0 && !INB[k].done) { INB[k].done = now(); ch = true; } }); if (ch) inbSave(); },
+    drop: function (pre, dec, keep) { var ch = false; Object.keys(INB).forEach(function (k) { if (k.indexOf(pre) === 0 && k !== keep && !INB[k].done) { INB[k].done = now(); if (dec) INB[k].dec = dec; ch = true; } }); if (ch) inbSave(); },
     count: inbOpen
   };
   function inbBell() {
@@ -660,7 +660,7 @@
     return '<div class="wu-top"><h2>Zu erledigen</h2><button class="wu-x" data-wu="close" aria-label="Schließen">×</button></div><p class="wu-mu">' + (open.length ? inbOpen() + ' offen' + (open.length - inbOpen() ? ', ' + (open.length - inbOpen()) + ' auf später' : '') : 'Alles erledigt.') + ' · Erledigtes verschwindet nach 7 Tagen. Kurze Bestätigungen erscheinen weiter unten als kleine Meldung.</p>' +
       open.map(function (x) { return it(x, false); }).join('') + (dn.length ? '<p class="wu-gh">Erledigt</p>' + dn.map(function (x) { return it(x, true); }).join('') : '');
   }
-  var DECW = { 'Übernehmen': 'Übernommen', 'Ablehnen': 'Abgelehnt', 'Nachholen': 'Nachholen gewählt', 'Nein': 'Nein', 'Passt': 'Passt', 'Erledigt': 'Erledigt', 'Anschauen': 'Angeschaut', 'Jetzt verbinden': 'Verbinden gewählt', 'Zur Console': 'Console geöffnet', 'Später': 'Später' };
+  var DECW = { 'Übernehmen': 'Übernommen', 'Ablehnen': 'Abgelehnt', 'Nachholen': 'Nachholen gewählt', 'Nein': 'Nein', 'Passt': 'Passt', 'Erledigt': 'Erledigt', 'Anschauen': 'Angeschaut', 'Jetzt verbinden': 'Verbinden gewählt', 'Zur Console': 'Console geöffnet', 'Später': 'Später', 'Jetzt aktualisieren': 'Aktualisieren gewählt', 'Diese Version auslassen': 'Version ausgelassen' };
   async function inbAct(id, key) {
     var x = INB[id]; if (!x) return;
     var lb = ((x.a || []).filter(function (a) { return a[1] === key; })[0] || [])[0]; if (lb && key.indexOf('fn-ftpdet') !== 0) x.dec = DECW[lb] || lb;
@@ -1142,12 +1142,13 @@
       } catch (e) { }
     }
     UPD = { cur: cur, latest: latest, newer: latest > cur };
-    if (UPD.newer) updBanner(); else WU_INBOX.drop('upd-');
+    if (UPD.newer) updBanner(); else WU_INBOX.drop('upd-', 'Von selbst erledigt: Version 1.' + cur + ' ist installiert');
     return UPD;
   }
   function updBanner() {
     if (lg('wu_updskip', 0) === UPD.latest) return;
-    WU_INBOX.drop('upd-'); WU_INBOX.add({ id: 'upd-' + UPD.latest, ic: '📲', t: 'Neue App-Version 1.' + UPD.latest, b: 'Installiert ist 1.' + UPD.cur + '. Nötig für Widget, Benachrichtigungen und Berechtigungen; Inhalte kommen ohnehin automatisch.', a: [['Jetzt aktualisieren', 'upd'], ['Diese Version auslassen', 'updx']] });
+    var uo = INB['upd-' + UPD.latest]; if (uo && uo.done && !uo.dec) { uo.done = 0; }
+    WU_INBOX.drop('upd-', 'Ersetzt durch Version 1.' + UPD.latest, 'upd-' + UPD.latest); WU_INBOX.add({ id: 'upd-' + UPD.latest, ic: '📲', t: 'Neue App-Version 1.' + UPD.latest, b: 'Installiert ist 1.' + UPD.cur + '. Nötig für Widget, Benachrichtigungen und Berechtigungen; Inhalte kommen ohnehin automatisch.', a: [['Jetzt aktualisieren', 'upd'], ['Diese Version auslassen', 'updx']] });
   }
   async function doUpdate(el) {
     if (!NAT) { location.href = APK; return; }
