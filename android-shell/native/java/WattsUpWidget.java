@@ -171,6 +171,22 @@ public class WattsUpWidget extends AppWidgetProvider {
             }
         }
 
+        // Neue Aktivität per Push gemeldet, App noch nicht geöffnet: sofort nach der Belastung fragen
+        if (step == null && rq == null) {
+            try {
+                JSONObject ac = read(c, STORE, "wu_widget_act"), done = l.optJSONObject("rpe");
+                String aid = ac.optString("id", "");
+                boolean appKnows = j.optLong("ts", 0) > ac.optLong("ts", 0);
+                JSONArray q = j.optJSONArray("rpeQ");
+                boolean inQ = false;
+                if (q != null) for (int i = 0; i < q.length(); i++) { JSONObject x = q.optJSONObject(i); if (x != null && aid.equals(x.optString("k"))) inQ = true; }
+                if (aid.length() > 0 && t.equals(ac.optString("day")) && (done == null || (!done.has(aid) && !done.has("p:" + t))) && (!appKnows || inQ)) {
+                    rq = new JSONObject();
+                    String n = fresh ? j.optString("today", "") : "";
+                    rq.put("k", aid); rq.put("n", n.length() > 0 ? n.replaceAll("^\\uD83D\\uDD11\\s*", "") : "deine Einheit"); rq.put("day", t); rq.put("at", 0);
+                }
+            } catch (Exception e) { /* nichts */ }
+        }
         if (step != null || rq != null) {
             v.setViewVisibility(R.id.wu_info, View.GONE);
             v.setViewVisibility(R.id.wu_ask, View.VISIBLE);

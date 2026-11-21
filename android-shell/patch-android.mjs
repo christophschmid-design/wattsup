@@ -96,7 +96,18 @@ fs.writeFileSync(fp, x);
 // Push-Nachrichten (nur wenn google-services.json vorhanden)
 if (fs.existsSync('google-services.json')) {
   fs.copyFileSync('google-services.json', `${A}/google-services.json`);
+  for (const f of fs.readdirSync('native/java-fcm')) fs.copyFileSync(`native/java-fcm/${f}`, `${jd}/${f}`);
+  { let bg = fs.readFileSync(g, 'utf8'); if (!bg.includes('firebase-messaging')) { bg = bg.replace(/dependencies \{/, 'dependencies {\n    implementation "com.google.firebase:firebase-messaging:25.0.1"'); fs.writeFileSync(g, bg); } }
   let mm = fs.readFileSync(man, 'utf8');
+  // Eigener Nachrichten-Dienst statt dem des Plugins (macht dasselbe und aktualisiert zusätzlich das Widget)
+  if (!mm.includes('xmlns:tools=')) mm = mm.replace('<manifest ', '<manifest xmlns:tools="http://schemas.android.com/tools" ');
+  if (!mm.includes('WattsUpMessagingService')) mm = mm.replace('</application>', `    <service android:name="io.capawesome.capacitorjs.plugins.firebase.messaging.MessagingService" tools:node="remove" />
+        <service android:name=".WattsUpMessagingService" android:exported="false">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+            </intent-filter>
+        </service>
+    </application>`);
   if (!mm.includes('default_notification_icon')) {
     mm = mm.replace('<application', '<application').replace(/(<application[^>]*>)/, `$1
         <meta-data android:name="com.google.firebase.messaging.default_notification_icon" android:resource="@drawable/ic_stat_wattsup" />

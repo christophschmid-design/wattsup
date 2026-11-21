@@ -104,6 +104,18 @@ async function push(env, athlete, title, body, data) {
   if (!r.ok) throw new Error('FCM ' + r.status + ': ' + (await r.text()));
 }
 
+// Stille Datennachricht (ohne Anzeige), damit das Widget sofort nach der Belastung fragt
+async function pushData(env, athlete, data) {
+  const sa = JSON.parse(env.FCM_SA);
+  const tok = await googleToken(sa);
+  const r = await fetch(`https://fcm.googleapis.com/v1/projects/${sa.project_id}/messages:send`, {
+    method: 'POST',
+    headers: { Authorization: 'Bearer ' + tok, 'Content-Type': 'application/json' },
+    body: JSON.stringify({ message: { topic: 'wattsup_' + athlete, data: data || {}, android: { priority: 'HIGH' } } })
+  });
+  if (!r.ok) throw new Error('FCM ' + r.status + ': ' + (await r.text()));
+}
+
 export default {
   // Freitags: Skitour-Vorschlag fürs Wochenende (nur Dezember bis April)
   async scheduled(event, env, ctx) {
@@ -190,6 +202,7 @@ export default {
       }
       if (ev && ev.object_type === 'activity' && ev.aspect_type === 'create' && ev.owner_id) {
         ctx.waitUntil(push(env, ev.owner_id, 'Neue Aktivität auf Strava', 'Kurz in WattsUp bewerten?', { k: 'act', id: String(ev.object_id) }).catch(e => console.log(e.message)));
+        ctx.waitUntil(pushData(env, ev.owner_id, { k: 'wact', id: String(ev.object_id) }).catch(e => console.log(e.message)));
       }
       return new Response('ok');
     }
