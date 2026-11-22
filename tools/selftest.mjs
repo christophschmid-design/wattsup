@@ -130,11 +130,21 @@ async function runtimeCheck() {
   await open('coach', 'Coach');
   await open('cfg', 'Einstellungen Training und Ziele');
   await open('jr', 'Jahresrückblick');
+  await open('rb1', 'Rennblatt Mondsee');
+  await open('rb2', 'Rennblatt Ötztaler');
+  for (const k of ['leist', 'trn', 'koerp', 'abz', 'einh']) {
+    await pg.evaluate((k) => { location.hash = '#analyse'; const b = document.querySelector('#analyse [data-atop="' + k + '"]'); if (b) b.click(); }, k); await pg.waitForTimeout(600);
+    await look('Fortschritt „' + k + '“');
+  }
+  await pg.evaluate(() => { location.hash = '#weg'; }); await pg.waitForTimeout(500);
+  await pg.evaluate(() => { const b = document.querySelector('[data-s1p]'); if (b) b.click(); }); await pg.waitForTimeout(600);
+  await look('Saison → Phase');
   // Tablet-Dashboard
   await pg.setViewportSize({ width: 1280, height: 800 });
   await pg.evaluate(() => { location.hash = '#dash'; }); await pg.waitForTimeout(1500);
   await look('Tablet-Dashboard');
   if (errs.length) for (const e of [...new Set(errs)].slice(0, 5)) fail('Skriptfehler: ' + e.slice(0, 200));
+  if (process.env.SHOTS) { await pg.setViewportSize({ width: 390, height: 844 }); for (const [h, f, k] of [['weg', 'saison'], ['saison', 'phasen'], ['analyse', 'f_leist', 'leist'], ['analyse', 'f_trn', 'trn'], ['analyse', 'f_koerp', 'koerp'], ['analyse', 'f_abz', 'abz'], ['einheiten', 'f_einh']]) { await pg.evaluate(([h, k]) => { location.hash = '#' + h; if (k) { const b = document.querySelector('#analyse [data-atop="' + k + '"]'); if (b) b.click(); } }, [h, k]); await pg.waitForTimeout(900); await pg.evaluate(() => window.scrollTo(0, 0)); await pg.screenshot({ path: process.env.SHOTS + '/' + f + '.png' }); } for (const k of ['rb1', 'rb2']) { await pg.evaluate((k) => window.WU_OPEN(k), k); await pg.waitForTimeout(1000); await pg.screenshot({ path: process.env.SHOTS + '/' + k + '.png' }); await pg.evaluate(() => document.getElementById('shx').click()); } }
   await b.close();
 }
 
