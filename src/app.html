@@ -2335,7 +2335,7 @@ function wdLong(d){return['Sonntag','Montag','Dienstag','Mittwoch','Donnerstag',
 function isWe(d){var g=new Date(d+'T12:00:00').getDay();return g===0||g===6}
 function stT(d){return String((isWe(d)?CF.we:CF.wd)||'19:00').slice(0,5)}
 function isBike(t){t=t||'';return/Zwift|SIT|VO2|30[/]30|GLA|Grundlage|Sweet|Schwelle|Intervall|Ausfahrt|Rennrad|\bRad\b|[45]×4|Tempo|Over|FTP/i.test(t)&&!/Lauf|Wanderung|Skitour|Schneeschuh|Ski\b/i.test(t)}
-function minsOf(p){var t=(p&&p[2]||'')+' '+(p&&p[3]||''),m=/(\d+)\s*min/.exec(p&&p[2]||'')||/(\d+)\s*min/.exec(t),h=/(\d+(?:[,.]\d+)?)\s*(?:–|-|bis)?\s*(\d+(?:[,.]\d+)?)?\s*h\b/.exec(t);if(m)return Number(m[1]);if(h)return Math.round(Number(String(h[2]||h[1]).replace(',','.'))*60);return p&&p[1]?Math.round(p[1]/50*60):60}
+function minsOf(p){var x=function(v){return String(v||'').replace(/\d+\s*[×x]\s*\d+(?:[,.]\d+)?\s*(?:min|s|sek)\b/gi,'')},t=x(p&&p[2])+' '+x(p&&p[3]),m=/ca\.?\s*(\d+)\s*min/i.exec(t)||/(\d+)\s*min/.exec(x(p&&p[2]))||/(\d+)\s*min/.exec(t),h=/(\d+(?:[,.]\d+)?)\s*(?:–|-|bis)?\s*(\d+(?:[,.]\d+)?)?\s*h\b/.exec(t);if(m)return Number(m[1]);if(h)return Math.round(Number(String(h[2]||h[1]).replace(',','.'))*60);return p&&p[1]?Math.round(p[1]/50*60):60}
 function ioMode(t){return isZw(t)?'zw':outd(t)?'od':isBike(t)?'zw':null}
 /* Vorschlag drinnen oder draußen: Trainingsart vor Wetter */
 function ioSug(p,d){if(!p||!isBike(p[2]))return null;var t=p[2]+' '+(p[3]||''),mi=minsOf(p),f=wxDay(d),dy=f&&f.day||{},rp=dy.rainProbabilityValue||0,sp=dy.snowProbabilityValue||0,tx=dy.temperature,mo=Number(d.slice(5,7)),dark=!isWe(d)&&(mo>=10||mo<=3)&&Number(stT(d).slice(0,2))>=17,bad=rp>=60?'Regen '+rp+' %':sp>=40?'Schnee '+sp+' %':tx!=null&&tx<4?'nur '+Math.round(tx)+'°':'';
@@ -2344,15 +2344,16 @@ if(dark)return{m:'zw',why:'um '+stT(d)+' ist es dunkel'};
 if(/Ausfahrt|lang|Berg|Höhenmeter|Hm\b|Renn/i.test(t)||mi>=150)return bad?{m:'zw',why:bad+', lange Einheit lieber drinnen'}:{m:'od',why:'lange Einheit ist draußen wertvoller'};
 if(mi<75)return{m:'zw',why:'kurze Einheit, drinnen effizienter'};
 return bad?{m:'zw',why:bad}:{m:'od',why:'Wetter passt'+(tx!=null?', '+Math.round(tx)+'°':'')}}
-function ioConv(p,m){var o=p.slice(),mi=minsOf(p),core=String(p[2]).replace(/^(Zwift[- ]?(Variante)?:?\s*)/i,'').replace(/^Ausfahrt( draußen)?:?\s*/i,'');
-if(m==='zw'){var z=Math.max(45,Math.round(mi*.85/15)*15),hard=/SIT|VO2|Schwelle|Sweet|30[/]30|Intervall|[45]×4/i.test(core);o[2]='Zwift '+(hard?core:'GLA '+z+' min');o[3]='Indoor-Variante von „'+p[2]+'“'+(hard?'':': '+z+' min Zone 2 statt '+Math.round(mi)+' min draußen, gleiche Belastung.')+(p[3]?' '+p[3]:'')}
-else{o[2]='Ausfahrt draußen: '+core;o[3]=(/SIT|Sprint/i.test(core)?'Sprints an einem leichten Anstieg oder auf gerader, verkehrsarmer Strecke. ':/VO2|Schwelle|Sweet|Intervall|[45]×4/i.test(core)?'Intervalle an einem gleichmäßigen Anstieg fahren, Watt statt Tempo im Blick. ':'Ruhig in Zone 2, Puls im Blick. ')+(p[3]||'')}
+function ioConv(p,m){var o=p.slice(),mi=minsOf(p),ky=/🔑/.test(p[2])?'🔑 ':'',core=String(p[2]).replace(/🔑\s*/g,'').replace(/^(Zwift[- ]?(Variante)?:?\s*)/i,'').replace(/^Ausfahrt( draußen)?:?\s*/i,'');
+if(m==='zw'){var z=Math.max(45,Math.round(mi*.85/15)*15),hard=/SIT|VO2|Schwelle|Sweet|30[/]30|Intervall|[45]×4/i.test(core);o[2]=ky+'Zwift '+(hard?core:'GLA '+z+' min');o[3]='Indoor-Variante von „'+p[2]+'“'+(hard?'':': '+z+' min Zone 2 statt '+Math.round(mi)+' min draußen, gleiche Belastung.')+(p[3]?' '+p[3]:'')}
+else{o[2]=ky+'Ausfahrt draußen: '+core;o[3]=(/SIT|Sprint/i.test(core)?'Sprints an einem leichten Anstieg oder auf gerader, verkehrsarmer Strecke. ':/VO2|Schwelle|Sweet|Intervall|[45]×4/i.test(core)?'Intervalle an einem gleichmäßigen Anstieg fahren, Watt statt Tempo im Blick. ':'Ruhig in Zone 2, Puls im Blick. ')+(p[3]||'')}
 o._io=m;o._o=p;return o}
-function ioApply(){Object.keys(IOV).forEach(function(d){var v=IOV[d],p=PM[d];if(!p||!v||v.t!==p[2])return;if(ioMode(p[2])===v.m)return;PM[d]=ioConv(p,v.m)})}
+function ioNorm(t){return String(t||'').replace(/🔑\s*/g,'').replace(/\s*\([^)]*\bW\)/g,'').replace(/\s+/g,' ').trim()}
+function ioApply(){Object.keys(IOV).forEach(function(d){var v=IOV[d],p=PM[d];if(!p||!v||ioNorm(v.t)!==ioNorm(p[2]))return;if(ioMode(p[2])===v.m)return;PM[d]=ioConv(p,v.m)})}
 function ioSet(d,m){var p=PM[d],o=p&&p._o?p._o:p;if(!o)return;if(ioMode(o[2])===m)delete IOV[d];else IOV[d]={m:m,t:o[2]};try{localStorage.setItem('io1',JSON.stringify(IOV))}catch(e){}
 if(DBH&&UID){var x=DBH.doc('data/users/'+UID+'/io_'+d);DBP(IOV[d]?x.set({day:d,m:m,t:o[2],ts:Date.now()}):x.delete(),'Drinnen/Draußen').catch(function(){})}
 rpm();rall();try{if(window.WU&&WU.ivSync)setTimeout(function(){WU.ivSync(false)},300)}catch(e){}hToast(m==='zw'?'Auf Zwift umgestellt'+(window.WU_IVSTAT?', wird an Zwift übertragen':''):'Auf draußen umgestellt')}
-var _rpmIO=rpm;rpm=function(){_rpmIO();try{ioApply()}catch(e){logErr('App','Drinnen/Draußen',e)}};
+
 function ioHtml(d,p,cmp){if(!p||!isBike(p[2]))return'';var cur=p._io||ioMode(p[2]),s=ioSug(p._o||p,d);
 return'<div class="io'+(cmp?' cmp':'')+'"><div class="ioseg" role="group" aria-label="Drinnen oder draußen"><button type="button" data-io="'+d+'|zw" aria-pressed="'+(cur==='zw')+'">🏠 Zwift</button><button type="button" data-io="'+d+'|od" aria-pressed="'+(cur==='od')+'">🌄 Draußen</button></div>'+(s&&s.m!==cur?'<span class="iosug">Vorschlag: '+(s.m==='zw'?'Zwift':'draußen')+', '+E(s.why)+'</span>':'')+'</div>'}
 document.addEventListener('click',function(e){var b=e.target.closest&&e.target.closest('[data-io]');if(!b)return;e.stopPropagation();e.preventDefault();var q=b.getAttribute('data-io').split('|');ioSet(q[0],q[1])},true);
@@ -3423,7 +3424,7 @@ var RT={lib:null,res:{},busy:false,q:[],err:'',libSt:''};
 try{RT.res=JSON.parse(localStorage.getItem('rt1')||'{}')||{}}catch(e){RT.res={}}
 try{RT.lib=JSON.parse(localStorage.getItem('rlib1')||'null')}catch(e){}
 function rtHome(){var v=String(CF.home||'').split(',');return v.length===2&&isFinite(+v[0])&&isFinite(+v[1])&&+v[0]!==0?[+v[0],+v[1]]:null}
-function rtIsOut(t){t=String(t||'');return/Rennrad|Ausfahrt|Radfahrt|drau(ß|ss)en|outdoor/i.test(t)&&!/Lauf|Wander|Skitour|Zwift|Rolle/i.test(t)}
+function rtIsOut(t){t=String(t||'');return ioMode(t)==='od'&&!/Lauf|Wander|Skitour|Schneeschuh/i.test(t)}
 function rtHav(a,b){var R=6371000,f1=a[0]*Math.PI/180,f2=b[0]*Math.PI/180,df=f2-f1,dl=(b[1]-a[1])*Math.PI/180,x=Math.sin(df/2)*Math.sin(df/2)+Math.cos(f1)*Math.cos(f2)*Math.sin(dl/2)*Math.sin(dl/2);return 2*R*Math.asin(Math.sqrt(x))}
 function rtDest(p,brg,km){var R=6371,d=km/R,b=brg*Math.PI/180,f1=p[0]*Math.PI/180,l1=p[1]*Math.PI/180,f2=Math.asin(Math.sin(f1)*Math.cos(d)+Math.cos(f1)*Math.sin(d)*Math.cos(b)),l2=l1+Math.atan2(Math.sin(b)*Math.sin(d)*Math.cos(f1),Math.cos(d)-Math.sin(f1)*Math.sin(f2));return[f2*180/Math.PI,l2*180/Math.PI]}
 /* Google-Polyline, für kompakte Speicherung */
@@ -3555,6 +3556,7 @@ document.addEventListener('click',async function(e){var b=e.target.closest&&e.ta
  var v=b.getAttribute(b.hasAttribute('data-rtg')?'data-rtg':'data-rta').split('|');if(b.hasAttribute('data-rtg'))rtGpxDl(v[0],Number(v[1]),b);else rtAdjApply(v[0],Number(v[1]))});
 var RTT=null;var _rallRt=rall;rall=function(){_rallRt();try{rtBadges()}catch(e){}clearTimeout(RTT);RTT=setTimeout(function(){rtRun()},4000)};
 window.WU_RT=RT;window.WU_RTCALC=rtCalc;window.WU_RTT=function(h,d,p){CF.home=h;PM[d]=p};window.WU_RTLIB=rtLibBuild;
+var _rpmIO=rpm;rpm=function(){_rpmIO();try{ioApply()}catch(e){logErr('App','Drinnen/Draußen',e)}};window.WU_IOSET=function(d,m){ioSet(d,m)};window.WU_PMGET=function(d){return PM[d]};
 /* Kontext für den Coach */
 function coCtx(){var t=tod(),X=window.ACT||[],n=S?S.ct.length:0,ph=phaseOf(t),bw=bodyAt(t),kg=bw?bw.kg:W;
  var ak=X.filter(function(a){return a.day>=addD(t,-21)}).map(function(a){var p=PM[a.day],q=LOG[a.id]||{};return{datum:a.day,name:a.name,sport:sn(a.sp),minuten:Math.round(a.sec/60),km:a.km>0?Math.round(a.km):null,hm:a.hm>0?Math.round(a.hm):null,tss:Math.round(a.tss),np:a.np?Math.round(a.np):null,puls:a.ah||null,if:a.iff?Math.round(a.iff*100)/100:null,entkopplung_prozent:a.dc==null?null:a.dc,geplant:p?p[2]:null,rpe:q.rpe||null,notiz:q.note||null,kraempfe:q.kr&&q.kr.s?krSum(q.kr):null}});

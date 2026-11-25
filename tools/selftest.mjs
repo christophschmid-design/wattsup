@@ -147,6 +147,8 @@ async function runtimeCheck() {
     return { a: (WU_RT.res[d] && WU_RT.res[d].R.length) || 0, b: (WU_RT.res[d2] && WU_RT.res[d2].R.length) || 0, zw: (WU_RT.res[d] && WU_RT.res[d].zw) || [] };
   });
   if (!rt.a || !rt.b) fail('Routen: zu wenige Vorschläge (' + JSON.stringify(rt) + ')'); else console.log('✓ Routen: ' + rt.a + ' + ' + rt.b + ' Vorschläge, Zwift-Hinweis: ' + rt.zw.join(', '));
+  const io = await pg.evaluate(() => { const d = '2026-11-19'; WU_IOSET(d, 'od'); const a = WU_PMGET(d)[2]; WU_IOSET(d, 'zw'); return [a, WU_PMGET(d)[2]]; });
+  if (!/Ausfahrt draußen/.test(io[0]) || /draußen/.test(io[1])) fail('Schalter Zwift/Draußen: ' + JSON.stringify(io)); else console.log('✓ Schalter Zwift/Draußen: ' + io[0]);
   await open('p:18.11.', 'Routen Intervalle');
   await open('p:21.11.', 'Routen Grundlage');
   await open('rb1', 'Rennblatt Mondsee');
