@@ -147,6 +147,16 @@
     try { var res = await Promise.all([streams(a), loadLeaflet()]); p = res[0]; L = res[1]; }
     catch (e) { el.innerHTML = '<p class="mu">Karte nicht verfügbar: ' + ((e && e.message) || e) + '</p>'; return; }
     if (!p.location || p.location.length < 3) { el.innerHTML = ''; return; }
+    show0(el, p, L);
+  };
+  /* v52: gleiche Karte für geplante Routen (Strecke, Höhe, geschätzte Zeit) */
+  window.WU_MAPP = async function (el, p) {
+    if (!el || !p || !p.location || p.location.length < 3) return;
+    addCss(); el.innerHTML = '<p class="mu">Lade Karte …</p>';
+    var L; try { L = await loadLeaflet(); } catch (e) { el.innerHTML = '<p class="mu">Karte nicht verfügbar: ' + ((e && e.message) || e) + '</p>'; return; }
+    show0(el, p, L);
+  };
+  function show0(el, p, L) {
     var r = prep(p), cls = climbs(r), mob = matchMedia('(pointer:coarse)').matches;
     var modes = MODES.filter(function (m) { return m[0] === 'plain' || m[0] === 'g' && r.alt[0] != null || m[0] === 'hr' && r.hr || m[0] === 'w' && r.w || m[0] === 'v' && r.v; });
     var lay = pref('lay', 'str'), mode = pref('mode', 'plain'); if (!modes.some(function (m) { return m[0] === mode; })) mode = 'plain';
@@ -307,5 +317,5 @@
     // Vollbild schließen, wenn der Dialog zugeht
     var mo = new MutationObserver(function () { if (ph && !ph.isConnected && root.isConnected) { root.remove(); mo.disconnect(); } });
     mo.observe(document.body, { childList: true, subtree: true });
-  };
+  }
 })();

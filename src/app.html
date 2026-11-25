@@ -849,6 +849,7 @@ nav a.cnav{position:relative}.cnb{position:absolute;top:2px;right:2px;min-width:
 .rtzw{display:flex;flex-direction:column;gap:2px;border:1px solid var(--warn);border-radius:12px;padding:8px 10px;margin:6px 0 10px}.rtzw span{font-size:.82rem;color:var(--mu)}
 .rtadj{display:flex;gap:8px;align-items:center;justify-content:space-between;background:var(--card);border-radius:10px;padding:6px 8px;margin:6px 0;font-size:.84rem}
 .rtn{margin:4px 0 6px;padding-left:18px;font-size:.82rem;color:var(--mu)}.rtmsg{font-size:.8rem;color:var(--mu);margin-left:8px}
+.rtd{margin:6px 0}.rtd summary{cursor:pointer;color:var(--ac);font-size:.86rem;padding:4px 0}
 .rtset{display:flex;flex-wrap:wrap;gap:8px;align-items:center}.rtset .ta{flex:1 1 200px}
 </style>
 </head>
@@ -3540,7 +3541,7 @@ function rtHtml(d){var p=PM[d];if(!p||!rtIsOut(p[2]))return'';var h='<h3>Routen 
  if(!r.R.length)return h+'<p class="mu">Keine passende Route ohne Schotter gefunden.</p>';
  h+='<p class="mu">'+(u.ty==='int'?'Intervalle am Anstieg, bevorzugt an Anstiegen aus deinen Fahrten.':'Runden mit möglichst vielen neuen Abschnitten.')+' Ohne Schotter, Bundesstraße möglichst gemieden.</p>';
  return h+r.R.map(function(R,i){var sc=R.s.ges,cl=sc>=75?'ok':sc>=60?'wa':'bad',ks=Object.keys(R.s).filter(function(k){return k!=='ges'});
-  return'<div class="rtc"><div class="rth"><b>Route '+(i+1)+(R.name?' · '+E(R.name):'')+'</b><span class="rtsc '+cl+'">'+sc+'</span></div>'+rtMap(R)
+  return'<div class="rtc"><div class="rth"><b>Route '+(i+1)+(R.name?' · '+E(R.name):'')+'</b><span class="rtsc '+cl+'">'+sc+'</span></div>'+(window.WU_MAPP?'<details class="rtd"'+(i===0?' open':'')+'><summary>Karte und Höhenprofil</summary><div class="rtmap" data-rtm="'+d+'|'+i+'"></div></details>':rtMap(R))
    +'<p class="rtk">'+f1(R.km)+' km · '+R.hm+' Hm · ca. '+hmS(R.est)+' h'+(R.asc?' · '+R.asc+'× '+f1(R.ckm)+' km / '+R.chm+' Hm, je ca. '+Math.round(R.tc/60)+' min':'')+'</p>'
    +(R.adj?'<div class="rtadj"><span>Vorschlag: <b>'+R.adj.r+'×'+R.adj.on+' min</b> statt '+R.adj.r0+'×'+R.adj.on0+' min, gleiche Zeit im Bereich.</span><button type="button" class="pbtn sm" data-rta="'+d+'|'+i+'">Übernehmen</button></div>':'')
    +(R.notes.length?'<ul class="rtn">'+R.notes.map(function(n){return'<li>'+E(n)+'</li>'}).join('')+'</ul>':'')
@@ -3557,6 +3558,13 @@ document.addEventListener('click',async function(e){var b=e.target.closest&&e.ta
 var RTT=null;var _rallRt=rall;rall=function(){_rallRt();try{rtBadges()}catch(e){}clearTimeout(RTT);RTT=setTimeout(function(){rtRun()},4000)};
 window.WU_RT=RT;window.WU_RTCALC=rtCalc;window.WU_RTT=function(h,d,p){CF.home=h;PM[d]=p};window.WU_RTLIB=rtLibBuild;
 var _rpmIO=rpm;rpm=function(){_rpmIO();try{ioApply()}catch(e){logErr('App','Drinnen/Draußen',e)}};window.WU_IOSET=function(d,m){ioSet(d,m)};window.WU_PMGET=function(d){return PM[d]};
+/* v52: Routen auf derselben Karte wie die Analyse (Straße, Satellit, Topo, Höhenprofil, Anstiege, Vollbild) */
+function rtStreams(R){var c=rtDec(R.pl),n=c.length,dist=[0],i,t=[0],P=.65*FTP;for(i=1;i<n;i++)dist.push(dist[i-1]+rtHav(c[i-1],c[i]));
+ for(i=1;i<n;i++){var j=i,k=i;while(j>0&&dist[i]-dist[j]<60)j--;while(k<n-1&&dist[k]-dist[i]<60)k++;var g=dist[k]-dist[j]>20?Math.max(-.15,Math.min(.18,(c[k][2]-c[j][2])/(dist[k]-dist[j]))):0;t.push(t[i-1]+(dist[i]-dist[i-1])/rtV(P,g))}
+ var f=R.est&&t[n-1]?R.est*60/t[n-1]:1;return{location:c.map(function(q){return[q[0],q[1]]}),altitude:c.map(function(q){return q[2]}),distance:dist,time:t.map(function(x){return Math.round(x*f)})}}
+function rtMapFill(){if(!window.WU_MAPP)return;[].forEach.call(document.querySelectorAll('details.rtd[open] .rtmap:not([data-on])'),function(el){el.setAttribute('data-on','1');var v=el.getAttribute('data-rtm').split('|'),r=RT.res[v[0]],R=r&&r.R[Number(v[1])];if(R)try{window.WU_MAPP(el,rtStreams(R))}catch(e){logErr('App','Routenkarte',e)}})}
+document.addEventListener('toggle',function(e){if(e.target&&e.target.classList&&e.target.classList.contains('rtd'))setTimeout(rtMapFill,30)},true);
+(function(){var tm=null;new MutationObserver(function(){clearTimeout(tm);tm=setTimeout(rtMapFill,80)}).observe(document.body,{childList:true,subtree:true})})();
 /* Kontext für den Coach */
 function coCtx(){var t=tod(),X=window.ACT||[],n=S?S.ct.length:0,ph=phaseOf(t),bw=bodyAt(t),kg=bw?bw.kg:W;
  var ak=X.filter(function(a){return a.day>=addD(t,-21)}).map(function(a){var p=PM[a.day],q=LOG[a.id]||{};return{datum:a.day,name:a.name,sport:sn(a.sp),minuten:Math.round(a.sec/60),km:a.km>0?Math.round(a.km):null,hm:a.hm>0?Math.round(a.hm):null,tss:Math.round(a.tss),np:a.np?Math.round(a.np):null,puls:a.ah||null,if:a.iff?Math.round(a.iff*100)/100:null,entkopplung_prozent:a.dc==null?null:a.dc,geplant:p?p[2]:null,rpe:q.rpe||null,notiz:q.note||null,kraempfe:q.kr&&q.kr.s?krSum(q.kr):null}});
