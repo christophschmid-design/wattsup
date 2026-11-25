@@ -207,6 +207,30 @@ export default {
       return new Response('ok');
     }
 
+    // Routen für Outdoor-Einheiten (v51): Rennrad-Routing über BRouter, Adresssuche über Nominatim
+    if (url.pathname === '/route') {
+      const ll = url.searchParams.get('lonlats') || '', pr = url.searchParams.get('profile') || 'fastbike';
+      if (!/^-?\d+(\.\d+)?,-?\d+(\.\d+)?(\|-?\d+(\.\d+)?,-?\d+(\.\d+)?){1,8}$/.test(ll) || !/^[a-z-]{3,40}$/.test(pr)) return new Response('bad', { status: 400, headers: cors });
+      const u = 'https://brouter.de/brouter?lonlats=' + encodeURIComponent(ll) + '&profile=' + pr + '&alternativeidx=0&format=geojson';
+      const ck = new Request(u), cache = caches.default;
+      let r = await cache.match(ck);
+      if (!r) {
+        const up = await fetch(u, { headers: { 'User-Agent': 'WattsUp-Trainingsapp (privat)' } });
+        const t = await up.text();
+        if (!up.ok) return new Response(t.slice(0, 300), { status: 502, headers: cors });
+        r = new Response(t, { headers: { 'Content-Type': 'application/json', 'Cache-Control': 'max-age=604800' } });
+        ctx.waitUntil(cache.put(ck, r.clone()));
+      }
+      return new Response(r.body, { headers: Object.assign({ 'Content-Type': 'application/json', 'Cache-Control': 'max-age=86400' }, cors) });
+    }
+    if (url.pathname === '/geo') {
+      const q = (url.searchParams.get('q') || '').slice(0, 160);
+      if (q.length < 3) return new Response('bad', { status: 400, headers: cors });
+      const up = await fetch('https://nominatim.openstreetmap.org/search?format=json&limit=1&q=' + encodeURIComponent(q), { headers: { 'User-Agent': 'WattsUp-Trainingsapp (privat)', 'Accept-Language': 'de' } });
+      const j = up.ok ? await up.json() : [];
+      return Response.json(j[0] ? { lat: Number(j[0].lat), lon: Number(j[0].lon), name: j[0].display_name } : { error: 'nicht gefunden' }, { headers: cors });
+    }
+
     // Skitour-Vorschlag für die App
     if (url.pathname === '/ski') {
       try { return Response.json(await skiCheck(), { headers: Object.assign({ 'Cache-Control': 'max-age=1800' }, cors) }); }

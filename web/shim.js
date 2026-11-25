@@ -120,6 +120,11 @@
     return out;
   }
   var STRAVA = {
+    /* v51: Segmente in einem Gebiet (für neue Anstiege) */
+    explore_segments: async function (q) {
+      var j = await sv('/segments/explore?' + qs({ bounds: q.bounds, activity_type: 'riding' })) || {};
+      return { segments: (j.segments || []).map(function (x) { return { id: x.id, name: x.name, cat: x.climb_category, grade: x.avg_grade, km: x.distance / 1000, hm: x.elev_difference, a: x.start_latlng, b: x.end_latlng, pts: x.points }; }) };
+    },
     list_activities: async function (q) {
       var per = Math.min(100, q.first || 30), page = Number(q.after || 1);
       var p = { per_page: per, page: page };
@@ -418,7 +423,7 @@
     if (c !== false) CACHE[ck] = { p: p, t: now() };
     return { payload: p, cache: { storedAt: now() } };
   }
-  var MCP = { callTool: callTool, server: async function (name) { var o = {}; ['list_activities', 'get_activity_streams', 'get_activity_laps', 'get_athlete_zones', 'get_athlete_profile', 'get_athlete_best_efforts', 'get_active_streak', 'list_events', 'create_event', 'delete_event', 'widgets-daily-claude'].forEach(function (t) { o[t] = function (i) { return callTool(name, t, i).then(function (r) { return r.payload; }); }; }); return o; } };
+  var MCP = { callTool: callTool, server: async function (name) { var o = {}; ['list_activities', 'get_activity_streams', 'explore_segments', 'get_activity_laps', 'get_athlete_zones', 'get_athlete_profile', 'get_athlete_best_efforts', 'get_active_streak', 'list_events', 'create_event', 'delete_event', 'widgets-daily-claude'].forEach(function (t) { o[t] = function (i) { return callTool(name, t, i).then(function (r) { return r.payload; }); }; }); return o; } };
 
   /* ---------- Dateien speichern ---------- */
   function b64(u8) { var s = '', i, ch = 0x8000; for (i = 0; i < u8.length; i += ch) s += String.fromCharCode.apply(null, u8.subarray(i, i + ch)); return btoa(s); }
@@ -1165,6 +1170,16 @@
   WU.checkUpdate = checkUpdate; WU.doUpdate = doUpdate;
   /* Push über Strava-Webhook, Cloudflare und Firebase */
   var FM = PL.FirebaseMessaging;
+  /* v51: Routen und Adresssuche über den eigenen Worker */
+  window.WU_ROUTE = async function (lonlats, profile) {
+    var b = pushBase(); if (!b) throw fail('no_server', 'Push-Dienst nicht eingerichtet');
+    return await http(b + '/route?' + qs({ lonlats: lonlats, profile: profile || 'fastbike' }));
+  };
+  window.WU_ROUTE_ON = function () { return !!pushBase(); };
+  window.WU_GEO = async function (q) {
+    var b = pushBase(); if (!b) throw fail('no_server', 'Push-Dienst nicht eingerichtet');
+    return await http(b + '/geo?' + qs({ q: q }));
+  };
   function pushBase() { return String(cfg().pushUrl || '').trim().replace(/\/+$/, ''); }
   async function pushTopic(on) {
     var c = cfg(); if (!FM || !c.pushTopic) return;

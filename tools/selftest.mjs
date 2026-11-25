@@ -87,6 +87,14 @@ async function runtimeCheck() {
     if (u.includes('/api/v3/athlete')) return J({ id: 1, firstname: 'Test', weight: 78, ftp: 250 });
     if (u.includes('/streams')) return J(streams());
     if (u.includes('open-meteo')) { const days = [...Array(10)].map((_, k) => new Date(Date.UTC(2026, 10, 16 + k)).toISOString().slice(0, 10)); return J({ daily: { time: days, weather_code: days.map(() => 61), temperature_2m_max: days.map(() => 8), temperature_2m_min: days.map(() => 1), precipitation_probability_max: days.map(() => 70), snowfall_sum: days.map(() => 0), rain_sum: days.map(() => 3), wind_gusts_10m_max: days.map(() => 30) } }); }
+    if (u.includes('/route?')) {
+      const ll = decodeURIComponent((u.match(/lonlats=([^&]+)/) || [0, ''])[1]).split('|').map((x) => x.split(',').map(Number)), c = [], msg = [['Longitude', 'Latitude', 'Elevation', 'Distance', 'CostPerKm', 'ElevCost', 'TurnCost', 'NodeCost', 'InitialCost', 'WayTags', 'NodeTags', 'Time', 'Energy']];
+      let tot = 0;
+      for (let i = 1; i < ll.length; i++) { const [a1, b1] = ll[i - 1], [a2, b2] = ll[i], dk = Math.hypot((a2 - a1) * 74500, (b2 - b1) * 111320), n = Math.max(2, Math.round(dk / 80)); for (let k = 0; k < n; k++) { const f = k / n, lo = a1 + (a2 - a1) * f, la = b1 + (b2 - b1) * f; c.push([lo, la, 450 + 250 * Math.max(0, Math.sin(la * 900))]); if (k % 10 === 0) msg.push([lo, la, 0, dk / n * 10, 0, 0, 0, 0, 0, i === 2 ? 'highway=primary surface=asphalt' : 'highway=secondary surface=asphalt', k % 30 === 0 ? 'highway=traffic_signals' : '', 0, 0]); } tot += dk; }
+      return J({ type: 'FeatureCollection', features: [{ type: 'Feature', properties: { 'track-length': String(Math.round(tot * 1.25)), 'filtered ascend': '320', messages: msg }, geometry: { type: 'LineString', coordinates: c } }] });
+    }
+    if (u.includes('/geo?')) return J({ lat: 47.81, lon: 13.04, name: 'Teststraße 1, Salzburg' });
+    if (u.includes('/segments/explore')) return J({ segments: [{ id: 1, name: 'Testanstieg', climb_category: 2, avg_grade: 7, distance: 3200, elev_difference: 220, start_latlng: [47.83, 13.1], end_latlng: [47.84, 13.12], points: '' }] });
     if (u.includes('calendar/v3')) return J(m === 'GET' ? { summary: 'Training', items: [] } : { id: 'x' });
     if (u.includes('drive/v3/files') && m === 'GET' && !u.includes('alt=media')) return J({ files: [] });
     if (u.includes('upload/drive')) return J({ id: 'f1' });
@@ -130,6 +138,17 @@ async function runtimeCheck() {
   await open('coach', 'Coach');
   await open('cfg', 'Einstellungen Training und Ziele');
   await open('jr', 'Jahresrückblick');
+  /* Routen (v51): Startpunkt setzen, Outdoor-Einheit anlegen, Routen rechnen und anzeigen */
+  const rt = await pg.evaluate(async () => {
+    const d = '2026-11-18', d2 = '2026-11-21';
+    WU_RTT('47.81000,13.04000', d, [d, 70, 'Rennrad Schwelle 3×12 min', '3×12 min bei 95 % FTP, 5 min Pause, Start 19:00 Uhr']);
+    WU_RTT('47.81000,13.04000', d2, [d2, 80, 'Rennrad Zone 2', '2 h Zone 2, Start 10:00 Uhr']);
+    await WU_RTLIB(); await WU_RTCALC(d); await WU_RTCALC(d2);
+    return { a: (WU_RT.res[d] && WU_RT.res[d].R.length) || 0, b: (WU_RT.res[d2] && WU_RT.res[d2].R.length) || 0, zw: (WU_RT.res[d] && WU_RT.res[d].zw) || [] };
+  });
+  if (!rt.a || !rt.b) fail('Routen: zu wenige Vorschläge (' + JSON.stringify(rt) + ')'); else console.log('✓ Routen: ' + rt.a + ' + ' + rt.b + ' Vorschläge, Zwift-Hinweis: ' + rt.zw.join(', '));
+  await open('p:18.11.', 'Routen Intervalle');
+  await open('p:21.11.', 'Routen Grundlage');
   await open('rb1', 'Rennblatt Mondsee');
   await open('rb2', 'Rennblatt Ötztaler');
   for (const k of ['leist', 'trn', 'koerp', 'abz', 'einh']) {
