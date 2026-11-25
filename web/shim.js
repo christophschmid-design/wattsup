@@ -86,7 +86,14 @@
   async function sv(path) {
     var tk = await stToken();
     try { return await http(SV + '/api/v3' + path, { headers: { Authorization: 'Bearer ' + tk } }); }
-    catch (e) { if (e.code === 'needs_reauth') { ls('wu_strava', null); } throw e; }
+    catch (e) {
+      if (e.code !== 'needs_reauth') throw e;
+      /* 401 bei einem einzelnen Endpunkt heißt oft nur „fehlende Berechtigung für diesen Aufruf“.
+         Die Verbindung nur löschen, wenn auch das eigene Profil abgelehnt wird. */
+      var ok = false; try { await http(SV + '/api/v3/athlete', { headers: { Authorization: 'Bearer ' + tk } }); ok = true; } catch (x) { if (x.code !== 'needs_reauth') ok = true; }
+      if (ok) throw fail('tool_error', 'Strava lehnt diesen Abruf ab (' + path.split('?')[0] + '): ' + e.message, { status: 401 });
+      ls('wu_strava', null); throw e;
+    }
   }
   /* Manuelle Aktivität anlegen (z. B. Krafttraining); braucht activity:write */
   window.WU_STRAVA_ADD = async function (o) {
