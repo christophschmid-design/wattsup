@@ -3483,11 +3483,21 @@ async function rtLibBuild(){var home=rtHome();if(!home||!window.claude)return;va
 /* Bewertung */
 function rtScore(u,o){var dur=25*Math.max(0,1-Math.abs(o.est-u.mn)/(.35*u.mn)),traf=20*Math.max(0,1-3*o.ps)-(o.pMax>2000?5:0),nov=u.ty==='int'?(o.own?20:10):20*Math.min(1,o.nw/.4);
  var s={Dauer:Math.round(dur),Eignung:Math.round(o.fit),Verkehr:Math.max(0,Math.round(traf)),[u.ty==='int'?'Bewährt':'Neu']:Math.round(nov)};s.ges=s.Dauer+s.Eignung+s.Verkehr+s[u.ty==='int'?'Bewährt':'Neu'];return s}
+/* Anteil doppelt gefahrener Strecke (Stichstraßen, hin und retour); rund um den Start (1 km) zählt nicht */
+function rtOverlap(c,home){var seen={},tot=0,ov=0,d=0,i,last=c[0],acc=0;function key(q,dx,dy){return(Math.round(q[0]*2500)+dx)+':'+(Math.round(q[1]*1700)+dy)}
+ var C2=[c[0]];for(i=1;i<c.length;i++){var sd=rtHav(c[i-1],c[i]),ns=Math.floor(sd/40);for(var z=1;z<=ns;z++){var f=z/(ns+1);C2.push([c[i-1][0]+(c[i][0]-c[i-1][0])*f,c[i-1][1]+(c[i][1]-c[i-1][1])*f])}C2.push(c[i])}c=C2;
+ for(i=1;i<c.length;i++){var st=rtHav(c[i-1],c[i]);d+=st;acc+=st;if(acc<40)continue;acc=0;var q=c[i],nearHome=rtHav(q,home)<1000,hit=false;
+  if(!nearHome){tot+=40;for(var x=-1;x<=1&&!hit;x++)for(var y=-1;y<=1&&!hit;y++){var v=seen[key(q,x,y)];if(v!=null&&v<d-400)hit=true}if(hit)ov+=40}
+  var k0=key(q,0,0);if(seen[k0]==null)seen[k0]=d}return tot?ov/tot:0}
 async function rtLoops(u,home){var v=25,X=(window.ACT||[]).filter(function(a){return a.sp==='Ride'&&a.km>20&&a.sec>0}).slice(0,30).map(function(a){return a.km/(a.sec/3600)}).sort();if(X.length>4)v=Math.max(20,Math.min(30,X[Math.floor(X.length/2)]));
- var P=u.pw*FTP,D=u.mn/60*v*(u.pw<.7?1:.95),out=[],h;for(h=0;h<360;h+=45){var R=D/3.3,r=null;for(var k=0;k<2;k++){try{r=await rtRoute([home,rtDest(home,h-32,R),rtDest(home,h+32,R),home])}catch(e){r=null;break}if(Math.abs(r.km-D)/D<.15)break;R*=D/r.km}
-  if(!r||r.unp>150)continue;var est=rtTrackT(r.c,u.ty==='tempo'?u.pw*.9*FTP:P)*1.05,stp=0,i,dd=0,g7=0;for(i=1;i<r.c.length;i++){var dx=rtHav(r.c[i-1],r.c[i]);dd+=dx;if(dx>5&&(r.c[i][2]-r.c[i-1][2])/dx>.07)g7+=dx}
-  var fit=u.ty==='tempo'?35*Math.min(1,(r.runMax/1000)/(rtV(u.pw*FTP,0)*3.6*(u.on||1200)/3600)):35*Math.max(0,1-4*g7/dd);
-  out.push({k:'loop',h:h,c:r.c,km:r.km,hm:r.hm,est:est,ps:r.prim/(r.km*1000),pMax:r.pMax,nw:rtNew(r.c),fit:fit,unp:r.unp,notes:g7/dd>.03?['Ein paar steile Stücke über 7 %: dort bewusst leicht treten, damit die Zone passt.']:[]})}
+ var P=u.pw*FTP,D=u.mn/60*v*(u.pw<.7?1:.95),out=[],h,q=3.3,VAR=[[-32,32,1],[-48,48,.88],[-20,40,1.05]];
+ for(h=0;h<360;h+=30){var best=null;for(var j=0;j<VAR.length;j++){var V=VAR[j],R=D/q,r=null;for(var k=0;k<2;k++){try{r=await rtRoute([home,rtDest(home,h+V[0],R*V[2]),rtDest(home,h+V[1],R*V[2]),home])}catch(e){r=null;break}
+    if(r.km>0)q=Math.max(2,Math.min(5,r.km/R));if(Math.abs(r.km-D)/D<.15)break;R=D/q}
+   if(!r||r.unp>150||Math.abs(r.km-D)/D>.3)continue;r.ov=rtOverlap(r.c,home);if(!best||r.ov<best.ov)best=r;if(r.ov<=.08)break}
+  r=best;if(!r||r.ov>.25)continue;var est=rtTrackT(r.c,u.ty==='tempo'?u.pw*.9*FTP:P)*1.05,i,dd=0,g7=0;for(i=1;i<r.c.length;i++){var dx=rtHav(r.c[i-1],r.c[i]);dd+=dx;if(dx>5&&(r.c[i][2]-r.c[i-1][2])/dx>.07)g7+=dx}
+  var fit=(u.ty==='tempo'?35*Math.min(1,(r.runMax/1000)/(rtV(u.pw*FTP,0)*3.6*(u.on||1200)/3600)):35*Math.max(0,1-4*g7/dd))*Math.max(0,1-2.5*r.ov),notes=[];
+  if(g7/dd>.03)notes.push('Ein paar steile Stücke über 7 %: dort bewusst leicht treten, damit die Zone passt.');if(r.ov>.05)notes.push('Ca. '+Math.round(r.ov*100)+' % der Strecke fährst du doppelt (hin und retour).');
+  out.push({k:'loop',h:h,c:r.c,km:r.km,hm:r.hm,est:est,ps:r.prim/(r.km*1000),pMax:r.pMax,nw:rtNew(r.c),fit:fit,unp:r.unp,ov:r.ov,notes:notes})}
  return out}
 async function rtClimbs(u,home){var P=u.pw*FTP,on=u.on||480,C=(RT.lib&&RT.lib.climbs||[]).map(function(c){var tc=rtClimbT(c,P)*60;return{c:c,tc:tc,dh:rtHav(home,c.a)}}).filter(function(x){return x.tc>=Math.min(on*.5,240)&&x.dh<30000});
  C.forEach(function(x){x.pre=(x.tc>=on*.9&&x.tc<=on*1.7?3:x.tc>=on*.9?2:1)+(x.c.own?1.5:0)+(x.c.n>2?.5:0)-x.dh/15000});C.sort(function(a,b){return b.pre-a.pre});
@@ -3505,12 +3515,12 @@ function rtZw(d,p,u,best){var r=[],h=rtHome()||[47.8,13.04],s=rtSun(d,h),st=rtSt
  if(en>s.unter-15)r.push('Ende ca. '+hmS(en)+', Sonnenuntergang '+hmS(s.unter));else if(st<s.auf)r.push('Start vor Sonnenaufgang ('+hmS(s.auf)+')');
  if((dy.rainProbabilityValue||0)>=60)r.push('Regenrisiko '+dy.rainProbabilityValue+' %');if((dy.snowProbabilityValue||0)>=40)r.push('Schneerisiko '+dy.snowProbabilityValue+' %');if(dy.temperature!=null&&dy.temperature<3)r.push('nur '+Math.round(dy.temperature)+'° tagsüber');
  if(u.prec)r.push('genau dosierte Intervalle, draußen schwer sauber zu fahren');var lim=u.key?70:60;if(best&&best.s.ges<lim)r.push('keine Route mit mindestens '+lim+' Punkten');if(!best&&!u.prec)r.push('keine passende Route gefunden');return r}
-function rtSig(d,p){return[d,p[2],p[3],FTP,Math.round(W),CF.home,RT.lib?RT.lib.ts:0].join('|')}
+function rtSig(d,p){return['v2',d,p[2],p[3],FTP,Math.round(W),CF.home,RT.lib?RT.lib.ts:0].join('|')}
 async function rtCalc(d){var p=PM[d],home=rtHome();if(!p||!home)return;var u=rtUnit(d,p),L=u.ty==='int'?await rtClimbs(u,home):await rtLoops(u,home);
  if(u.ty==='int'&&L.length<3){var lo=await rtLoops({mn:u.mn,ty:'ga',pw:.65,on:0,reps:0},home);lo.forEach(function(x){x.fit=Math.min(x.fit,10);x.notes=['Kein weiterer passender Anstieg: Runde ohne gezielte Intervallstrecke.']});L=L.concat(lo)}
  L.forEach(function(o){o.s=rtScore(u,o)});L.sort(function(a,b){return b.s.ges-a.s.ges});
- var pick=[];L.forEach(function(o){if(pick.length>=3)return;if(o.k==='loop'&&pick.some(function(q){return q.k==='loop'&&Math.abs(((q.h-o.h+540)%360)-180)<50}))return;if(o.k==='climb'&&pick.some(function(q){return q.name===o.name}))return;pick.push(o)});
- RT.res[d]={sig:rtSig(d,p),ts:Date.now(),ty:u.ty,R:pick.map(function(o){return{k:o.k,name:o.name||null,own:o.own||0,pl:rtEnc(o.c),wp:o.wp||[],km:Math.round(o.km*10)/10,hm:Math.round(o.hm),est:Math.round(o.est),s:o.s,adj:o.adj||null,notes:o.notes||[],asc:o.asc||0,tc:o.tc||0,ckm:o.ckm||0,chm:o.chm||0,ps:Math.round(o.ps*100),nw:o.nw!=null?Math.round(o.nw*100):null,unp:Math.round(o.unp||0)}})};
+ var pick=[];L.forEach(function(o){if(pick.length>=3)return;if(o.k==='loop'&&pick.some(function(q){return q.k==='loop'&&Math.abs(((q.h-o.h+540)%360)-180)<60}))return;if(o.k==='climb'&&pick.some(function(q){return q.name===o.name}))return;pick.push(o)});
+ RT.res[d]={sig:rtSig(d,p),ts:Date.now(),ty:u.ty,R:pick.map(function(o){return{k:o.k,name:o.name||null,own:o.own||0,pl:rtEnc(o.c),wp:o.wp||[],km:Math.round(o.km*10)/10,hm:Math.round(o.hm),est:Math.round(o.est),s:o.s,adj:o.adj||null,notes:o.notes||[],asc:o.asc||0,tc:o.tc||0,ckm:o.ckm||0,chm:o.chm||0,ps:Math.round(o.ps*100),nw:o.nw!=null?Math.round(o.nw*100):null,ov:o.ov!=null?Math.round(o.ov*100):null,unp:Math.round(o.unp||0)}})};
  RT.res[d].zw=rtZw(d,p,u,RT.res[d].R[0]?{est:RT.res[d].R[0].est,s:RT.res[d].R[0].s}:null);
  try{localStorage.setItem('rt1',JSON.stringify(RT.res))}catch(e){try{var ks=Object.keys(RT.res).sort();delete RT.res[ks[0]];localStorage.setItem('rt1',JSON.stringify(RT.res))}catch(x){}}}
 function rtDays(){var t=iso(new Date()),o=[];for(var i=0;i<8;i++){var d=addD(t,i),p=PM[d];if(p&&rtIsOut(p[2])&&!(window.ACT||[]).some(function(a){return a.day===d}))o.push(d)}return o}
@@ -3545,7 +3555,7 @@ function rtHtml(d){var p=PM[d];if(!p||!rtIsOut(p[2]))return'';var h='<h3>Routen 
    +'<p class="rtk">'+f1(R.km)+' km · '+R.hm+' Hm · ca. '+hmS(R.est)+' h'+(R.asc?' · '+R.asc+'× '+f1(R.ckm)+' km / '+R.chm+' Hm, je ca. '+Math.round(R.tc/60)+' min':'')+'</p>'
    +(R.adj?'<div class="rtadj"><span>Vorschlag: <b>'+R.adj.r+'×'+R.adj.on+' min</b> statt '+R.adj.r0+'×'+R.adj.on0+' min, gleiche Zeit im Bereich.</span><button type="button" class="pbtn sm" data-rta="'+d+'|'+i+'">Übernehmen</button></div>':'')
    +(R.notes.length?'<ul class="rtn">'+R.notes.map(function(n){return'<li>'+E(n)+'</li>'}).join('')+'</ul>':'')
-   +'<details class="pd"><summary>Bewertung '+sc+' von 100 ›</summary><table class="pt">'+ks.map(function(k){return'<tr><td>'+k+'</td><td>'+R.s[k]+' / '+({Dauer:25,Eignung:35,Verkehr:20,Neu:20,'Bewährt':20})[k]+'</td></tr>'}).join('')+'</table><p class="mu">Bundesstraße '+R.ps+' %'+(R.nw!=null?' · neue Abschnitte '+R.nw+' %':'')+(R.k==='climb'?' · '+(R.own?'Anstieg aus deinen Fahrten':'neuer Anstieg aus Strava-Segmenten'):'')+'</p></details>'
+   +'<details class="pd"><summary>Bewertung '+sc+' von 100 ›</summary><table class="pt">'+ks.map(function(k){return'<tr><td>'+k+'</td><td>'+R.s[k]+' / '+({Dauer:25,Eignung:35,Verkehr:20,Neu:20,'Bewährt':20})[k]+'</td></tr>'}).join('')+'</table><p class="mu">'+(R.ov!=null?'Doppelt gefahren '+R.ov+' % · ':'')+'Bundesstraße '+R.ps+' %'+(R.nw!=null?' · neue Abschnitte '+R.nw+' %':'')+(R.k==='climb'?' · '+(R.own?'Anstieg aus deinen Fahrten':'neuer Anstieg aus Strava-Segmenten'):'')+'</p></details>'
    +'<div class="row2"><button type="button" class="pbtn sm" data-rtg="'+d+'|'+i+'">GPX speichern</button><span class="rtmsg" role="status"></span></div></div>'}).join('')}
 function rtBadges(){rtDays().forEach(function(d){var r=RT.res[d],ok=r&&PM[d]&&r.sig===rtSig(d,PM[d]);[].forEach.call(document.querySelectorAll('[data-k="p:'+lab(d)+'"]'),function(el){var b=el.querySelector('.rtb');if(!b){b=document.createElement('span');b.className='rtb';el.appendChild(b)}b.textContent=!ok?'':r.zw&&r.zw.length?' 🖥️':r.R.length?' 🗺️':'';b.title=!ok?'':r.zw&&r.zw.length?'Besser auf Zwift: '+r.zw.join(', '):r.R.length+' Routen'})})}
 var _dPlanRt=dPlan;dPlan=function(x){var o=_dPlanRt(x);try{var d=isoOf(x);if(d>=iso(new Date()))o.h+=rtHtml(d)}catch(e){logErr('App','Routen anzeigen',e)}return o};
