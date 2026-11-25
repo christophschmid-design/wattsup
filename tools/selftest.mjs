@@ -149,6 +149,27 @@ async function runtimeCheck() {
   if (!rt.a || !rt.b) fail('Routen: zu wenige Vorschläge (' + JSON.stringify(rt) + ')'); else console.log('✓ Routen: ' + rt.a + ' + ' + rt.b + ' Vorschläge, Zwift-Hinweis: ' + rt.zw.join(', '));
   const io = await pg.evaluate(() => { const d = '2026-11-19'; WU_IOSET(d, 'od'); const a = WU_PMGET(d)[2]; WU_IOSET(d, 'zw'); return [a, WU_PMGET(d)[2]]; });
   if (!/Ausfahrt draußen/.test(io[0]) || /draußen/.test(io[1])) fail('Schalter Zwift/Draußen: ' + JSON.stringify(io)); else console.log('✓ Schalter Zwift/Draußen: ' + io[0]);
+  /* Routen-Dashboard (v53) */
+  await pg.evaluate(() => { location.hash = '#routen'; }); await pg.waitForTimeout(1200);
+  const db = await pg.evaluate(async () => {
+    const o = {};
+    document.querySelector('[data-rtv="frei"]').click(); await new Promise((r) => setTimeout(r, 300));
+    document.getElementById('rtf-go').click(); for (let i = 0; i < 80 && !Object.keys(WU_RT.res).some((k) => /^f:/.test(k)); i++) await new Promise((r) => setTimeout(r, 250));
+    await new Promise((r) => setTimeout(r, 1200));
+    const fk = Object.keys(WU_RT.res).filter((k) => /^f:/.test(k))[0]; o.free = fk ? WU_RT.res[fk].R.length : 0;
+    o.cmp = !!document.querySelector('#rt-b .rtcmp table'); o.map = !!document.querySelector('#rt-map .wm-box');
+    const b = document.querySelector('[data-rts="1"]'); if (b) b.click(); await new Promise((r) => setTimeout(r, 800));
+    o.sel = !!document.querySelector('.rtth.on[data-rts="1"]');
+    if (fk) { await WU_RTEDIT(fk, [[47.85, 13.1], [47.83, 13.15]], null); o.own = !!(WU_RT.res[fk].R[3] && WU_RT.res[fk].R[3].ed); }
+    await WU_RTHIST(); o.hist = Object.keys(WU_RT.hist).length;
+    document.querySelector('[data-rtv="verl"]').click(); await new Promise((r) => setTimeout(r, 500)); o.verl = !!document.querySelector('.rtrate');
+    const t = document.querySelector('[data-rtr$="|1"]'); if (t) { t.click(); await new Promise((r) => setTimeout(r, 400)); }
+    const w = document.querySelector('[data-rtw$="|huegel"]'); if (w) { w.click(); await new Promise((r) => setTimeout(r, 400)); }
+    document.querySelector('[data-rtv="lern"]').click(); await new Promise((r) => setTimeout(r, 400)); o.lern = !!document.getElementById('rt-lmap');
+    return o;
+  });
+  if (!db.cmp || !db.map || !db.sel || !db.own || !db.free || !db.verl || !db.lern) fail('Routen-Dashboard: ' + JSON.stringify(db)); else console.log('✓ Routen-Dashboard: ' + JSON.stringify(db));
+  await look('Routen-Dashboard');
   await open('p:18.11.', 'Routen Intervalle');
   await open('p:21.11.', 'Routen Grundlage');
   await open('rb1', 'Rennblatt Mondsee');
