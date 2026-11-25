@@ -31,7 +31,7 @@ jobs:
       - name: Selbsttest (bei Fehlern wird nicht veröffentlicht)
         run: node tools/selftest.mjs
       - uses: actions/configure-pages@v5
-      - uses: actions/upload-pages-artifact@v3
+      - uses: actions/upload-pages-artifact@v4
         with:
           path: dist
       - id: deploy
