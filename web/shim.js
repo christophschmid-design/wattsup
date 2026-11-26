@@ -35,10 +35,13 @@
   function qs(o) { return Object.keys(o).filter(function (k) { return o[k] != null && o[k] !== ''; }).map(function (k) { return encodeURIComponent(k) + '=' + encodeURIComponent(o[k]); }).join('&'); }
   function now() { return Date.now(); }
 
+  /* Abrufe an den eigenen Push-Dienst und an Overpass über den normalen Browser-Abruf statt über die native Schicht:
+     bei langen Abrufen hat die native Schicht Antworten vertauscht (Overpass bekam eine Google-Drive-Liste zurück) */
+  function wf(url, opt) { var b = pushBase(), w = window.CapacitorWebFetch, m = String(opt && opt.method || 'GET').toUpperCase(); return w && ((b && url.indexOf(b) === 0 && m === 'GET') || /overpass|maps\.mail\.ru\/osm/.test(url)) ? w : fetch; }
   async function http(url, opt) {
     opt = opt || {};
     var r;
-    try { r = await fetch(url, opt); } catch (e) { throw fail('network', 'Keine Verbindung (' + (e && e.message || e) + ')', { retryable: true }); }
+    try { r = await wf(url, opt)(url, opt); } catch (e) { throw fail('network', 'Keine Verbindung (' + (e && e.message || e) + ')', { retryable: true }); }
     var txt = await r.text(), js = null;
     try { js = txt ? JSON.parse(txt) : null; } catch (e) { }
     if (!r.ok) {
@@ -1189,14 +1192,14 @@
   window.WU_ROUTE_ON = function () { return !!pushBase(); };
   window.WU_OSM = async function (lat, lon, r) {
     var b = pushBase(); if (!b) throw fail('no_server', 'Push-Dienst nicht eingerichtet');
-    var x; try { x = await fetch(b + '/osm?' + qs({ lat: lat, lon: lon, r: r })); } catch (e) { throw fail('network', 'Keine Verbindung zum Push-Dienst'); }
+    var u0 = b + '/osm?' + qs({ lat: lat, lon: lon, r: r }), x; try { x = await wf(u0)(u0); } catch (e) { throw fail('network', 'Keine Verbindung zum Push-Dienst'); }
     var t = await x.text(); if (x.ok) return { csv: t };
     /* Push-Dienst kam nicht durch: direkt aus der App bei Overpass fragen (erlaubt Abrufe aus dem Browser) */
     var A = 'around:' + Math.round(r / 1000) * 1000 + ',' + (+lat).toFixed(3) + ',' + (+lon).toFixed(3);
     var q = '[out:csv(::lat,::lon,natural,mountain_pass,tourism,amenity,ele,name;false)][timeout:180];(node(' + A + ')[natural~"^(peak|saddle)$"];node(' + A + ')[mountain_pass=yes];node(' + A + ')[tourism~"^(viewpoint|alpine_hut)$"];node(' + A + ')[amenity=restaurant][ele];);out;';
     var why = ['Push-Dienst: ' + (t.slice(0, 120) || 'HTTP ' + x.status)];
     for (var ep of ['https://overpass.private.coffee/api/interpreter', 'https://overpass-api.de/api/interpreter']) {
-      try { var y = await fetch(ep, { method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded' }, body: 'data=' + encodeURIComponent(q) }); var t2 = await y.text(); if (y.ok) return { csv: t2 }; why.push(ep.split('/')[2] + ' ' + y.status); } catch (e) { why.push(ep.split('/')[2] + ' nicht erreichbar'); }
+      try { var y = await wf(ep)(ep, { method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded' }, body: 'data=' + encodeURIComponent(q) }); var t2 = await y.text(); if (y.ok) return { csv: t2 }; why.push(ep.split('/')[2] + ' ' + y.status); } catch (e) { why.push(ep.split('/')[2] + ' nicht erreichbar'); }
     }
     throw fail('tool_error', 'Kartenabfrage: ' + why.join(' · '), { status: x.status });
   };
