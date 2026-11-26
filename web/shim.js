@@ -1187,6 +1187,10 @@
     return await http(b + '/route?' + qs({ lonlats: lonlats, profile: profile || 'fastbike' }));
   };
   window.WU_ROUTE_ON = function () { return !!pushBase(); };
+  window.WU_OSM = async function (lat, lon, r) {
+    var b = pushBase(); if (!b) throw fail('no_server', 'Push-Dienst nicht eingerichtet');
+    return await http(b + '/osm?' + qs({ lat: lat, lon: lon, r: r }));
+  };
   window.WU_RGEO = async function (lat, lon) {
     var b = pushBase(); if (!b) throw fail('no_server', 'Push-Dienst nicht eingerichtet');
     return await http(b + '/rgeo?' + qs({ lat: lat, lon: lon }));

@@ -237,6 +237,29 @@ export default {
       }
       return new Response(r.body, { headers: Object.assign({ 'Content-Type': 'application/json' }, cors) });
     }
+    // v62: mögliche Ziele für Anstiege (Gipfel, Sättel, Pässe, Hütten, Aussichtspunkte) aus OpenStreetMap
+    if (url.pathname === '/osm') {
+      const la = Number(url.searchParams.get('lat')), lo = Number(url.searchParams.get('lon')), rr = Math.round(Number(url.searchParams.get('r')) / 1000) * 1000;
+      if (!isFinite(la) || !isFinite(lo) || !(rr >= 5000 && rr <= 100000)) return new Response('bad', { status: 400, headers: cors });
+      const ck = new Request('https://wattsup-cache.invalid/osm?lat=' + la.toFixed(2) + '&lon=' + lo.toFixed(2) + '&r=' + rr), cache = caches.default;
+      let r = await cache.match(ck);
+      if (!r) {
+        const A = 'around:' + rr + ',' + la.toFixed(3) + ',' + lo.toFixed(3);
+        const q = '[out:json][timeout:120];(node(' + A + ')[natural~"^(peak|saddle)$"];node(' + A + ')[mountain_pass=yes];node(' + A + ')[tourism~"^(viewpoint|alpine_hut)$"];node(' + A + ')[amenity=restaurant][ele];);out;';
+        const up = await fetch('https://overpass-api.de/api/interpreter', { method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded', 'User-Agent': 'WattsUp-Trainingsapp (privat)' }, body: 'data=' + encodeURIComponent(q) });
+        if (!up.ok) return new Response((await up.text()).slice(0, 300), { status: 502, headers: cors });
+        const j = await up.json(), n = [];
+        (j.elements || []).forEach(function (e) {
+          const t = e.tags || {}, el = parseFloat(String(t.ele || '').replace(',', '.'));
+          const k = t.mountain_pass === 'yes' || t.natural === 'saddle' ? 'p' : t.tourism === 'alpine_hut' ? 'h' : t.amenity === 'restaurant' ? 'r' : t.tourism === 'viewpoint' ? 'v' : 'g';
+          if (k === 'g' && isFinite(el) && el > 2000) return;
+          n.push([Math.round(e.lat * 1e5) / 1e5, Math.round(e.lon * 1e5) / 1e5, k, isFinite(el) ? Math.round(el) : null, String(t.name || '').slice(0, 40)]);
+        });
+        r = new Response(JSON.stringify({ n: n }), { headers: { 'Content-Type': 'application/json', 'Cache-Control': 'max-age=2592000' } });
+        ctx.waitUntil(cache.put(ck, r.clone()));
+      }
+      return new Response(r.body, { headers: Object.assign({ 'Content-Type': 'application/json' }, cors) });
+    }
     if (url.pathname === '/geo') {
       const q = (url.searchParams.get('q') || '').slice(0, 160);
       if (q.length < 3) return new Response('bad', { status: 400, headers: cors });
