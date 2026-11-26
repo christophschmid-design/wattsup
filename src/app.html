@@ -870,6 +870,9 @@ nav a.rnav{display:none}body.tabdev nav a.rnav{display:flex}body.tabdev .rtentry
 .rtpwb{position:relative;width:90px;height:6px;border-radius:3px;background:linear-gradient(90deg,#4dabf7,var(--ln) 50%,#f08c00)}.rtpwb i{position:absolute;top:-4px;width:14px;height:14px;margin-left:-7px;border-radius:50%;background:var(--tx);border:2px solid var(--card)}
 .rtcl{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:7px 0;border-top:1px solid var(--ln);flex-wrap:wrap}.rtcl:first-of-type{border-top:0}.rtcl>span:first-child{display:flex;flex-direction:column}.rtcl small{color:var(--mu);font-size:.76rem}.rtcl>span:last-child{display:flex;gap:6px}.rtcl.on b{color:var(--ac)}
 .rtcl.hid b{color:var(--mu);text-decoration:line-through}.rtmorebar{margin:0 0 10px;align-items:center}.rtaddc{border-color:var(--ac)}
+.rtstb{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:2px 2px 10px}.rtstb>.mu{font-size:.8rem}.rtsts{display:flex;gap:4px;background:var(--ln);border-radius:12px;padding:3px}.rtsts button{border:0;background:none;padding:6px 12px;border-radius:9px;font:inherit;font-size:.85rem;cursor:pointer;color:var(--mu)}.rtsts button[aria-pressed="true"]{background:var(--card);color:inherit;font-weight:600;box-shadow:0 1px 3px rgba(0,0,0,.15)}
+.rtst2f{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0}.rtst2f input.ta{flex:1 1 200px;width:auto}
+.rtcln{display:flex;gap:10px;align-items:center;padding:9px 0;border-top:1px solid var(--ln)}.rtcln:first-child{border-top:0}.rtpsv{flex:0 0 auto;background:rgba(127,127,127,.08);border-radius:8px}.rtcln-t{display:flex;flex-direction:column;min-width:0;flex:1}.rtcln-t b{font-size:.86rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.rtcln-t small{color:var(--mu);font-size:.74rem;margin-bottom:3px}.rtcln-b{display:flex;flex-wrap:wrap;gap:6px;margin-top:4px}
 .rtan-h{display:flex;flex-wrap:wrap;gap:4px 14px;align-items:center;font-size:.86rem;margin:4px 2px 10px}.rtan-h #rt-mqst{flex:1 1 280px;font-size:.74rem;line-height:1.3}.rtan-h .rtmw{position:relative;margin-left:auto}
 .rtan-g{display:flex;flex-direction:column;gap:0}.rtan-m{order:-1;position:relative;padding:8px}.rtan-l{padding:10px}
 .rtan-tb{display:flex;gap:6px;align-items:center}.rtan-tb input.ta{flex:1 1 auto;min-width:0;width:auto}.rtan-tb .pbtn{flex:0 0 auto;white-space:nowrap}.rtan-tb .pbtn.on{border-color:var(--ac,#1d6fe0);color:var(--ac,#1d6fe0)}
@@ -1002,7 +1005,7 @@ nav a.rnav{display:none}body.tabdev nav a.rnav{display:flex}body.tabdev .rtentry
 <div id="legacy" hidden><div id="p-goal"></div><div id="liste"></div><div id="kp2"></div><div id="f-top"></div><div id="f-best"></div><div id="f-run"></div><div id="m-kpi"></div><div id="m-volb"></div><div id="m-bestb"></div><div id="p-wx"></div><div id="pw-wxb"></div><div id="pl-act"><div id="pl-acb"></div></div><div id="pl-nx"></div><div id="pvb"></div><div id="pl-rdy"></div></div>
 </main>
 <script>
-var CFD={ftp:null,lthr:166,hrmax:186,hrrest:50,weight:null,wd:'19:00',we:'10:00',maxU:4,spring:'2027-03-01',maxU2:6,hrs1:6,hrs2:12,blk:3,m300:0,m280:0,ramp:8,tsbT1:-30,tsbT2:-10,tsbE1:-10,tsbE2:5,tsbR1:5,tsbR2:25,race:'2027-06-20',raceCtl:85,goal1Min:400,race1Stops:5,home:'',homeAdr:'',race2:'2027-08-29',race2Ctl:95,ticket:'offen',goalMin:600,ftpGoal:265,kgGoal:74,raceStops:10,bikeKg:10,mood:true,ftpSug:true,ftpDown:true,mFrom:5,mUntil:12,ts:0};
+var CFD={ftp:null,lthr:166,hrmax:186,hrrest:50,weight:null,wd:'19:00',we:'10:00',maxU:4,spring:'2027-03-01',maxU2:6,hrs1:6,hrs2:12,blk:3,m300:0,m280:0,ramp:8,tsbT1:-30,tsbT2:-10,tsbE1:-10,tsbE2:5,tsbR1:5,tsbR2:25,race:'2027-06-20',raceCtl:85,goal1Min:400,race1Stops:5,home:'',homeAdr:'',home2:'',home2Adr:'',home2N:'',hsel:0,race2:'2027-08-29',race2Ctl:95,ticket:'offen',goalMin:600,ftpGoal:265,kgGoal:74,raceStops:10,bikeKg:10,mood:true,ftpSug:true,ftpDown:true,mFrom:5,mUntil:12,ts:0};
 var H0='2026-01-01';
 function isRL(e){return!!e&&(e.code==='rate_limited'||/too many|429|rate.?limit/i.test(String(e.message||'')))}
 function rlOn(){var t=0;try{t=Number(localStorage.getItem('rl429')||0)}catch(e){}return Date.now()-t<16*60000}
@@ -3608,7 +3611,7 @@ function rtZw(d,p,u,best){var r=[],h=rtHome()||[47.8,13.04],s=rtSun(d,h),st=rtSt
  if(en>s.unter-15)r.push('Ende ca. '+hmS(en)+', Sonnenuntergang '+hmS(s.unter));else if(st<s.auf)r.push('Start vor Sonnenaufgang ('+hmS(s.auf)+')');
  if((dy.rainProbabilityValue||0)>=60)r.push('Regenrisiko '+dy.rainProbabilityValue+' %');if((dy.snowProbabilityValue||0)>=40)r.push('Schneerisiko '+dy.snowProbabilityValue+' %');if(dy.temperature!=null&&dy.temperature<3)r.push('nur '+Math.round(dy.temperature)+'° tagsüber');
  if(u.prec)r.push('genau dosierte Intervalle, draußen schwer sauber zu fahren');var lim=u.key?70:60;if(best&&best.s.ges<lim)r.push('keine Route mit mindestens '+lim+' Punkten');if(!best&&!u.prec)r.push('keine passende Route gefunden');return r}
-function rtSig(d,p){return['v6',RT.pref&&RT.pref.ts||0,d,p[2],p[3],FTP,Math.round(W),CF.home,RT.lib?RT.lib.ts:0].join('|')}
+function rtSig(d,p){return['v6',RT.pref&&RT.pref.ts||0,d,p[2],p[3],FTP,Math.round(W),(rtHome()||[]).join(','),RT.lib?RT.lib.ts:0].join('|')}
 async function rtCalc(d){var p=PM[d],home=rtHome();if(!p||!home)return;var u=rtUnit(d,p),L=u.ty==='int'?await rtClimbs(u,home):await rtLoops(u,home);
  if(u.ty==='int'&&L.length<3){var lo=await rtLoops({mn:u.mn,ty:'ga',pw:.65,on:0,reps:0},home);lo.forEach(function(x){x.fit=Math.min(x.fit,10);x.notes=['Kein weiterer passender Anstieg: Runde ohne gezielte Intervallstrecke.']});L=L.concat(lo)}
  L.forEach(function(o){o.s=rtScore(u,o)});L.sort(function(a,b){return b.s.ges-a.s.ges});
@@ -3723,7 +3726,7 @@ rtHtml=function(d){var p=PM[d];if(!p||!rtIsOut(p[2]))return'';var h='<h3>Routen 
  var R=r.R[0],sc=R.s.ges,cl=sc>=75?'ok':sc>=60?'wa':'bad';
  return h+'<div class="rtc"><div class="rth"><b>Beste Route'+(R.name?' · '+E(R.name):'')+'</b><span class="rtsc '+cl+'">'+sc+'</span></div><p class="rtk">'+f1(R.km)+' km · '+R.hm+' Hm · ca. '+hmS(R.est)+' h'+(R.asc?' · '+R.asc+'× '+f1(R.ckm)+' km / '+R.chm+' Hm':'')+'</p>'
   +(R.ivq!=null?'<p class="rtk">'+(r.u&&r.u.test?'Teststrecke':'Intervallstrecken')+': <b>'+R.ivq+'</b> von 100</p>':'')+rtBar(rtShares(R)&&rtShares(R).road,rtCM('road'))+(R.adj?'<div class="rtadj"><span>Vorschlag: <b>'+R.adj.r+'×'+R.adj.on+' min</b> statt '+R.adj.r0+'×'+R.adj.on0+' min, gleiche Zeit im Bereich.</span><button type="button" class="pbtn sm" data-rta="'+d+'|0">Übernehmen</button></div>':'')
-  +'<div class="row2"><button type="button" class="pbtn sm" data-rtg="'+d+'|0">GPX speichern</button><button type="button" class="pbtn sm sec" data-rtopen="'+d+'">Alle '+r.R.length+' Routen vergleichen ›</button><span class="rtmsg" role="status"></span></div></div>'};
+  +(rtH2()&&r.R[0]&&r.R[0].st?'<p class="mu" style="font-size:.76rem;margin:4px 0">Start: '+E(r.R[0].st)+'</p>':'')+'<div class="row2"><button type="button" class="pbtn sm" data-rtg="'+d+'|0">GPX speichern</button><button type="button" class="pbtn sm sec" data-rtopen="'+d+'">Alle '+r.R.length+' Routen vergleichen ›</button><span class="rtmsg" role="status"></span></div></div>'};
 function rtSetHtml(){return'<div class="rtset"><p class="mu">Gib einmal deinen Startpunkt ein. Er wird nur in deinen Einstellungen gespeichert.</p><input class="ta" id="rt-adr" placeholder="Straße Hausnummer, Ort" autocomplete="street-address"><button type="button" class="pbtn sm" id="rt-adrs">Startpunkt speichern</button><span class="rtmsg" role="status"></span></div>'}
 /* Dashboard */
 function rtDayLab(d){var w=['So','Mo','Di','Mi','Do','Fr','Sa'][new Date(d+'T12:00:00').getDay()];return w+' '+lab(d)}
@@ -3745,7 +3748,7 @@ function rtCmpHtml(key){var r=RT.res[key];if(!r||!r.R)return'<p class="mu">'+(RT
   +(R.notes&&R.notes.length?'<ul class="rtn">'+R.notes.map(function(n){return'<li>'+E(n)+'</li>'}).join('')+'</ul>':'')
   +'<details class="pd"><summary>Bewertung '+R.s.ges+' von 100 ›</summary><table class="pt">'+ks.map(function(k){var mx=rtSMax(k,r.ty);return'<tr><td>'+k+'</td><td>'+R.s[k]+(k==='Vorlieben'||k==='Abwechslung'?' (±'+mx+')':' / '+mx)+'</td></tr>'}).join('')+'</table>'+(r.ty==='int'?'<p class="mu" style="font-size:.76rem">Bei Intervallen und Test zählt fast nur die Strecke: Eignung der Intervallstrecke 70, Passung zur Vorgabe 20. Die Dauer ist eine Grenze: mehr als 15 % darüber oder 20 % darunter kommt nur mit Hinweis.</p>':'')+'</details>'
   +'<div class="row2"><button type="button" class="pbtn sm" data-rtg="'+key+'|'+sel+'">GPX speichern</button>'+(R.k==='loop'?'<span class="mu" style="font-size:.8rem">Anpassen: auf der Karte „✎ Anpassen“</span>':'')+'<span class="rtmsg" role="status"></span></div></div>';
- return(r.zw&&r.zw.length?'<div class="rtzw"><b>🖥️ Besser auf Zwift</b><span>'+E(r.zw.join(' · '))+'</span></div>':'')+(r.R&&r.R[0]&&r.R[0].wr?'<p class="rtwarn">'+E(r.R[0].wr)+'</p>':'')+(RTV.msg?'<p class="rtwarn">'+E(RTV.msg)+'</p>':'')+'<div class="rtfbtn rtmorebar"><button type="button" class="pbtn sm sec" data-rtmore="'+E(key)+'">↻ Andere Vorschläge</button>'+(r.ex&&r.ex.length?'<button type="button" class="pbtn sm sec" data-rtbest="'+E(key)+'">Zurück zu den besten</button><span class="mu" style="font-size:.78rem">'+r.ex.length+' ausgeschlossen</span>':'')+'</div>'
+ return(r.zw&&r.zw.length?'<div class="rtzw"><b>🖥️ Besser auf Zwift</b><span>'+E(r.zw.join(' · '))+'</span></div>':'')+(r.R&&r.R[0]&&r.R[0].wr?'<p class="rtwarn">'+E(r.R[0].wr)+'</p>':'')+(rtH2()&&r.R&&r.R[0]&&r.R[0].st?'<p class="mu" style="font-size:.78rem">Start: '+E(r.R[0].st)+'</p>':'')+(RTV.msg?'<p class="rtwarn">'+E(RTV.msg)+'</p>':'')+'<div class="rtfbtn rtmorebar"><button type="button" class="pbtn sm sec" data-rtmore="'+E(key)+'">↻ Andere Vorschläge</button>'+(r.ex&&r.ex.length?'<button type="button" class="pbtn sm sec" data-rtbest="'+E(key)+'">Zurück zu den besten</button><span class="mu" style="font-size:.78rem">'+r.ex.length+' ausgeschlossen</span>':'')+'</div>'
   +'<div class="rtgrid"><div class="rtmapc"><div id="rt-map" data-key="'+E(key)+'"></div></div><div class="rtside"><div class="rtcmp"><table>'+th+tb+'</table></div>'+card+'</div></div>'}
 function rtMapDraw(){var el=$('rt-map');if(!el||!window.WU_MAPP)return;var key=el.getAttribute('data-key'),r=RT.res[key];if(!r||!r.R||!r.R.length)return;var sel=Math.min(RTV.sel,r.R.length-1),R=r.R[sel],p=rtStreams(R),rc=rtUnrle(R.rc),sc=rtUnrle(R.sc);
  if(rc.length===p.location.length){p.road=rc.split('');p.surf=sc.split('')}
@@ -4159,7 +4162,7 @@ async function rtKiList(home){var sm=await window.claude.use('sample');if(!sm)th
  return(j.anstiege||[]).filter(function(x){return x&&ok(x.fuss)&&ok(x.oben)&&rtHav([+x.fuss[0],+x.fuss[1]],[+x.oben[0],+x.oben[1]])>800}).slice(0,40).map(function(x){return{f:[+x.fuss[0],+x.fuss[1]],o:[+x.oben[0],+x.oben[1]],n:String(x.name||'').slice(0,40)}})}
 async function rtMqRoute(pts){var w=(RTM.t||0)+2500-Date.now();if(w>0)await new Promise(function(r){setTimeout(r,w)});while(RTQ.busy)await new Promise(function(r){setTimeout(r,2000)});RTM.t=Date.now();
  try{return await _rtRoute61(pts)}catch(e){if(/keine Route/.test(String(e&&e.message||'')))return null;await new Promise(function(r){setTimeout(r,5000)});RTM.t=Date.now();try{return await _rtRoute61(pts)}catch(e2){if(/keine Route/.test(String(e2&&e2.message||'')))return null;throw e2}}}
-async function rtMapScan(){if(RTM.on)return;var home=rtHome();if(!home||!RT.lib||RT.lib.v!==3||!window.WU_OSM||!(window.WU_ROUTE_ON&&WU_ROUTE_ON()))return;var q=rtMq();if(q.wait&&q.wait>Date.now()){clearTimeout(RTM.wt);RTM.wt=setTimeout(function(){rtMapScan().catch(function(){})},q.wait-Date.now()+2000);return}
+async function rtMapScan(){if(RTM.on)return;var home=rtHome0();if(!home||!RT.lib||RT.lib.v!==3||!window.WU_OSM||!(window.WU_ROUTE_ON&&WU_ROUTE_ON()))return;var q=rtMq();if(q.wait&&q.wait>Date.now()){clearTimeout(RTM.wt);RTM.wt=setTimeout(function(){rtMapScan().catch(function(){})},q.wait-Date.now()+2000);return}
  RTM.on=true;rtMqShow();var calls=0,fails=0,since=0,found=function(cl,src,nm){if(rtAddMap(cl,src,nm)){q.nC=(q.nC||0)+1;since++}};
  try{if(!q.ki&&(q.kiN||0)<3&&window.claude){q.kiN=(q.kiN||0)+1;RTM.st='Frage Claude nach Anstiegen in der Region …';rtMqShow();try{q.kq=await rtKiList(home);q.kiC=q.kq.length;q.ki=1}catch(e){q.kiE=String(e&&e.message||e).slice(0,120)}RTM.st=''}
   while(calls<300&&RT.lib&&RT.lib.mq===q){var t=null,isKi=false;
@@ -4229,7 +4232,7 @@ rtAnstHtml=function(){var all=rtClAll(true),inf=all.map(rtClInfo),cnt=function(s
  var sel=function(id,opts,v){return'<select class="ta" data-anf="'+id+'" aria-label="'+id+'">'+opts.map(function(o){return'<option value="'+o[0]+'"'+(String(v)===String(o[0])?' selected':'')+'>'+o[1]+'</option>'}).join('')+'</select>'};
  var h='<div class="rtan"><div class="rtan-h"><span><b>'+all.length+' Anstiege</b> · '+cnt('eigen')+' gefahren · <span style="color:#f08c00">'+(cnt('karte')+cnt('ki'))+' neu für dich</span> · '+cnt('dir')+' von dir</span>'
   +'<span class="mu" id="rt-mqst">'+E(rtAnStTx())+'</span><span class="rtmw"><button type="button" class="rtdots" data-anm="1" aria-label="Weitere Aktionen" aria-expanded="'+!!RTV.anm+'">⋯</button>'
-  +(RTV.anm?'<span class="rtmenu" role="menu"><button type="button" role="menuitem" data-anlib="more">↻ Weiter aus Fahrten lernen</button><button type="button" role="menuitem" data-anlib="scan">⌖ Kartensuche neu starten</button><button type="button" role="menuitem" data-anlib="names">✎ Namen neu vergeben</button><button type="button" role="menuitem" data-anlib="new">⟲ Alles neu lernen</button></span>':'')+'</span></div>';
+  +(RTV.anm?'<span class="rtmenu" role="menu"><button type="button" role="menuitem" data-anlib="more">↻ Weiter aus Fahrten lernen</button><button type="button" role="menuitem" data-anlib="scan">⌖ Kartensuche neu starten</button><button type="button" role="menuitem" data-ancl="1">🧹 Aufräumen</button><button type="button" role="menuitem" data-anlib="names">✎ Namen neu vergeben</button><button type="button" role="menuitem" data-anlib="new">⟲ Alles neu lernen</button></span>':'')+'</span></div>';
  if(RTV.add)h+='<div class="card hc rtaddc"><p><b>'+(RTV.add.a?RTV.add.b?'Anstieg prüfen und speichern':'Jetzt das Ende (oben) auf der Karte antippen.':'Den Start (Fuß) auf der Karte antippen.')+'</b></p>'+(RTV.add.r?'<p class="rtk">'+f1(RTV.add.r.km)+' km · '+RTV.add.r.hm+' Hm · Ø '+String(Math.round(RTV.add.r.hm/RTV.add.r.km/10*10)/10).replace('.',',')+' %</p><div class="rtren"><input class="ta" id="rt-addn" maxlength="50" placeholder="Name, z. B. Haunsberg" value="'+E(RTV.add.n||'')+'"><button type="button" class="pbtn sm" data-rtadds="1">Speichern</button></div>':RTV.add.b?'<p class="mu">Route wird berechnet …</p>':'')+'</div>';
  h+='<div class="rtan-g"><div class="rtan-l card hc"><div class="rtan-tb"><input class="ta" data-anf="q" placeholder="Suchen, z. B. Gaisberg" value="'+E(RTAF.q||'')+'"><button type="button" class="pbtn sm sec'+(nAct?' on':'')+'" data-anfo="1" aria-expanded="'+!!RTV.afo+'">Filter'+(nAct?' ('+nAct+')':'')+'</button><button type="button" class="pbtn sm'+(RTV.add?' warn':'')+'" data-rtadd="1" title="Anstieg selbst eintragen">'+(RTV.add?'Abbrechen':'＋ Anstieg')+'</button></div>'
   +'<div class="rtan-f'+(RTV.afo?' open':'')+'">'
@@ -4294,6 +4297,74 @@ document.addEventListener('click',function(e){var b=e.target.closest&&e.target.c
   if(v==='scan'){if(RT.lib){RT.lib.climbs=(RT.lib.climbs||[]).filter(function(z){return!z.q});RT.lib.mq=null}rRoutes();rtMapScan().catch(function(){});return}
   if(v==='names'){(RT.lib&&RT.lib.climbs||[]).forEach(function(z){if(rtNmGen(z)){z.nmD=0;if(z.nmS==='ki'||z.nmS==='ort')z.nmS=''}});rRoutes();rtNmRun().catch(function(){});return}
   RT.libSt='Lerne …';rRoutes();rtLibBuild(v==='new').then(function(){RT.libSt='';rRoutes()});return}},true);
+/* v64: zweiter Startort zum Umschalten; Anstiege automatisch zusammenlegen (Doppelte, Teilstücke) und „Aufräumen“ für unklare Fälle */
+function rtH2(){var v=String(CF.home2||'').split(',');return v.length===2&&isFinite(+v[0])&&isFinite(+v[1])&&+v[0]!==0?[+v[0],+v[1]]:null}
+var rtHome0=rtHome;rtHome=function(){if(+CF.hsel===1){var h=rtH2();if(h)return h}return rtHome0()};
+function rtStName(){return+CF.hsel===1&&rtH2()?(CF.home2N||'Zweiter Startort'):'Zuhause'}
+async function rtCfgSave(p){var o={};try{o=JSON.parse(localStorage.getItem('cfg1')||'{}')||{}}catch(x){}Object.keys(p).forEach(function(k){o[k]=p[k];CF[k]=p[k]});o.ts=Date.now();try{localStorage.setItem('cfg1',JSON.stringify(o))}catch(x){}
+ if(DBH&&UID){var full={};Object.keys(CFD).forEach(function(k){full[k]=o[k]!==undefined?o[k]:CFD[k]});full.ts=o.ts;try{await DBP(DBH.doc('data/users/'+UID+'/cfg').set(full),'Einstellungen speichern')}catch(x){}}}
+try{RT.resAlt=JSON.parse(localStorage.getItem('rt1alt')||'{}')||{}}catch(e){RT.resAlt={}}
+function rtStSwitch(v){var o=+CF.hsel===1?1:0;if(o===v)return;var A=RT.resAlt;A[o]=A[o]||{};A[v]=A[v]||{};
+ Object.keys(RT.res).forEach(function(k){if(/^\d{4}-/.test(k)){A[o][k]=RT.res[k];delete RT.res[k]}});Object.keys(A[v]).forEach(function(k){RT.res[k]=A[v][k]});A[v]={};
+ try{localStorage.setItem('rt1alt',JSON.stringify(A))}catch(e){}rtStore();rtCfgSave({hsel:v});RTV.cs=null;rRoutes();setTimeout(function(){rtRun()},200)}
+var _rtCore64=rtCalcCore;rtCalcCore=async function(u,home){var R=await _rtCore64(u,home);if(R[0])R[0].st=rtStName();return R};
+function rtStartBar(){var h2=rtH2(),on=+CF.hsel===1&&h2?1:0;
+ var h='<div class="rtstb"><span class="mu">Start</span><div class="rtsts" role="group" aria-label="Startort"><button type="button" data-rtst="0" aria-pressed="'+!on+'">🏠 Zuhause</button>'+(h2?'<button type="button" data-rtst="1" aria-pressed="'+!!on+'">📍 '+E(CF.home2N||'Zweiter Startort')+'</button>':'')+'</div><button type="button" class="pbtn sm sec" data-rtst2="1">'+(h2?'✎ Zweiter Startort':'＋ Zweiter Startort')+'</button></div>';
+ if(RTV.st2)h+='<div class="card hc rtst2"><p class="mu" style="font-size:.8rem">Ein zweiter Startort, auf den du umschalten kannst, z. B. ein Parkplatz. Er wird nur in deinen Einstellungen gespeichert.</p><div class="rtst2f"><input class="ta" id="rt-s2n" maxlength="30" placeholder="Name, z. B. Mondsee" value="'+E(CF.home2N||'')+'"><input class="ta" id="rt-s2a" placeholder="Adresse oder Ort" value="'+E(CF.home2Adr||'')+'"></div><div class="row2"><button type="button" class="pbtn sm" data-rtst2s="1">Speichern</button>'+(h2?'<button type="button" class="pbtn sm sec" data-rtst2d="1">Entfernen</button>':'')+'<button type="button" class="pbtn sm sec" data-rtst2x="1">Abbrechen</button><span class="rtmsg" id="rt-s2m" role="status"></span></div></div>';
+ return h}
+var _rR64=rRoutes;rRoutes=function(){_rR64();try{var sg=document.querySelector('#rt-b .rtseg');if(sg&&rtHome0()&&!document.querySelector('#rt-b .rtstb'))sg.insertAdjacentHTML('afterend',rtStartBar())}catch(e){}};
+document.addEventListener('click',async function(e){var b=e.target.closest&&e.target.closest('[data-rtst],[data-rtst2],[data-rtst2s],[data-rtst2d],[data-rtst2x]');if(!b)return;e.preventDefault();e.stopPropagation();
+ if(b.hasAttribute('data-rtst')){rtStSwitch(+b.getAttribute('data-rtst'));return}
+ if(b.hasAttribute('data-rtst2')){RTV.st2=!RTV.st2;rRoutes();return}
+ if(b.hasAttribute('data-rtst2x')){RTV.st2=false;rRoutes();return}
+ if(b.hasAttribute('data-rtst2d')){RTV.st2=false;if(+CF.hsel===1)rtStSwitch(0);await rtCfgSave({home2:'',home2Adr:'',home2N:'',hsel:0});rRoutes();return}
+ if(b.hasAttribute('data-rtst2s')){var m=$('rt-s2m'),n=(($('rt-s2n')||{}).value||'').trim()||'Zweiter Startort',q=(($('rt-s2a')||{}).value||'').trim();if(!q){if(m)m.textContent='Bitte Adresse oder Ort eingeben.';return}if(!window.WU_GEO){if(m)m.textContent='Adresssuche nur in der App.';return}if(m)m.textContent='Suche …';
+  try{var g=await WU_GEO(q);if(!g||g.lat==null){if(m)m.textContent='Adresse nicht gefunden.';return}var ch=String(CF.home2)!==g.lat.toFixed(5)+','+g.lon.toFixed(5);await rtCfgSave({home2:g.lat.toFixed(5)+','+g.lon.toFixed(5),home2Adr:q,home2N:n});
+   if(ch&&RT.resAlt[1]){RT.resAlt[1]={};try{localStorage.setItem('rt1alt',JSON.stringify(RT.resAlt))}catch(x){}}RTV.st2=false;rRoutes();if(+CF.hsel===1&&ch)setTimeout(function(){rtRun()},200)}catch(x){if(m)m.textContent='Adresssuche fehlgeschlagen.'}}},true);
+
+/* ---------- Anstiege zusammenlegen ---------- */
+var RTPC={};function rtClPts(c){var k=c.id+'|'+String(c.pl||'').length;return RTPC[k]||(RTPC[k]=rtClLine(c))}
+function rtBoxOf(p){var b=[90,180,-90,-180];p.forEach(function(q){b[0]=Math.min(b[0],q[0]);b[1]=Math.min(b[1],q[1]);b[2]=Math.max(b[2],q[0]);b[3]=Math.max(b[3],q[1])});return b}
+/* Anteil der Punkte von B, die höchstens 70 m neben A liegen */
+function rtCover(A,B){var pa=rtClPts(A),pb=rtClPts(B),n=0;if(!pa.length||!pb.length)return 0;pb.forEach(function(q){for(var i=0;i<pa.length;i++){var p=pa[i];if(Math.abs(p[0]-q[0])<.0009&&Math.abs(p[1]-q[1])<.0013&&rtHav(p,q)<70){n++;break}}});return n/pb.length}
+function rtClPool(){return((RT.lib&&RT.lib.climbs)||[]).concat(RT.pref.mcl||[]).filter(function(c){return!c.mg&&rtClOk(c)})}
+function rtPairs(){var L=rtClPool(),B=L.map(function(c){return rtBoxOf(rtClPts(c))}),keep=RT.pref.ckeep||[],out=[];
+ for(var i=0;i<L.length;i++)for(var j=i+1;j<L.length;j++){var a=B[i],b=B[j];if(a[0]>b[2]+.001||b[0]>a[2]+.001||a[1]>b[3]+.0015||b[1]>a[3]+.0015)continue;
+  var A=L[i],C=L[j],cB=rtCover(A,C),cA=rtCover(C,A);if(Math.max(cA,cB)<.6)continue;out.push({a:A,b:C,cA:cA,cB:cB,kp:keep.indexOf([A.id,C.id].sort().join('|'))>=0})}
+ return out.sort(function(x,y){return Math.max(y.cA,y.cB)-Math.max(x.cA,x.cB)})}
+function rtKeeper(A,B){if(A.own===2&&B.own!==2)return A;if(B.own===2&&A.own!==2)return B;if(Math.abs(A.km-B.km)>.1*Math.max(A.km,B.km))return A.km>B.km?A:B;if(!!A.own!==!!B.own)return A.own?A:B;return(A.n||0)>=(B.n||0)?A:B}
+function rtMerge(K,X){var cf=RT.pref.cf=RT.pref.cf||{};X.mg=K.id;var add=(X.n||0)-(X.nMg||0);if(add>0){K.n=(K.n||0)+add;X.nMg=X.n||0}
+ if(X.own&&X.own!==2&&!K.own)K.own=1;
+ if(Math.abs(K.km-X.km)<=.1*Math.max(K.km,X.km)&&X.t&&(!K.t||X.t<K.t)){K.t=X.t;K.w=X.w}
+ if(!K.nmU&&X.nmU){K.name=X.name;K.nmU=1}else if(!K.nmU&&K.nmS!=='ki'&&K.nmS!=='ziel'&&(X.nmS==='ki'||X.nmS==='ziel')){K.name=X.name;K.nmS=X.nmS}
+ var fx=cf[X.id];if(fx&&fx.f){cf[K.id]=cf[K.id]||{};cf[K.id].f=1}}
+/* automatisch: über 90 % Überlappung (Doppelte und Teilstücke); selbst eingetragene nur auf Rückfrage */
+function rtAutoMerge(){if(!RT.lib||!RT.lib.climbs)return 0;var n=0,P=rtPairs(),done={};
+ P.forEach(function(p){if(done[p.a.id]||done[p.b.id]||p.kp)return;if(Math.max(p.cA,p.cB)<.9)return;var K,X;
+  if(p.cA>=.9&&p.cB>=.9)K=rtKeeper(p.a,p.b);else K=p.cB>=.9?p.a:p.b;X=K===p.a?p.b:p.a;if(X.own===2)return;rtMerge(K,X);done[X.id]=1;n++});
+ /* neue Fahrten zu bereits zusammengelegten Anstiegen nachtragen */
+ var all=(RT.lib.climbs||[]).concat(RT.pref.mcl||[]),by={};all.forEach(function(c){by[c.id]=c});all.forEach(function(X){if(!X.mg)return;var K=by[X.mg];while(K&&K.mg)K=by[K.mg];var add=(X.n||0)-(X.nMg||0);if(K&&add>0){K.n=(K.n||0)+add;X.nMg=X.n;n++}});
+ return n}
+async function rtMergeRun(){try{var n=rtAutoMerge();if(n){delete RT.lib._set;await rtLibSave();rtPrefSave();if(RTV.tab==='anst')rtAnUpd('all')}}catch(e){logErr('Routen','Anstiege zusammenlegen',e)}}
+var _rtClAll64=rtClAll;rtClAll=function(w){return _rtClAll64(w).filter(function(c){return!c.mg})};
+var _rtLib64=rtLibBuild;rtLibBuild=async function(f){var r=await _rtLib64(f);await rtMergeRun();return r};
+var _rtNm64=rtNmRun;rtNmRun=async function(){await _rtNm64();await rtMergeRun()};
+var _rtScan64=rtMapScan;rtMapScan=async function(){await _rtScan64();await rtMergeRun()};
+/* „Aufräumen“: 60–90 % Überlappung */
+function rtPairSvg(A,B){var pa=rtClPts(A),pb=rtClPts(B),bx=rtBoxOf(pa.concat(pb)),W=120,H=80,k=Math.cos(bx[0]*Math.PI/180),sx=(bx[3]-bx[1])*k||1e-4,sy=(bx[2]-bx[0])||1e-4,s=Math.min((W-8)/sx,(H-8)/sy);
+ var pt=function(p){return pp(p).join(' ')},pp=function(L){return L.map(function(q){return(4+(q[1]-bx[1])*k*s).toFixed(1)+','+(H-4-(q[0]-bx[0])*s).toFixed(1)})};
+ return'<svg viewBox="0 0 '+W+' '+H+'" width="'+W+'" height="'+H+'" class="rtpsv" aria-hidden="true"><polyline points="'+pt(pa)+'" fill="none" stroke="#1d6fe0" stroke-width="5" stroke-linecap="round" opacity=".55"/><polyline points="'+pt(pb)+'" fill="none" stroke="#f08c00" stroke-width="2.5" stroke-linecap="round"/></svg>'}
+function rtCleanHtml(){var P=rtPairs().filter(function(p){return!p.kp&&Math.max(p.cA,p.cB)<.9||(!p.kp&&(p.a.own===2||p.b.own===2))});RTV.clN=P.length;
+ if(!P.length)return'<p class="mu">Nichts aufzuräumen: keine Anstiege, die sich teilweise überschneiden.</p>';
+ return P.map(function(p){var A=p.a,B=p.b,ov=Math.round(Math.max(p.cA,p.cB)*100);return'<div class="rtcln">'+rtPairSvg(A,B)+'<div class="rtcln-t"><b style="color:#1d6fe0">'+E(A.name)+'</b><small>'+f1(A.km)+' km · '+A.hm+' Hm</small><b style="color:#f08c00">'+E(B.name)+'</b><small>'+f1(B.km)+' km · '+B.hm+' Hm · '+ov+' % gemeinsam</small>'
+  +'<span class="rtcln-b"><button type="button" class="pbtn sm" data-anmg="'+A.id+'|'+B.id+'">Zusammenlegen</button><button type="button" class="pbtn sm sec" data-ankp="'+A.id+'|'+B.id+'">Beide behalten</button></span></div></div>'}).join('')}
+var _rtAnList64=rtAnList;rtAnList=function(){if(!RTV.anClean)return _rtAnList64();var ls=$('rt-anls'),ct=$('rt-ancnt');if(!ls)return;ls.innerHTML=rtCleanHtml();if(ct)ct.innerHTML='Aufräumen: '+(RTV.clN||0)+' Fälle <button type="button" class="pbtn sm sec" data-ancl="0" style="margin-left:8px">Zurück zur Liste</button>'};
+document.addEventListener('click',async function(e){var b=e.target.closest&&e.target.closest('[data-ancl],[data-anmg],[data-ankp]');if(!b)return;e.preventDefault();e.stopPropagation();
+ if(b.hasAttribute('data-ancl')){RTV.anClean=b.getAttribute('data-ancl')==='1';RTV.anm=0;if(RTV.anClean){rRoutes()}else rtAnList();return}
+ var ids=(b.getAttribute('data-anmg')||b.getAttribute('data-ankp')).split('|'),pool=rtClPool(),A=pool.filter(function(c){return c.id===ids[0]})[0],B=pool.filter(function(c){return c.id===ids[1]})[0];
+ if(b.hasAttribute('data-ankp')){RT.pref.ckeep=(RT.pref.ckeep||[]).concat([ids.slice().sort().join('|')]);rtPrefSave();rtAnList();return}
+ if(A&&B){var K=rtKeeper(A,B);rtMerge(K,K===A?B:A);delete RT.lib._set;await rtLibSave();rtPrefSave();RTAN.list=rtClFiltered();rtAnList();rtAnMap()}},true);
+window.WU_RTMERGE=function(){return rtAutoMerge()};window.WU_RTENC=function(p){return rtEnc(p)};window.WU_RTST={set:function(h,n){CF.home2=h;CF.home2N=n},sw:function(v){rtStSwitch(v)},home:function(){return rtHome()},clean:function(){return rtCleanHtml()}};window.WU_RTPAIRS=function(){return rtPairs().map(function(p){return[p.a.id,p.b.id,Math.round(p.cA*100),Math.round(p.cB*100)]})};
 /* Kontext für den Coach */
 function coCtx(){var t=tod(),X=window.ACT||[],n=S?S.ct.length:0,ph=phaseOf(t),bw=bodyAt(t),kg=bw?bw.kg:W;
  var ak=X.filter(function(a){return a.day>=addD(t,-21)}).map(function(a){var p=PM[a.day],q=LOG[a.id]||{};return{datum:a.day,name:a.name,sport:sn(a.sp),minuten:Math.round(a.sec/60),km:a.km>0?Math.round(a.km):null,hm:a.hm>0?Math.round(a.hm):null,tss:Math.round(a.tss),np:a.np?Math.round(a.np):null,puls:a.ah||null,if:a.iff?Math.round(a.iff*100)/100:null,entkopplung_prozent:a.dc==null?null:a.dc,geplant:p?p[2]:null,rpe:q.rpe||null,notiz:q.note||null,kraempfe:q.kr&&q.kr.s?krSum(q.kr):null}});

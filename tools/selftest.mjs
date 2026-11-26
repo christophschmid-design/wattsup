@@ -200,6 +200,21 @@ async function runtimeCheck() {
   MOCK.rfail = 2;
   const rq = await pg.evaluate(async () => { const d = '2026-11-21'; await WU_RTCALC(d); const q = WU_RTQ(); return { n: WU_RT.res[d].R.length, f: q.f, wr: WU_RT.res[d].R[0].wr || '' }; });
   if (rq.n < 3 || rq.f || rq.wr) fail('Routenplaner-Wiederholung: ' + JSON.stringify(rq)); else console.log('✓ Routenplaner-Wiederholung: ' + JSON.stringify(rq));
+  /* v64: zweiter Startort und Zusammenlegen */
+  const v64 = await pg.evaluate(async () => {
+    const o = {}, h0 = WU_RTST.home().join(','), d = Object.keys(WU_RT.res).filter((k) => /^\d{4}-/.test(k))[0];
+    WU_RTST.set('47.85500,13.38000', 'Mondsee'); WU_RTST.sw(1); await new Promise((r) => setTimeout(r, 300));
+    o.h2 = WU_RTST.home().join(',') === '47.855,13.38'; o.bar = document.querySelectorAll('.rtsts button').length; o.stash = d ? !WU_RT.res[d] || WU_RT.res[d].R[0].st === 'Mondsee' : true;
+    WU_RTST.sw(0); await new Promise((r) => setTimeout(r, 300)); o.back = WU_RTST.home().join(',') === h0;
+    const line = (a0, a1) => { const p = []; for (let la = a0; la <= a1 + 1e-9; la += 0.00045) p.push([la, 13.25, 500 + (la - a0) * 111320 * 0.06]); return p; };
+    const mk = (id, a0, a1) => { const p = line(a0, a1); return { id, a: [p[0][0], p[0][1]], b: [p[p.length - 1][0], p[p.length - 1][1]], via: [], km: (a1 - a0) * 111.32, hm: Math.round((a1 - a0) * 111320 * 0.06), g: 0.06, own: 1, n: 2, name: id, pl: WU_RTENC(p) }; };
+    WU_RT.lib.climbs.push(mk('tA', 47.70, 47.73), mk('tB', 47.705, 47.725), mk('tC', 47.705, 47.735));
+    WU_RTMERGE(); const by = (i) => WU_RT.lib.climbs.filter((c) => c.id === i)[0];
+    o.part = /^t[AC]$/.test(by('tB').mg || '') && by(by('tB').mg).n === 4; o.ask = /tA\|tC|tC\|tA/.test(WU_RTST.clean()); o.notC = !by('tC').mg; o.dbg = JSON.stringify([by('tB').mg, by('tA').n, by('tC').n, WU_RTPAIRS().filter((x) => /^t/.test(x[0]) && /^t/.test(x[1]))]);
+    WU_RT.lib.climbs = WU_RT.lib.climbs.filter((c) => !/^t[ABC]$/.test(c.id));
+    return o;
+  });
+  if (!v64.h2 || v64.bar !== 2 || !v64.back || !v64.part || !v64.ask || !v64.notC || !v64.stash) fail('Startort/Zusammenlegen: ' + JSON.stringify(v64)); else console.log('✓ Startort/Zusammenlegen: ' + JSON.stringify(v64));
   /* v62: Anstiege aus der Karte */
   const mp = await pg.evaluate(async () => {
     const c = []; for (let i = 0; i <= 120; i++) { const d = i * 50; c.push([47.7 + d / 111320, 13.2, d < 1000 ? 500 : d < 4000 ? 500 + (d - 1000) * 0.06 : 680]); }
