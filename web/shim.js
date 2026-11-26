@@ -88,6 +88,8 @@
     try { return await http(SV + '/api/v3' + path, { headers: { Authorization: 'Bearer ' + tk } }); }
     catch (e) {
       if (e.code !== 'needs_reauth') throw e;
+      /* Segmentsuche ist bei Strava seit 1.9.2026 gesperrt: nicht als Verbindungsproblem prüfen (spart Abfragen) */
+      if (/^\/segments\/explore/.test(path)) throw fail('tool_error', 'Strava lehnt diesen Abruf ab (/segments/explore): ' + e.message, { status: 401 });
       /* 401 bei einem einzelnen Endpunkt heißt oft nur „fehlende Berechtigung für diesen Aufruf“.
          Die Verbindung nur löschen, wenn auch das eigene Profil abgelehnt wird. */
       var ok = false; try { await http(SV + '/api/v3/athlete', { headers: { Authorization: 'Bearer ' + tk } }); ok = true; } catch (x) { if (x.code !== 'needs_reauth') ok = true; }

@@ -73,6 +73,7 @@ function streams() {
   }
   const r = {}; for (const k in o) r[k] = { data: o[k] }; return r;
 }
+const MOCK = { rfail: 0, rn: 0, ex401: false, exn: 0 };
 async function runtimeCheck() {
   const A = acts(), b = await chromium.launch();
   const pg = await b.newPage({ viewport: { width: 390, height: 844 } });
@@ -87,13 +88,15 @@ async function runtimeCheck() {
     if (u.includes('/api/v3/athlete')) return J({ id: 1, firstname: 'Test', weight: 78, ftp: 250 });
     if (u.includes('/streams')) return J(streams());
     if (u.includes('open-meteo')) { const days = [...Array(10)].map((_, k) => new Date(Date.UTC(2026, 10, 16 + k)).toISOString().slice(0, 10)); return J({ daily: { time: days, weather_code: days.map(() => 61), temperature_2m_max: days.map(() => 8), temperature_2m_min: days.map(() => 1), precipitation_probability_max: days.map(() => 70), snowfall_sum: days.map(() => 0), rain_sum: days.map(() => 3), wind_gusts_10m_max: days.map(() => 30) } }); }
-    if (u.includes('/route?')) {
+    if (u.includes('/route?') && MOCK.rfail > 0) { MOCK.rfail--; MOCK.rn++; return route.fulfill({ status: 502, body: 'busy' }); }
+    if (u.includes('/route?')) { MOCK.rn++;
       const ll = decodeURIComponent((u.match(/lonlats=([^&]+)/) || [0, ''])[1]).split('|').map((x) => x.split(',').map(Number)), c = [], msg = [['Longitude', 'Latitude', 'Elevation', 'Distance', 'CostPerKm', 'ElevCost', 'TurnCost', 'NodeCost', 'InitialCost', 'WayTags', 'NodeTags', 'Time', 'Energy']];
       let tot = 0;
       for (let i = 1; i < ll.length; i++) { const [a1, b1] = ll[i - 1], [a2, b2] = ll[i], dk = Math.hypot((a2 - a1) * 74500, (b2 - b1) * 111320), n = Math.max(2, Math.round(dk / 80)); for (let k = 0; k < n; k++) { const f = k / n, lo = a1 + (a2 - a1) * f, la = b1 + (b2 - b1) * f; c.push([lo, la, 450 + 250 * Math.max(0, Math.sin(la * 900))]); if (k % 10 === 0) msg.push([lo, la, 0, dk / n * 10, 0, 0, 0, 0, 0, i === 2 ? 'highway=primary surface=asphalt' : 'highway=secondary surface=asphalt', k % 30 === 0 ? 'highway=traffic_signals' : '', 0, 0]); } tot += dk; }
       return J({ type: 'FeatureCollection', features: [{ type: 'Feature', properties: { 'track-length': String(Math.round(tot * 1.25)), 'filtered ascend': '320', messages: msg }, geometry: { type: 'LineString', coordinates: c } }] });
     }
     if (u.includes('/geo?')) return J({ lat: 47.81, lon: 13.04, name: 'Teststraße 1, Salzburg' });
+    if (u.includes('/segments/explore') && MOCK.ex401) { MOCK.exn++; return route.fulfill({ status: 401, contentType: 'application/json', body: JSON.stringify({ message: 'Authorization Error' }) }); }
     if (u.includes('/segments/explore')) return J({ segments: [{ id: 1, name: 'Testanstieg', climb_category: 2, avg_grade: 7, distance: 3200, elev_difference: 220, start_latlng: [47.83, 13.1], end_latlng: [47.84, 13.12], points: '' }] });
     if (u.includes('calendar/v3')) return J(m === 'GET' ? { summary: 'Training', items: [] } : { id: 'x' });
     if (u.includes('drive/v3/files') && m === 'GET' && !u.includes('alt=media')) return J({ files: [] });
@@ -191,6 +194,14 @@ async function runtimeCheck() {
   });
   if (/false/.test(db.pop || 'false') || db.filt === 'fehlt' || !/climb↩/.test(db.fint || '') || !db.anst || !db.ren || !db.del || !db.ftp || db.ftp === 'fehlt' || !db.cmp || !db.map || !db.sel || !db.own || !db.free || !db.verl || !db.lern) fail('Routen-Dashboard: ' + JSON.stringify(db)); else console.log('✓ Routen-Dashboard: ' + JSON.stringify(db));
   await look('Routen-Dashboard');
+  /* v61: Segmentsuche gesperrt (401) → einmal fragen, dann ruhen; Routenplaner lehnt kurz ab → wiederholen */
+  MOCK.ex401 = true; MOCK.exn = 0;
+  const ex = await pg.evaluate(async () => { WU_RT.lib.exTs = 0; WU_RT.lib.exDone = []; WU_RT.lib.exWait = 0; WU_RT.lib.next = Date.now() + 1e7; await WU_RTLIB(); const a = { off: !!WU_RT.lib.exOff, err: WU_RT.lib.exErr || '' }; WU_RT.lib.exTs = 0; await WU_RTLIB(); return a; });
+  MOCK.ex401 = false;
+  if (!ex.off || ex.err || MOCK.exn !== 1) fail('Segmentsuche 401: ' + JSON.stringify(ex) + ' Abrufe ' + MOCK.exn); else console.log('✓ Segmentsuche 401: eine Abfrage, danach Ruhe');
+  MOCK.rfail = 2;
+  const rq = await pg.evaluate(async () => { const d = '2026-11-21'; await WU_RTCALC(d); const q = WU_RTQ(); return { n: WU_RT.res[d].R.length, f: q.f, wr: WU_RT.res[d].R[0].wr || '' }; });
+  if (rq.n < 3 || rq.f || rq.wr) fail('Routenplaner-Wiederholung: ' + JSON.stringify(rq)); else console.log('✓ Routenplaner-Wiederholung: ' + JSON.stringify(rq));
   await open('p:18.11.', 'Routen Intervalle');
   await open('p:21.11.', 'Routen Grundlage');
   await open('rb1', 'Rennblatt Mondsee');
