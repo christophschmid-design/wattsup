@@ -157,7 +157,7 @@ async function runtimeCheck() {
   await pg.evaluate(() => { location.hash = '#routen'; }); await pg.waitForTimeout(1200);
   const db = await pg.evaluate(async () => {
     const o = {};
-    document.querySelector('[data-rtv="frei"]').click(); await new Promise((r) => setTimeout(r, 300));
+    document.querySelector('[data-rtv="plan"]').click(); await new Promise((r) => setTimeout(r, 150)); document.querySelector('[data-rtnew]').click(); await new Promise((r) => setTimeout(r, 300));
     document.getElementById('rtf-go').click(); for (let i = 0; i < 80 && !Object.keys(WU_RT.res).some((k) => /^f:/.test(k)); i++) await new Promise((r) => setTimeout(r, 250));
     await new Promise((r) => setTimeout(r, 1200));
     const fk = Object.keys(WU_RT.res).filter((k) => /^f:/.test(k))[0]; o.free = fk ? WU_RT.res[fk].R.length : 0;
@@ -165,10 +165,10 @@ async function runtimeCheck() {
     const b = document.querySelector('[data-rts="1"]'); if (b) b.click(); await new Promise((r) => setTimeout(r, 800));
     o.sel = !!document.querySelector('.rtth.on[data-rts="1"]');
     if (fk) { await WU_RTEDIT(fk, [[47.85, 13.1], [47.83, 13.15]], null); o.own = !!(WU_RT.res[fk].R[3] && WU_RT.res[fk].R[3].ed); }
-    document.getElementById('rtf-ty').value = 'ftp'; document.getElementById('rtf-go').click(); const n0 = Object.keys(WU_RT.res).filter((k) => /^f:/.test(k)).length;
+    document.querySelector('[data-rtnew]').click(); await new Promise((r) => setTimeout(r, 200));  document.getElementById('rtf-ty').value = 'ftp'; document.getElementById('rtf-go').click(); const n0 = Object.keys(WU_RT.res).filter((k) => /^f:/.test(k)).length;
     for (let i = 0; i < 80 && Object.keys(WU_RT.res).filter((k) => /^f:/.test(k)).length <= n0; i++) await new Promise((r) => setTimeout(r, 250));
     const ft = Object.keys(WU_RT.res).filter((k) => /^f:/.test(k) && WU_RT.res[k].title === 'FTP-Test')[0]; o.ftp = ft ? WU_RT.res[ft].R.length + ':' + WU_RT.res[ft].R.map((x) => x.k).join(',') : 'fehlt ' + WU_RT.err + ' ' + JSON.stringify(Object.keys(WU_RT.res).map((k) => WU_RT.res[k].title));
-    document.querySelector('[data-rtv="frei"]').click(); await new Promise((r) => setTimeout(r, 300));
+    document.querySelector('[data-rtv="plan"]').click(); await new Promise((r) => setTimeout(r, 150)); document.querySelector('[data-rtnew]').click(); await new Promise((r) => setTimeout(r, 300));
     const ctx = () => { const c = document.querySelector('[data-rtfk].on') || document.querySelector('[data-rtfk]'); if (c) c.dispatchEvent(new MouseEvent('contextmenu', { bubbles: true, cancelable: true })); }; ctx(); await new Promise((r) => setTimeout(r, 200)); const rb = document.querySelector('[data-rtren]'); if (rb) { rb.click(); await new Promise((r) => setTimeout(r, 200)); document.getElementById('rt-ren').value = 'Testname'; document.querySelector('[data-rtrens]').click(); await new Promise((r) => setTimeout(r, 200)); }
     o.ren = Object.keys(WU_RT.res).some((k) => WU_RT.res[k].title === 'Testname');
     const n1 = Object.keys(WU_RT.res).length; ctx(); await new Promise((r) => setTimeout(r, 200)); const db1 = document.querySelector('[data-rtdel]'); if (db1) { db1.click(); await new Promise((r) => setTimeout(r, 200)); document.querySelector('[data-rtdel]').click(); await new Promise((r) => setTimeout(r, 200)); }
@@ -177,7 +177,7 @@ async function runtimeCheck() {
     document.querySelector('[data-rtv="verl"]').click(); await new Promise((r) => setTimeout(r, 500)); o.verl = !!document.querySelector('.rtrate');
     const t = document.querySelector('[data-rtr$="|1"]'); if (t) { t.click(); await new Promise((r) => setTimeout(r, 400)); }
     const w = document.querySelector('[data-rtw$="|huegel"]'); if (w) { w.click(); await new Promise((r) => setTimeout(r, 400)); }
-    document.querySelector('[data-rtv="frei"]').click(); await new Promise((r) => setTimeout(r, 300));
+    document.querySelector('[data-rtv="plan"]').click(); await new Promise((r) => setTimeout(r, 150)); document.querySelector('[data-rtnew]').click(); await new Promise((r) => setTimeout(r, 300));
     document.getElementById('rtf-mn').value = '120'; document.getElementById('rtf-ty').value = 'int'; document.getElementById('rtf-reps').value = '3'; document.getElementById('rtf-on').value = '8'; document.getElementById('rtf-pw').value = '95';
     const n2 = Object.keys(WU_RT.res).length; document.getElementById('rtf-go').click(); for (let i = 0; i < 120 && Object.keys(WU_RT.res).length <= n2; i++) await new Promise((r) => setTimeout(r, 250));
     const ik = Object.keys(WU_RT.res).filter((k) => /^Intervalle/.test(WU_RT.res[k].title || ''))[0]; o.fint = ik ? WU_RT.res[ik].R.map((x) => x.k + (x.iv && x.iv.some((v) => v.turn) ? '↩' : '') + ':' + x.s.ges + '/' + x.est).join(',') : 'fehlt';
@@ -192,19 +192,19 @@ async function runtimeCheck() {
     o.filt = ((document.getElementById('rt-ancnt') || {}).textContent || '').match(/\d+ von \d+ Anstiegen/) ? document.getElementById('rt-ancnt').textContent : 'fehlt';
     o.chip = !!document.querySelector('[data-anfx="g"]');
     if (so) { so.value = '0'; so.dispatchEvent(new Event('input', { bubbles: true })); await new Promise((r) => setTimeout(r, 300)); }
-    document.querySelector('[data-rtv="lern"]').click(); await new Promise((r) => setTimeout(r, 400)); o.lern = !!document.getElementById('rt-lmap') && !!document.querySelector('.rtpw') && /Gemiedene Stellen/.test(document.getElementById('rt-b').textContent);
+    document.querySelector('[data-rtv="verl"]').click(); await new Promise((r) => setTimeout(r, 400)); o.lern = !!document.getElementById('rt-lmap') && !!document.querySelector('.rtpw') && /Gemiedene Stellen/.test(document.getElementById('rt-b').textContent);
     return o;
   });
   if (/false/.test(db.pop || 'false') || db.filt === 'fehlt' || !/climb↩/.test(db.fint || '') || !db.anst || !db.det || !db.chip || !db.ren || !db.del || !db.ftp || db.ftp === 'fehlt' || !db.cmp || !db.map || !db.sel || !db.own || !db.free || !db.verl || !db.lern) fail('Routen-Dashboard: ' + JSON.stringify(db)); else console.log('✓ Routen-Dashboard: ' + JSON.stringify(db));
   await look('Routen-Dashboard');
-  if (process.env.ANSHOT) { for (const [w, h, n] of [[1280, 800, 'tab'], [390, 844, 'tel']]) { await pg.setViewportSize({ width: w, height: h }); await pg.evaluate(async () => { location.hash = '#routen'; await new Promise((r) => setTimeout(r, 300)); WU_RTV.tab = 'anst'; WU_RTV.cs = null; WU_RTR(); await new Promise((r) => setTimeout(r, 1500)); const r0 = document.querySelector('.rtan-r'); if (r0) r0.click(); await new Promise((r) => setTimeout(r, 800)); }); await pg.screenshot({ path: process.env.ANSHOT + '/an-' + n + '.png' }); } await pg.setViewportSize({ width: 390, height: 844 }); }
+  if (process.env.ANSHOT) { for (const [w, h, n] of [[1280, 800, 'tab'], [390, 844, 'tel']]) { await pg.setViewportSize({ width: w, height: h }); await pg.evaluate(async () => { location.hash = '#routen'; await new Promise((r) => setTimeout(r, 300)); WU_RTV.tab = 'anst'; WU_RTV.cs = null; WU_RTR(); await new Promise((r) => setTimeout(r, 1500)); const r0 = document.querySelector('.rtan-r'); if (r0) r0.click(); await new Promise((r) => setTimeout(r, 800)); }); await pg.screenshot({ path: process.env.ANSHOT + '/an-' + n + '.png' }); await pg.evaluate(async () => { WU_RTV.tab = 'plan'; WU_RTV.pm = 'd'; WU_RTR(); await new Promise((r) => setTimeout(r, 1500)); }); await pg.screenshot({ path: process.env.ANSHOT + '/pl-' + n + '.png' }); await pg.evaluate(async () => { location.hash = '#plan'; await new Promise((r) => setTimeout(r, 800)); }); await pg.screenshot({ path: process.env.ANSHOT + '/wk-' + n + '.png' }); await pg.evaluate(async () => { location.hash = '#routen'; await new Promise((r) => setTimeout(r, 500)); }); } await pg.setViewportSize({ width: 390, height: 844 }); }
   MOCK.rfail = 2;
   const rq = await pg.evaluate(async () => { const d = '2026-11-21'; await WU_RTCALC(d); const q = WU_RTQ(); return { n: WU_RT.res[d].R.length, f: q.f, wr: WU_RT.res[d].R[0].wr || '' }; });
   if (rq.n < 3 || rq.f || rq.wr) fail('Routenplaner-Wiederholung: ' + JSON.stringify(rq)); else console.log('✓ Routenplaner-Wiederholung: ' + JSON.stringify(rq));
   /* v64: zweiter Startort und Zusammenlegen */
   const v64 = await pg.evaluate(async () => {
     const o = {}, h0 = WU_RTST.home().join(','), d = Object.keys(WU_RT.res).filter((k) => /^\d{4}-/.test(k))[0];
-    WU_RTST.set('47.85500,13.38000', 'Mondsee'); WU_RTST.sw(1); await new Promise((r) => setTimeout(r, 300));
+    WU_RTV.tab = 'plan'; WU_RTST.set('47.85500,13.38000', 'Mondsee'); WU_RTST.sw(1); await new Promise((r) => setTimeout(r, 300));
     o.h2 = WU_RTST.home().join(',') === '47.855,13.38'; o.bar = document.querySelectorAll('.rtsts button').length; o.stash = d ? !WU_RT.res[d] || WU_RT.res[d].R[0].st === 'Mondsee' : true;
     WU_RTST.sw(0); await new Promise((r) => setTimeout(r, 300)); o.back = WU_RTST.home().join(',') === h0;
     const line = (a0, a1) => { const p = []; for (let la = a0; la <= a1 + 1e-9; la += 0.00045) p.push([la, 13.25, 500 + (la - a0) * 111320 * 0.06]); return p; };
