@@ -283,6 +283,8 @@
     if (JSON.stringify(mg) !== before) { try { window.dispatchEvent(new Event('wu-db-pulled')); } catch (e) { } try { inbPull(); } catch (e) { } }
     return L;
   }
+  /* v54: Abgleich auf Anfrage, z. B. bevor das Morgengefühl gefragt wird */
+  window.WU_PULL = function () { return pull(); };
   var dbAhead = false;
   function merge(a, b) { var o = {}; Object.keys(a).forEach(function (k) { o[k] = a[k]; }); Object.keys(b).forEach(function (k) { if (!o[k] || (b[k].ts || 0) > (o[k].ts || 0)) o[k] = b[k]; }); return o; }
   async function pull() {

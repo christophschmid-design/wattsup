@@ -1667,7 +1667,11 @@ IN['mood']=function(){var t=iso(new Date()),m=MOOD[t]||{};MDS={g:m.g,s:m.s,b:m.b
 async function moodSave(){var t=iso(new Date()),ms=$('md-ms'),b=$('md-sv');if(!MDS.g)return;b.disabled=true;var rec={day:t,g:MDS.g,s:MDS.s||null,b:MDS.b||null,note:($('md-n').value||'').trim(),ts:Date.now()};MOOD[t]=rec;try{localStorage.setItem('mood1',JSON.stringify(MOOD))}catch(e){}
 var ok='lokal';if(DBH&&UID){try{await DBP(DBH.doc('data/users/'+UID+'/mood_'+t).set(rec),'Morgengefühl speichern');ok='db'}catch(e){}}
 ms.textContent=ok==='db'?'Gespeichert.':'Nur auf diesem Gerät gespeichert.';rall();setTimeout(function(){if(cur==='mood')close()},700)}
-function moodAuto(){if(!moodDue())return;var t=iso(new Date());try{if(localStorage.getItem('mdsk')===t||sessionStorage.getItem('mdask')===t)return;sessionStorage.setItem('mdask',t)}catch(e){}if(!$('sh').hidden)return;open('mood')}
+var MDCHK=false;async function moodAuto(){if(!moodDue()||MDCHK)return;var t=iso(new Date());try{if(localStorage.getItem('mdsk')===t||sessionStorage.getItem('mdask')===t)return}catch(e){}
+ /* v54: erst den Stand der anderen Geräte holen, sonst fragt das Tablet, obwohl am Handy schon eingetragen */
+ MDCHK=true;try{if(window.WU_PULL)await Promise.race([window.WU_PULL(),new Promise(function(r){setTimeout(r,8000)})]);if(DBH&&UID&&!MOOD[t]){var sn=await DBH.doc('data/users/'+UID+'/mood_'+t).get(),v=sn&&sn.exists?sn.data():null;if(v&&v.day){MOOD[t]=v;try{localStorage.setItem('mood1',JSON.stringify(MOOD))}catch(e){}if(window.__S)H.hook(window.__S)}}}catch(e){}finally{MDCHK=false}
+ if(!moodDue())return;try{if(sessionStorage.getItem('mdask')===t)return;sessionStorage.setItem('mdask',t)}catch(e){}if(!$('sh').hidden)return;open('mood')}
+window.addEventListener('wu-db-pulled',function(){setTimeout(function(){try{if(cur==='mood'&&MOOD[iso(new Date())]&&!(MDS&&MDS.g&&MDS.g!==MOOD[iso(new Date())].g))close()}catch(e){}},1500)});
 
 /* Zwift-Dateien */
 function isZw(t){return/Zwift|VO2max|SIT|30[/]30|GLA|[45]×4|Intervall/.test(t||'')&&!/Lauf|Rennrad|Wanderung|Skitour|Ausfahrt/.test(t||'')}
