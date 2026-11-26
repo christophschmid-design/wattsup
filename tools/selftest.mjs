@@ -164,14 +164,19 @@ async function runtimeCheck() {
     document.getElementById('rtf-ty').value = 'ftp'; document.getElementById('rtf-go').click(); const n0 = Object.keys(WU_RT.res).filter((k) => /^f:/.test(k)).length;
     for (let i = 0; i < 80 && Object.keys(WU_RT.res).filter((k) => /^f:/.test(k)).length <= n0; i++) await new Promise((r) => setTimeout(r, 250));
     const ft = Object.keys(WU_RT.res).filter((k) => /^f:/.test(k) && WU_RT.res[k].title === 'FTP-Test')[0]; o.ftp = ft ? WU_RT.res[ft].R.length + ':' + WU_RT.res[ft].R.map((x) => x.k).join(',') : 'fehlt ' + WU_RT.err + ' ' + JSON.stringify(Object.keys(WU_RT.res).map((k) => WU_RT.res[k].title));
+    document.querySelector('[data-rtv="frei"]').click(); await new Promise((r) => setTimeout(r, 300));
+    const rb = document.querySelector('[data-rtren]'); if (rb) { rb.click(); await new Promise((r) => setTimeout(r, 200)); document.getElementById('rt-ren').value = 'Testname'; document.querySelector('[data-rtrens]').click(); await new Promise((r) => setTimeout(r, 200)); }
+    o.ren = Object.keys(WU_RT.res).some((k) => WU_RT.res[k].title === 'Testname');
+    const n1 = Object.keys(WU_RT.res).length, db1 = document.querySelector('[data-rtdel]'); if (db1) { db1.click(); await new Promise((r) => setTimeout(r, 200)); document.querySelector('[data-rtdel]').click(); await new Promise((r) => setTimeout(r, 200)); }
+    o.del = Object.keys(WU_RT.res).length === n1 - 1;
     await WU_RTHIST(); o.hist = Object.keys(WU_RT.hist).length;
     document.querySelector('[data-rtv="verl"]').click(); await new Promise((r) => setTimeout(r, 500)); o.verl = !!document.querySelector('.rtrate');
     const t = document.querySelector('[data-rtr$="|1"]'); if (t) { t.click(); await new Promise((r) => setTimeout(r, 400)); }
     const w = document.querySelector('[data-rtw$="|huegel"]'); if (w) { w.click(); await new Promise((r) => setTimeout(r, 400)); }
-    document.querySelector('[data-rtv="lern"]').click(); await new Promise((r) => setTimeout(r, 400)); o.lern = !!document.getElementById('rt-lmap');
+    document.querySelector('[data-rtv="lern"]').click(); await new Promise((r) => setTimeout(r, 400)); o.lern = !!document.getElementById('rt-lmap') && !!document.querySelector('.rtpw') && /Gemiedene Stellen/.test(document.getElementById('rt-b').textContent);
     return o;
   });
-  if (!db.ftp || db.ftp === 'fehlt' || !db.cmp || !db.map || !db.sel || !db.own || !db.free || !db.verl || !db.lern) fail('Routen-Dashboard: ' + JSON.stringify(db)); else console.log('✓ Routen-Dashboard: ' + JSON.stringify(db));
+  if (!db.ren || !db.del || !db.ftp || db.ftp === 'fehlt' || !db.cmp || !db.map || !db.sel || !db.own || !db.free || !db.verl || !db.lern) fail('Routen-Dashboard: ' + JSON.stringify(db)); else console.log('✓ Routen-Dashboard: ' + JSON.stringify(db));
   await look('Routen-Dashboard');
   await open('p:18.11.', 'Routen Intervalle');
   await open('p:21.11.', 'Routen Grundlage');

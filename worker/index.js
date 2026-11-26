@@ -223,6 +223,20 @@ export default {
       }
       return new Response(r.body, { headers: Object.assign({ 'Content-Type': 'application/json', 'Cache-Control': 'max-age=86400' }, cors) });
     }
+    if (url.pathname === '/rgeo') {
+      const la = Number(url.searchParams.get('lat')), lo = Number(url.searchParams.get('lon'));
+      if (!isFinite(la) || !isFinite(lo)) return new Response('bad', { status: 400, headers: cors });
+      const u = 'https://nominatim.openstreetmap.org/reverse?format=json&zoom=16&lat=' + la.toFixed(4) + '&lon=' + lo.toFixed(4), ck = new Request(u), cache = caches.default;
+      let r = await cache.match(ck);
+      if (!r) {
+        const up = await fetch(u, { headers: { 'User-Agent': 'WattsUp-Trainingsapp (privat)', 'Accept-Language': 'de' } });
+        const j = up.ok ? await up.json() : {}, a = j.address || {};
+        const nm = [a.road || a.path || a.cycleway || a.hamlet || '', a.village || a.suburb || a.town || a.city_district || a.city || ''].filter(Boolean).join(', ');
+        r = new Response(JSON.stringify({ name: nm || j.display_name || '' }), { headers: { 'Content-Type': 'application/json', 'Cache-Control': 'max-age=2592000' } });
+        ctx.waitUntil(cache.put(ck, r.clone()));
+      }
+      return new Response(r.body, { headers: Object.assign({ 'Content-Type': 'application/json' }, cors) });
+    }
     if (url.pathname === '/geo') {
       const q = (url.searchParams.get('q') || '').slice(0, 160);
       if (q.length < 3) return new Response('bad', { status: 400, headers: cors });

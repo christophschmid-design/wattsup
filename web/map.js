@@ -159,15 +159,16 @@
     show0(el, p, L, opt || {});
   };
   /* v53: Punkte-Karte (z. B. gelernte Vorlieben: gemieden rot, bevorzugt grün) */
-  window.WU_MAPPTS = async function (el, pts, h) {
+  window.WU_MAPPTS = async function (el, pts, h, fit) {
     if (!el) return; addCss();
     var L; try { L = await loadLeaflet(); } catch (e) { el.innerHTML = '<p class="mu">Karte nicht verfügbar.</p>'; return; }
     el.innerHTML = '<div class="wm"><div class="wm-box" style="height:' + (h || 260) + 'px"></div></div>';
     var box = el.querySelector('.wm-box'), map = L.map(box, { scrollWheelZoom: false }), d = LAYERS[pref('lay', 'str')] || LAYERS.str;
     L.tileLayer(d.u, d.o).addTo(map);
     var ren = L.canvas({ padding: .5 }), ll = [];
-    pts.forEach(function (q) { ll.push([q[0], q[1]]); L.circleMarker([q[0], q[1]], { renderer: ren, radius: 4, weight: 0, fillColor: q[2], fillOpacity: .75, interactive: false }).addTo(map); });
-    if (ll.length) map.fitBounds(L.latLngBounds(ll), { padding: [16, 16] }); else map.setView([47.8, 13.04], 10);
+    pts.forEach(function (q) { ll.push([q[0], q[1]]); L.circleMarker([q[0], q[1]], { renderer: ren, radius: q[3] || 4, weight: q[3] ? 2 : 0, color: '#fff', fillColor: q[2], fillOpacity: q[4] != null ? q[4] : .75, interactive: false }).addTo(map); });
+    var fb = fit && fit.length ? fit : ll;
+    if (fb.length) map.fitBounds(L.latLngBounds(fb), { padding: [24, 24], maxZoom: 15 }); else map.setView([47.8, 13.04], 10);
     setTimeout(function () { map.invalidateSize(); }, 200);
   };
   /* Straßenart und Untergrund: Klassen je Punkt */
