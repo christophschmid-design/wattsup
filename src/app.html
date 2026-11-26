@@ -4286,6 +4286,25 @@ document.addEventListener('click',function(e){var b=e.target.closest&&e.target.c
  new MutationObserver(function(){if(!T)T=setTimeout(run,150)}).observe(document.documentElement,{childList:true,subtree:true});
  document.addEventListener('click',function(e){var b=e.target.closest&&e.target.closest('.cxb');if(b){var p=b.previousElementSibling;if(p&&p.classList.contains('cx')){var o=p.classList.toggle('open');b.textContent=o?'weniger':'mehr';b.setAttribute('aria-expanded',o)}return}
   var c=e.target.closest&&e.target.closest('[data-cfst]');if(c){e.preventDefault();RTV.tab='plan';RTV.st2=true;try{close()}catch(x){}go('routen')}},true)})();
+/* v66 (A5, C3): wichtige Meldungen landen in der Glocke, Hinweise unten bleiben kurze Bestätigungen; einheitliche Fehlerkarten mit „Nochmal versuchen“ */
+function wuNote(id,ic,t,b,a){if(window.WU_INBOX)try{WU_INBOX.add({id:id,ic:ic,t:t,b:b,a:a||[['Anschauen','o-src'],['Später','ok']]})}catch(e){}}
+function wuNoteOff(pre){if(window.WU_INBOX)try{WU_INBOX.drop(pre,'Erledigt')}catch(e){}}
+/* Datenquellen: liefert eine Quelle seit über einer Stunde nur Fehler, kommt ein Eintrag in die Glocke; geht sie wieder, verschwindet er */
+function wuSrcWatch(){var t=Date.now();['strava','wetter','kalender','claude','db'].forEach(function(k){var s=SRC[k];if(!s)return;
+ if(s.st==='err'&&s.err&&(!s.ok||t-s.ok>3600000)&&t-(s.err0||(s.err0=s.err))>3600000)wuNote('src-'+k,'⚠️',(s.n||k)+' liefert seit über einer Stunde keine Daten','Letzter Fehler: '+((ELOG.filter(function(x){return x.src===s.n})[0]||{}).msg||s.code||'unbekannt')+'. Details und „Neu laden“ unter Datenquellen.');
+ else if(s.st==='ok'){s.err0=0;wuNoteOff('src-'+k)}})}
+document.addEventListener('srcupd',function(){try{wuSrcWatch()}catch(e){}});setInterval(function(){try{wuSrcWatch()}catch(e){}},600000);
+window.WU_SRCTEST=function(){var o=SRC.wetter;SRC.wetter={n:'Wetter',st:'err',err:Date.now()-7.2e6,err0:Date.now()-7.2e6,ok:0,code:'x'};wuSrcWatch();var n=window.WU_INBOX?WU_INBOX.count():-1;SRC.wetter={n:'Wetter',st:'ok',ok:Date.now()};wuSrcWatch();var m=window.WU_INBOX?WU_INBOX.count():-1;SRC.wetter=o;return[n,m]};
+/* Routen: fehlgeschlagene Berechnung für geplante Einheiten in die Glocke */
+var _inbfn66=window.WU_INBFN;window.WU_INBFN=function(id,k){if(k==='rtgo'){RTV.tab='plan';RTV.pm='d';setTimeout(function(){go('routen')},50);return true}return _inbfn66?_inbfn66(id,k):true};
+var _rtRun66=rtRun;rtRun=async function(){await _rtRun66();try{if(RT.err&&!RT.busy)wuNote('rt-err','🗺️','Routen konnten nicht berechnet werden',String(RT.err).slice(0,200),[['Anschauen','fn-rtgo'],['Später','ok']]);else if(!RT.err)wuNoteOff('rt-err')}catch(e){}};
+/* C3: Bereiche, die wegen eines Fehlers nie fertig laden, bekommen nach 20 s eine Fehlerkarte mit „Nochmal versuchen“ */
+function wuStuck(){var sec=document.getElementById(curTab());if(!sec||sec.hidden)return;var bad=['strava','claude','db'].map(function(k){return SRC[k]}).filter(function(s){return s&&s.st==='err'});if(!bad.length)return;
+ [].forEach.call(sec.querySelectorAll('p.mu'),function(p){if(!/^Livedaten werden geladen/.test(p.textContent||'')||p.getAttribute('data-stuck'))return;p.setAttribute('data-stuck','1');
+  p.insertAdjacentHTML('afterend','<div class="card hc errc" role="alert"><p><b>⚠️ Daten konnten nicht geladen werden ('+E(bad.map(function(s){return s.n}).join(', '))+').</b></p><button type="button" class="pbtn sm" data-retry="src">Nochmal versuchen</button> <button type="button" class="pbtn sm sec" data-retry="srcinfo">Details</button></div>')})}
+setInterval(function(){try{wuStuck()}catch(e){}},20000);document.addEventListener('srcupd',function(){setTimeout(function(){try{wuStuck()}catch(e){}},20000)});
+document.addEventListener('click',function(e){var b=e.target.closest&&e.target.closest('[data-retry="src"],[data-retry="srcinfo"]');if(!b)return;e.preventDefault();
+ if(b.getAttribute('data-retry')==='srcinfo'){try{open('src')}catch(x){}return}var c=b.closest('.errc');if(c)c.remove();[].forEach.call(document.querySelectorAll('[data-stuck]'),function(p){p.removeAttribute('data-stuck')});try{tabRefresh(curTab(),true)}catch(x){}},true);
 /* Kontext für den Coach */
 function coCtx(){var t=tod(),X=window.ACT||[],n=S?S.ct.length:0,ph=phaseOf(t),bw=bodyAt(t),kg=bw?bw.kg:W;
  var ak=X.filter(function(a){return a.day>=addD(t,-21)}).map(function(a){var p=PM[a.day],q=LOG[a.id]||{};return{datum:a.day,name:a.name,sport:sn(a.sp),minuten:Math.round(a.sec/60),km:a.km>0?Math.round(a.km):null,hm:a.hm>0?Math.round(a.hm):null,tss:Math.round(a.tss),np:a.np?Math.round(a.np):null,puls:a.ah||null,if:a.iff?Math.round(a.iff*100)/100:null,entkopplung_prozent:a.dc==null?null:a.dc,geplant:p?p[2]:null,rpe:q.rpe||null,notiz:q.note||null,kraempfe:q.kr&&q.kr.s?krSum(q.kr):null}});

@@ -221,6 +221,7 @@ async function runtimeCheck() {
     return o;
   });
   if (!v64.h2 || v64.bar !== 2 || !v64.back || !v64.part || !v64.ask || !v64.notC || !v64.stash || !v64.lm || !v64.pm) fail('Startort/Zusammenlegen: ' + JSON.stringify(v64)); else console.log('✓ Startort/Zusammenlegen: ' + JSON.stringify(v64));
+  { const nt = await pg.evaluate(() => WU_SRCTEST()); if (!(nt[0] === nt[1] + 1)) fail('Glocke Datenquelle: ' + JSON.stringify(nt)); else console.log('✓ Glocke Datenquelle: ' + JSON.stringify(nt)); }
   /* v62: Anstiege aus der Karte */
   const mp = await pg.evaluate(async () => {
     const c = []; for (let i = 0; i <= 120; i++) { const d = i * 50; c.push([47.7 + d / 111320, 13.2, d < 1000 ? 500 : d < 4000 ? 500 + (d - 1000) * 0.06 : 680]); }
