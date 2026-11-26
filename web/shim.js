@@ -129,7 +129,7 @@
   var STRAVA = {
     /* v51: Segmente in einem Gebiet (für neue Anstiege) */
     explore_segments: async function (q) {
-      var j = await sv('/segments/explore?' + qs({ bounds: q.bounds, activity_type: 'riding' })) || {};
+      var o0 = { bounds: q.bounds, activity_type: 'riding' }; if (q.min_cat != null) o0.min_cat = q.min_cat; var j = await sv('/segments/explore?' + qs(o0)) || {};
       return { segments: (j.segments || []).map(function (x) { return { id: x.id, name: x.name, cat: x.climb_category, grade: x.avg_grade, km: x.distance / 1000, hm: x.elev_difference, a: x.start_latlng, b: x.end_latlng, pts: x.points }; }) };
     },
     list_activities: async function (q) {

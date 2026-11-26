@@ -173,10 +173,19 @@ async function runtimeCheck() {
     document.querySelector('[data-rtv="verl"]').click(); await new Promise((r) => setTimeout(r, 500)); o.verl = !!document.querySelector('.rtrate');
     const t = document.querySelector('[data-rtr$="|1"]'); if (t) { t.click(); await new Promise((r) => setTimeout(r, 400)); }
     const w = document.querySelector('[data-rtw$="|huegel"]'); if (w) { w.click(); await new Promise((r) => setTimeout(r, 400)); }
+    document.querySelector('[data-rtv="frei"]').click(); await new Promise((r) => setTimeout(r, 300));
+    document.getElementById('rtf-mn').value = '120'; document.getElementById('rtf-ty').value = 'int'; document.getElementById('rtf-reps').value = '3'; document.getElementById('rtf-on').value = '8'; document.getElementById('rtf-pw').value = '95';
+    const n2 = Object.keys(WU_RT.res).length; document.getElementById('rtf-go').click(); for (let i = 0; i < 120 && Object.keys(WU_RT.res).length <= n2; i++) await new Promise((r) => setTimeout(r, 250));
+    const ik = Object.keys(WU_RT.res).filter((k) => /^Intervalle/.test(WU_RT.res[k].title || ''))[0]; o.fint = ik ? WU_RT.res[ik].R.map((x) => x.k + (x.iv && x.iv.some((v) => v.turn) ? '↩' : '') + ':' + x.s.ges + '/' + x.est).join(',') : 'fehlt';
+    const r18 = WU_RT.res['2026-11-18']; o.int = r18 ? r18.R.map((x) => x.k + (x.iv && x.iv.some((v) => v.turn) ? '↩' : '') + ':' + x.s.ges).join(',') : 'fehlt';
+    if (r18) { await WU_RTMORE('2026-11-18'); o.more = (WU_RT.res['2026-11-18'].ex || []).length; }
+    location.hash = '#routen'; await new Promise((r) => setTimeout(r, 300));
+    const an = document.querySelector('[data-rtv="anst"]'); if (an) { an.click(); await new Promise((r) => setTimeout(r, 900)); }
+    o.anst = !!document.getElementById('rt-amap') && /Was die App kennt/.test(document.getElementById('rt-b').textContent);
     document.querySelector('[data-rtv="lern"]').click(); await new Promise((r) => setTimeout(r, 400)); o.lern = !!document.getElementById('rt-lmap') && !!document.querySelector('.rtpw') && /Gemiedene Stellen/.test(document.getElementById('rt-b').textContent);
     return o;
   });
-  if (!db.ren || !db.del || !db.ftp || db.ftp === 'fehlt' || !db.cmp || !db.map || !db.sel || !db.own || !db.free || !db.verl || !db.lern) fail('Routen-Dashboard: ' + JSON.stringify(db)); else console.log('✓ Routen-Dashboard: ' + JSON.stringify(db));
+  if (!/climb↩/.test(db.fint || '') || !db.anst || !db.ren || !db.del || !db.ftp || db.ftp === 'fehlt' || !db.cmp || !db.map || !db.sel || !db.own || !db.free || !db.verl || !db.lern) fail('Routen-Dashboard: ' + JSON.stringify(db)); else console.log('✓ Routen-Dashboard: ' + JSON.stringify(db));
   await look('Routen-Dashboard');
   await open('p:18.11.', 'Routen Intervalle');
   await open('p:21.11.', 'Routen Grundlage');
