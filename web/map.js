@@ -182,11 +182,12 @@
     function lay(k) { if (tl) map.removeLayer(tl); var d = LAYERS[k] || LAYERS.str; tl = L.tileLayer(d.u, d.o).addTo(map); }
     lay(key);
     el.querySelector('[data-g="lay"]').addEventListener('click', function (e) { var b = e.target.closest('button'); if (!b) return; [].forEach.call(this.children, function (x) { x.classList.toggle('on', x === b); }); setPref('lay', b.getAttribute('data-v')); lay(b.getAttribute('data-v')); });
-    var all = [];
+    var all = [], PL = {};
     lines.forEach(function (ln) {
       if (!ln.lat || ln.lat.length < 2) return; ln.lat.forEach(function (q) { all.push(q); });
       L.polyline(ln.lat, { color: '#ffffff', weight: (ln.w || 4) + 4, opacity: .8 }).addTo(map);
       var pl = L.polyline(ln.lat, { color: ln.c, weight: ln.w || 4, opacity: ln.o != null ? ln.o : .95 }).addTo(map);
+      if (ln.k != null) PL[ln.k] = { pl: pl, w: ln.w || 4 };
       if (ln.k != null && (opt.popup || opt.onLine)) pl.on('click', function (e) { L.DomEvent.stopPropagation(e); if (opt.popup) { var h = opt.popup(ln.k); if (h) L.popup({ maxWidth: 300, minWidth: 220, className: 'wm-pop' }).setLatLng(e.latlng).setContent(h).openOn(map); } else opt.onLine(ln.k); });
       if (ln.lab) L.marker(ln.lat[ln.lat.length - 1], { interactive: false, icon: L.divIcon({ className: '', html: '<div style="background:' + ln.c + ';color:#fff;font:700 10px/1 sans-serif;padding:3px 5px;border-radius:6px;border:1px solid #fff;white-space:nowrap">' + ln.lab + '</div>', iconSize: [10, 10], iconAnchor: [0, 16] }) }).addTo(map);
     });
@@ -207,6 +208,14 @@
     if (window.IntersectionObserver) { var io = new IntersectionObserver(function (es) { if (es.some(function (x) { return x.isIntersecting; })) refit(); }); io.observe(box); }
     window.addEventListener('resize', refit);
     map.whenReady(refit); setTimeout(refit, 200); setTimeout(refit, 800); setTimeout(refit, 2000);
+    /* v63: Anstieg hervorheben und hinzoomen, ohne die Karte neu aufzubauen */
+    var cur = null;
+    el._wmSel = function (k, zoom, pad) {
+      if (cur && PL[cur]) PL[cur].pl.setStyle({ weight: PL[cur].w });
+      cur = k; var x = k != null ? PL[k] : null; if (!x) return;
+      x.pl.setStyle({ weight: 9 }); x.pl.bringToFront();
+      if (zoom !== false) { user = true; map.invalidateSize({ animate: false }); pad = pad || [0, 0]; map.fitBounds(x.pl.getBounds(), { paddingTopLeft: [50, 50], paddingBottomRight: [50 + pad[0], 50 + pad[1]], maxZoom: 14 }); }
+    };
     el._wmView = function () { return { c: map.getCenter(), z: map.getZoom() }; };
   };
   /* Straßenart und Untergrund: Klassen je Punkt */

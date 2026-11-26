@@ -870,6 +870,18 @@ nav a.rnav{display:none}body.tabdev nav a.rnav{display:flex}body.tabdev .rtentry
 .rtpwb{position:relative;width:90px;height:6px;border-radius:3px;background:linear-gradient(90deg,#4dabf7,var(--ln) 50%,#f08c00)}.rtpwb i{position:absolute;top:-4px;width:14px;height:14px;margin-left:-7px;border-radius:50%;background:var(--tx);border:2px solid var(--card)}
 .rtcl{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:7px 0;border-top:1px solid var(--ln);flex-wrap:wrap}.rtcl:first-of-type{border-top:0}.rtcl>span:first-child{display:flex;flex-direction:column}.rtcl small{color:var(--mu);font-size:.76rem}.rtcl>span:last-child{display:flex;gap:6px}.rtcl.on b{color:var(--ac)}
 .rtcl.hid b{color:var(--mu);text-decoration:line-through}.rtmorebar{margin:0 0 10px;align-items:center}.rtaddc{border-color:var(--ac)}
+.rtan-h{display:flex;flex-wrap:wrap;gap:4px 14px;align-items:center;font-size:.86rem;margin:4px 2px 10px}.rtan-h #rt-mqst{flex:1 1 280px;font-size:.74rem;line-height:1.3}.rtan-h .rtmw{position:relative;margin-left:auto}
+.rtan-g{display:flex;flex-direction:column;gap:0}.rtan-m{order:-1;position:relative;padding:8px}.rtan-l{padding:10px}
+.rtan-tb{display:flex;gap:6px;align-items:center}.rtan-tb input.ta{flex:1 1 auto;min-width:0;width:auto}.rtan-tb .pbtn{flex:0 0 auto;white-space:nowrap}.rtan-tb .pbtn.on{border-color:var(--ac,#1d6fe0);color:var(--ac,#1d6fe0)}
+.rtan-f{display:none;flex-wrap:wrap;gap:6px;margin:8px 0 2px;align-items:center}.rtan-f.open{display:flex}.rtan-f select.ta{flex:1 1 150px;width:auto;min-width:0;padding-right:28px}
+.rtan-cnt{margin:10px 0 4px}.rtan-r{display:flex;align-items:center;gap:9px;padding:8px 6px;border-top:1px solid var(--ln);cursor:pointer;border-radius:8px}.rtan-r:first-child{border-top:0}.rtan-r.on{background:rgba(29,111,224,.1)}.rtan-r.hid{opacity:.55}
+.rtan-r>i{width:4px;align-self:stretch;border-radius:2px;flex:0 0 4px}.rtan-t{flex:1 1 auto;min-width:0;display:flex;flex-direction:column}.rtan-t b{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:.9rem}.rtan-t small{color:var(--mu);font-size:.74rem}.rtspk{flex:0 0 auto}
+.rtan-d{display:none}.rtan-d.on{display:block;position:fixed;left:8px;right:8px;bottom:calc(env(safe-area-inset-bottom,0px) + 96px);max-height:45vh;overflow:auto;z-index:1150;padding:12px 14px;margin:0;box-shadow:0 8px 34px rgba(0,0,0,.3)}
+.rtan-dh{display:flex;align-items:flex-start;gap:8px;justify-content:space-between}.rtan-dh>b{font-size:1rem}.rtan-dh .rtren{flex:1}.rtan-x{border:0;background:none;font-size:1.1rem;cursor:pointer;color:var(--mu);padding:2px 6px}
+.rtan-d table{width:100%;font-size:.82rem;border-collapse:collapse}.rtan-d td{padding:2px 0}.rtan-d td:last-child{text-align:right}.rtan-db{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.rtan-leg{font-size:.74rem;display:flex;flex-wrap:wrap;gap:4px 10px;align-items:center;margin:2px}.rtan-leg i{display:inline-block;width:14px;height:4px;border-radius:2px;margin-right:4px;vertical-align:middle}
+@media (min-width:900px) and (orientation:landscape){.rtan-g{display:grid;grid-template-columns:minmax(310px,34%) 1fr;gap:12px;align-items:start}.rtan-m{order:0;margin:0}.rtan-l{margin:0;max-height:var(--rtanh,72vh);overflow:auto}
+ .rtan-d.on{position:absolute;right:18px;left:auto;top:62px;bottom:auto;width:340px;max-height:calc(100% - 110px);z-index:500}}
 .rtafb{display:flex;flex-wrap:wrap;gap:6px;align-items:center}.rtafb input.ta{flex:1 1 200px;width:auto}.rtafb select.ta{flex:0 1 auto;width:auto;min-width:0;padding-right:28px}.rtck{display:flex;gap:5px;align-items:center;font-size:.82rem;color:var(--mu)}
 .rtfhd{display:flex;justify-content:space-between;align-items:center;gap:8px}.rtfhd>span:first-child{display:flex;flex-direction:column;min-width:0}.rtfhd small{font-size:.76rem}
 .rtmw{position:relative}.rtdots{width:36px;height:36px;border-radius:50%;border:1px solid var(--ln);background:var(--bg2);color:inherit;font:800 1.1rem/1 inherit;cursor:pointer}
@@ -3502,12 +3514,12 @@ function rtRev(s){return String(s||'').split('').reverse().join('')}
 async function rtRoute(pts){if(!window.WU_ROUTE)throw new Error('Routenplaner nur in der App verfügbar');var ll=pts.map(function(q){return q[1].toFixed(5)+','+q[0].toFixed(5)}).join('|'),j=null;
  try{j=await WU_ROUTE(ll,'fastbike-lowtraffic')}catch(e){j=await WU_ROUTE(ll,'fastbike')}
  var f=j&&j.features&&j.features[0];if(!f)throw new Error('keine Route');var c=f.geometry.coordinates.map(function(q){return[q[1],q[0],q[2]||0]}),ms=f.properties.messages||[],h=ms[0]||[],iD=h.indexOf('Distance'),iW=h.indexOf('WayTags'),iN=h.indexOf('NodeTags'),iLo=h.indexOf('Longitude'),iLa=h.indexOf('Latitude');
- var prim=0,unp=0,pRun=0,pMax=0,sig=[],run=0,runMax=0,tot=0,SG=[];ms.slice(1).forEach(function(r){var d=Number(r[iD])||0,w=String(r[iW]||''),n=String(r[iN]||'');tot+=d;SG.push([tot,rtRc(w),rtSc(w),/traffic_signals|highway=stop|give_way/.test(n)?1:0]);
+ var prim=0,unp=0,pRun=0,pMax=0,sig=[],run=0,runMax=0,tot=0,SG=[];ms.slice(1).forEach(function(r){var d=Number(r[iD])||0,w=String(r[iW]||''),n=String(r[iN]||'');tot+=d;SG.push([tot,rtRc(w),rtSc(w),/traffic_signals|highway=stop|give_way/.test(n)?1:0,/highway=(track|path|footway|bridleway|steps|pedestrian)/.test(w)&&!/surface=(asphalt|paved|concrete|chipseal)/.test(w)?'x':'o']);
   var pr=/highway=(primary|trunk)/.test(w),up=/surface=(gravel|unpaved|dirt|ground|fine_gravel|compacted|grass|sand|pebblestone|earth|mud)/.test(w)||(/highway=(track|path|bridleway)/.test(w)&&!/surface=(asphalt|paved|concrete)/.test(w));
   if(pr){prim+=d;pRun+=d;pMax=Math.max(pMax,pRun)}else pRun=0;if(up)unp+=d;
   if(/traffic_signals|stop|give_way/.test(n)){sig.push(tot);runMax=Math.max(runMax,run);run=0}else run+=d});runMax=Math.max(runMax,run);
- var cd=0,k2=0,rc='',sc='',nf='',sh2=0,sf=tot&&c.length>1?(function(){var x=0;for(var z=1;z<c.length;z++)x+=rtHav(c[z-1],c[z]);return tot/(x||tot)})():1;for(var z=0;z<c.length;z++){if(z)cd+=rtHav(c[z-1],c[z])*sf;while(k2<SG.length-1&&SG[k2][0]<cd){if(SG[k2][3])sh2=1;k2++}rc+=SG[k2]?SG[k2][1]:'s';sc+=SG[k2]?SG[k2][2]:'u';nf+=sh2?'x':'o';sh2=0}
- return{rc:rc,sc:sc,nf:nf,c:c,km:(Number(f.properties['track-length'])||tot)/1000,hm:Number(f.properties['filtered ascend'])||0,prim:prim,unp:unp,pMax:pMax,runMax:runMax}}
+ var cd=0,k2=0,rc='',sc='',nf='',tk='',sh2=0,sf=tot&&c.length>1?(function(){var x=0;for(var z=1;z<c.length;z++)x+=rtHav(c[z-1],c[z]);return tot/(x||tot)})():1;for(var z=0;z<c.length;z++){if(z)cd+=rtHav(c[z-1],c[z])*sf;while(k2<SG.length-1&&SG[k2][0]<cd){if(SG[k2][3])sh2=1;k2++}rc+=SG[k2]?SG[k2][1]:'s';sc+=SG[k2]?SG[k2][2]:'u';tk+=SG[k2]?SG[k2][4]:'o';nf+=sh2?'x':'o';sh2=0}
+ return{rc:rc,sc:sc,nf:nf,tk:tk,c:c,km:(Number(f.properties['track-length'])||tot)/1000,hm:Number(f.properties['filtered ascend'])||0,prim:prim,unp:unp,pMax:pMax,runMax:runMax}}
 /* Neuheit: Anteil der Strecke außerhalb deiner bisherigen Spuren (Raster ca. 250 m) */
 function rtCell(q){return Math.round(q[0]*400)+':'+Math.round(q[1]*270)}
 function rtNew(c){if(!RT.lib||!RT.lib.cells)return.5;var S2=RT.lib._set||(RT.lib._set=new Set(RT.lib.cells)),n=0,k=0,i;for(i=0;i<c.length;i+=3){k++;if(!S2.has(rtCell(c[i])))n++}return k?n/k:.5}
@@ -3636,7 +3648,7 @@ function rtHtml(d){var p=PM[d];if(!p||!rtIsOut(p[2]))return'';var h='<h3>Routen 
    +'<p class="rtk">'+f1(R.km)+' km · '+R.hm+' Hm · ca. '+hmS(R.est)+' h'+(R.asc?' · '+R.asc+'× '+f1(R.ckm)+' km / '+R.chm+' Hm, je ca. '+Math.round(R.tc/60)+' min':'')+'</p>'
    +(R.adj?'<div class="rtadj"><span>Vorschlag: <b>'+R.adj.r+'×'+R.adj.on+' min</b> statt '+R.adj.r0+'×'+R.adj.on0+' min, gleiche Zeit im Bereich.</span><button type="button" class="pbtn sm" data-rta="'+d+'|'+i+'">Übernehmen</button></div>':'')
    +(R.notes.length?'<ul class="rtn">'+R.notes.map(function(n){return'<li>'+E(n)+'</li>'}).join('')+'</ul>':'')
-   +'<details class="pd"><summary>Bewertung '+sc+' von 100 ›</summary><table class="pt">'+ks.map(function(k){return'<tr><td>'+k+'</td><td>'+R.s[k]+' / '+({Dauer:25,Eignung:35,Verkehr:20,Neu:20,'Bewährt':20})[k]+'</td></tr>'}).join('')+'</table><p class="mu">'+(R.ov!=null?'Doppelt gefahren '+R.ov+' % · ':'')+'Bundesstraße '+R.ps+' %'+(R.nw!=null?' · neue Abschnitte '+R.nw+' %':'')+(R.k==='climb'?' · '+(R.own?'Anstieg aus deinen Fahrten':'neuer Anstieg aus Strava-Segmenten'):'')+'</p></details>'
+   +'<details class="pd"><summary>Bewertung '+sc+' von 100 ›</summary><table class="pt">'+ks.map(function(k){return'<tr><td>'+k+'</td><td>'+R.s[k]+' / '+({Dauer:25,Eignung:35,Verkehr:20,Neu:20,'Bewährt':20})[k]+'</td></tr>'}).join('')+'</table><p class="mu">'+(R.ov!=null?'Doppelt gefahren '+R.ov+' % · ':'')+'Bundesstraße '+R.ps+' %'+(R.nw!=null?' · neue Abschnitte '+R.nw+' %':'')+(R.k==='climb'?' · '+(R.own?'Anstieg aus deinen Fahrten':'neuer Anstieg, noch nie gefahren'):'')+'</p></details>'
    +'<div class="row2"><button type="button" class="pbtn sm" data-rtg="'+d+'|'+i+'">GPX speichern</button><span class="rtmsg" role="status"></span></div></div>'}).join('')}
 function rtBadges(){rtDays().forEach(function(d){var r=RT.res[d],ok=r&&PM[d]&&r.sig===rtSig(d,PM[d]);[].forEach.call(document.querySelectorAll('[data-k="p:'+lab(d)+'"]'),function(el){var b=el.querySelector('.rtb');if(!b){b=document.createElement('span');b.className='rtb';el.appendChild(b)}b.textContent=!ok?'':r.zw&&r.zw.length?' 🖥️':r.R.length?' 🗺️':'';b.title=!ok?'':r.zw&&r.zw.length?'Besser auf Zwift: '+r.zw.join(', '):r.R.length+' Routen'})})}
 var _dPlanRt=dPlan;dPlan=function(x){var o=_dPlanRt(x);try{var d=isoOf(x);if(d>=iso(new Date()))o.h+=rtHtml(d)}catch(e){logErr('App','Routen anzeigen',e)}return o};
@@ -3919,7 +3931,7 @@ rtLibBuild=async function(force){var home=rtHome();if(!home||!window.claude)retu
  if(DBH&&UID&&(!RT.lib||RT.lib.v!==3)){try{var sn=await DBH.doc('data/users/'+UID+'/rlib').get(),v=sn&&sn.exists?sn.data():null;if(v&&v.climbs&&v.home===CF.home&&v.v===3){RT.lib=v;try{localStorage.setItem('rlib1',JSON.stringify(v))}catch(e){}}}catch(e){}}
  if(force||!RT.lib||RT.lib.v!==3||RT.lib.home!==CF.home)RT.lib={v:3,home:CF.home,ts:0,seen:{},cells:[],climbs:[],exTs:0};
  var lib=RT.lib,seen=lib.seen=lib.seen||{},X=(window.ACT||[]).filter(function(a){return a.sp==='Ride'&&a.km>15&&!seen[a.id]}),hil=X.filter(function(a){return a.hm/a.km>8}).sort(function(a,b){return b.day<a.day?-1:1}),fl=X.filter(function(a){return hil.indexOf(a)<0}).sort(function(a,b){return b.day<a.day?-1:1}),L=hil.concat(fl).slice(0,15);if(!force&&lib.next&&Date.now()<lib.next)L=[];
- if(force)lib.exOff=0;var needEx=(!lib.exTs||Date.now()-lib.exTs>30*864e5)&&(force||!lib.exWait||Date.now()>lib.exWait)&&!(lib.exOff&&Date.now()-lib.exOff<90*864e5);if(!L.length&&!needEx){delete lib._set;return}
+ var needEx=false&&(!lib.exTs||Date.now()-lib.exTs>30*864e5)&&(force||!lib.exWait||Date.now()>lib.exWait)&&!(lib.exOff&&Date.now()-lib.exOff<90*864e5);if(!L.length&&!needEx){delete lib._set;return}
  var cells={},ch=false;(lib.cells||[]).forEach(function(k){cells[k]=1});
  function addC(c){c.id=rtCid(c.a,c.b);for(var k=0;k<lib.climbs.length;k++){var o=lib.climbs[k];if(rtHav(o.a,c.a)<300&&rtHav(o.b,c.b)<300){o.n=(o.n||0)+1;o.own=1;if(c.t&&(!o.t||c.t<o.t)){o.t=c.t;o.w=c.w}if(!o.pl&&c.pl)o.pl=c.pl;return}}c.n=1;lib.climbs.push(c)}
  for(var i=0;i<L.length;i++){if(typeof rlOn==='function'&&rlOn())break;var a=L[i],p=null;RT.libSt='Lerne deine Anstiege aus Strava ('+(i+1)+' von '+L.length+', insgesamt '+(Object.keys(seen).length+1)+' Fahrten) …';
@@ -4036,7 +4048,7 @@ function rtAfSave(){try{localStorage.setItem('rtaf1',JSON.stringify(RTAF))}catch
 function rtClInfo(c){var home=rtHome(),o={d:home?rtHav(home,c.a)/1000:0,mx:null,sd:null,prof:null},p=c.pl?rtDec(c.pl):null;
  if(p&&p.length>2&&p[0][2]){var gs=[],acc=0,h0=p[0][2],dd=0,pr=[[0,p[0][2]]];for(var i=1;i<p.length;i++){var dx=rtHav(p[i-1],p[i]);acc+=dx;dd+=dx;pr.push([dd,p[i][2]]);if(acc>=200){gs.push((p[i][2]-h0)/acc);h0=p[i][2];acc=0}}
   if(gs.length){o.mx=Math.max.apply(0,gs);var m=gs.reduce(function(a,b){return a+b},0)/gs.length;o.sd=Math.sqrt(gs.reduce(function(a,b){return a+(b-m)*(b-m)},0)/gs.length)}o.prof=pr}
- o.src=c.own===2?'dir':c.own?(c.sid?'beide':'eigen'):c.q?'karte':'strava';return o}
+ o.src=c.own===2?'dir':c.own?'eigen':c.q==='ki'?'ki':c.q?'karte':'eigen';return o}
 function rtSteadyTx(sd){return sd==null?null:sd<.015?'sehr gleichmäßig':sd<.025?'gleichmäßig':sd<.04?'wechselnd':'sehr wechselnd'}
 function rtSrcTx(c,i){return i.src==='karte'?(c.q==='ki'?'Vorschlag von Claude, mit dem Routenplaner nachgerechnet':'aus der Karte (OpenStreetMap), mit dem Routenplaner nachgerechnet')+' · neu für dich':i.src==='dir'?'von dir eingetragen':i.src==='beide'?'aus '+(c.n||1)+' Fahrt'+((c.n||1)>1?'en':'')+' · zugleich Strava-Segment'+(c.cat?' (Kat. '+(c.cat===5?'HC':5-c.cat)+')':''):i.src==='eigen'?'aus '+(c.n||1)+' Fahrt'+((c.n||1)>1?'en':''):'Strava-Segment'+(c.cat?' (Kat. '+(c.cat===5?'HC':5-c.cat)+')':'')}
 function rtClFiltered(){var cf=RT.pref.cf||{},q=RTAF.q.toLowerCase();return rtClAll(true).map(function(c){return{c:c,i:rtClInfo(c),hid:!!(cf[c.id]&&cf[c.id].h)}}).filter(function(x){var c=x.c;if(x.hid&&!RTAF.hid)return false;if(RTAF.fav&&!c.fav)return false;if(q&&String(c.name).toLowerCase().indexOf(q)<0)return false;
@@ -4116,7 +4128,7 @@ window.WU_RTQ=function(){return RTQ};
    jeweils mit BRouter von unten angefahren (von der Startseite und von der Gegenseite) und wie eigene Fahrten in Anstiege zerlegt.
    Grenze für alle Anstiege: ab 1 km, 100 Hm, 4 % (selbst eingetragene bleiben immer). Umkreis 50 km, länger bei langen Einheiten. */
 function rtRad(u){var m=u&&u.mn||90;return m<=120?50:m<=180?70:90}
-function rtClOk(c){return c.own===2||(c.km>=1&&c.hm>=100&&c.g>=.04)}
+function rtClOk(c){return c.own===2||((c.own||c.q)&&c.km>=1&&c.hm>=100&&c.g>=.04)}
 var _rtClAll62=rtClAll;rtClAll=function(w){return _rtClAll62(w).filter(rtClOk)};
 function rtBrg(a,b){var f1=a[0]*Math.PI/180,f2=b[0]*Math.PI/180,dl=(b[1]-a[1])*Math.PI/180;return(Math.atan2(Math.sin(dl)*Math.cos(f2),Math.cos(f1)*Math.sin(f2)-Math.sin(f1)*Math.cos(f2)*Math.cos(dl))*180/Math.PI+360)%360}
 function rtFindCl(c,sc){if(!c||c.length<5)return[];var D=[0],i,j,out=[];for(i=1;i<c.length;i++)D.push(D[i-1]+rtHav(c[i-1],c[i]));
@@ -4127,12 +4139,12 @@ function rtFindCl(c,sc){if(!c||c.length<5)return[];var D=[0],i,j,out=[];for(i=1;
    var q1=Math.round(s1+(e1-s1)/3),q2=Math.round(s1+2*(e1-s1)/3);out.push({a:[c[s1][0],c[s1][1]],b:[c[e1][0],c[e1][1]],via:[[c[q1][0],c[q1][1]],[c[q2][0],c[q2][1]]],km:dk/1000,hm:Math.round(g),g:g/dk,pl:rtEnc(P2)})});st=j;mx=j}else if(al[j]<al[st])st=j}
  return out}
 function rtAddMap(cl,q,nm){var L=RT.lib.climbs,M=(RT.pref.mcl||[]).concat(L);for(var k=0;k<M.length;k++){var o=M[k],da=rtHav(o.a,cl.a),db=rtHav(o.b,cl.b);if((da<400&&db<1500)||(db<400&&da<1500)){if(nm&&(!o.name||/^Anstieg /.test(o.name)))o.name=nm;return 0}}
- cl.id=rtCid(cl.a,cl.b);cl.q=q;cl.n=0;cl.own=0;cl.name=nm||('Anstieg '+f1(cl.km)+' km, '+Math.round(cl.g*100)+' %');L.push(cl);return 1}
+ cl.id=rtCid(cl.a,cl.b);cl.q=q;cl.n=0;cl.own=0;cl.name=nm||('Anstieg '+f1(cl.km)+' km, '+Math.round(cl.g*100)+' %');if(nm)cl.nmS='ziel';L.push(cl);return 1}
 function rtMqTargets(N,home,r0,r1){var cell={},pr={p:4,h:3,r:3,v:2,g:1};(N||[]).forEach(function(x){var d=rtHav(home,[x[0],x[1]])/1000;if(d<Math.max(2,r0)||d>r1)return;if(x[3]!=null&&x[3]<520)return;if(x[2]==='g'&&x[3]!=null&&x[3]>2000)return;
   var sz=r0?6:4,k=Math.round(x[0]*111/sz)+':'+Math.round(x[1]*75/sz),o=cell[k],s=(pr[x[2]]||1)*10000+(x[3]||600);if(!o||s>o.s)cell[k]={t:[x[0],x[1],String(x[4]||'').slice(0,40),x[2]],s:s,d:d}});
  return Object.keys(cell).map(function(k){return cell[k]}).sort(function(a,b){return a.d-b.d}).map(function(o){return o.t})}
 var RTM={on:false},RTMR=[50,70,90];
-function rtMq(){var lib=RT.lib;if(!lib)return null;if(!lib.mq||lib.mq.home!==CF.home||lib.mq.v!==2)lib.mq={v:2,home:CF.home,st:0,tg:null,i:0,nC:(lib.mq&&lib.mq.home===CF.home&&lib.mq.nC)||0,ki:0,kiN:0};return lib.mq}
+function rtMq(){var lib=RT.lib;if(!lib)return null;if(!lib.mq||lib.mq.home!==CF.home||lib.mq.v!==3){lib.climbs=(lib.climbs||[]).filter(function(c){return!c.q});lib.mq={v:3,home:CF.home,st:0,tg:null,i:0,nC:0,ki:0,kiN:0}}return lib.mq}
 function rtMqTx(){var q=RT.lib&&RT.lib.mq;if(!q)return'Kartensuche nach neuen Anstiegen startet in Kürze.';if(RTM.on&&RTM.st)return RTM.st;if(q.wait&&q.wait>Date.now())return'Kartensuche pausiert'+(q.err?' ('+q.err+')':', der Routenplaner ist ausgelastet')+'. Weiter ab '+new Date(q.wait).toLocaleTimeString('de-AT',{hour:'2-digit',minute:'2-digit'})+' ('+(q.nC||0)+' neue Anstiege bisher).';
  if(q.st>=RTMR.length&&!(q.kq&&q.kq.length))return'Kartensuche bis '+RTMR[RTMR.length-1]+' km abgeschlossen: '+(q.nC||0)+' neue Anstiege gefunden.';
  return'Kartensuche nach neuen Anstiegen'+(q.kq&&q.kq.length?': prüfe '+q.kq.length+' Vorschläge von Claude':' bis '+RTMR[q.st]+' km: '+(q.i||0)+' von '+(q.tg?q.tg.length:'?')+' Zielen geprüft'+(q.nT?' (aus '+q.nT+' Punkten der Karte)':''))+', '+(q.nC||0)+' neue Anstiege'+(q.ki?', Claude-Vorschläge: '+(q.kiC||0):'')+(RTM.on?' (läuft im Hintergrund)':' (geht beim nächsten App-Start weiter)')+'.'}
@@ -4154,13 +4166,134 @@ async function rtMapScan(){if(RTM.on)return;var home=rtHome();if(!home||!RT.lib|
    if(q.kq&&q.kq.length){t=q.kq[0];isKi=true}
    else{if(q.st>=RTMR.length)break;if(!q.tg){var r=null;RTM.st='Lade Ziele aus OpenStreetMap …';rtMqShow();try{r=await WU_OSM(home[0],home[1],RTMR[q.st]*1000)}catch(e){q.err=String(e&&e.message||e).slice(0,160);q.wait=Date.now()+10*60000;break}RTM.st='';var N=r&&r.csv!=null?rtOsmCsv(r.csv):r&&r.n||[];if(!N.length){q.err='keine Ziele erhalten'+(r&&r.csv?': '+String(r.csv).replace(/\s+/g,' ').slice(0,100):'');q.wait=Date.now()+10*60000;break}q.err='';q.nT=N.length;q.tg=rtMqTargets(N,home,q.st?RTMR[q.st-1]:0,RTMR[q.st]);q.i=0}
     if(q.i>=q.tg.length){q.st++;q.tg=null;q.i=0;continue}t=q.tg[q.i]}
-   try{if(isKi){var x=await rtMqRoute([t.f,t.o]);calls++;if(x)rtFindCl(x.c,x.sc).forEach(function(cl){found(cl,'ki',rtHav(cl.b,t.o)<1500?t.n:null)});q.kq.shift()}
-    else{var T=[t[0],t[1]],nm=t[2]||null,legs=[[home,T],[rtDest(T,rtBrg(home,T),8),T]];for(var l=0;l<legs.length;l++){var y=await rtMqRoute(legs[l]);calls++;if(y)rtFindCl(y.c,y.sc).forEach(function(cl){found(cl,'osm',nm&&rtHav(cl.b,T)<1500?nm:null)})}q.i++}
+   try{if(isKi){var x=await rtMqRoute([t.f,t.o]);calls++;if(x)rtFindCl(x.c,x.sc,x.tk).forEach(function(cl){found(cl,'ki',rtHav(cl.b,t.o)<1500?t.n:null)});q.kq.shift()}
+    else{var T=[t[0],t[1]],nm=t[2]||null,legs=[[home,T],[rtDest(T,rtBrg(home,T),8),T]];for(var l=0;l<legs.length;l++){var y=await rtMqRoute(legs[l]);calls++;if(y)rtFindCl(y.c,y.sc,y.tk).forEach(function(cl){found(cl,'osm',nm&&rtHav(cl.b,T)<1500?nm:null)})}q.i++}
     fails=0}catch(e){fails++;if(fails>=4){q.wait=Date.now()+30*60000;break}}
    rtMqShow();if(since>=5||calls%20===0){since=0;delete RT.lib._set;await rtLibSave()}}
- }finally{RTM.on=false;await rtLibSave();rtMqShow();if(q.wait&&q.wait>Date.now()){clearTimeout(RTM.wt);RTM.wt=setTimeout(function(){rtMapScan().catch(function(){})},q.wait-Date.now()+2000)}}}
+ }finally{RTM.on=false;await rtLibSave();rtMqShow();setTimeout(function(){rtNmRun().catch(function(){})},1500);if(q.wait&&q.wait>Date.now()){clearTimeout(RTM.wt);RTM.wt=setTimeout(function(){rtMapScan().catch(function(){})},q.wait-Date.now()+2000)}}}
 var _rtLib62=rtLibBuild;rtLibBuild=async function(f){var r=await _rtLib62(f);setTimeout(function(){rtMapScan().catch(function(){})},3000);return r};
-window.WU_RTMAP=function(){return rtMapScan()};window.WU_RTOSM=function(t){return rtOsmCsv(t)};window.WU_RTFIND=function(c,sc){return rtFindCl(c,sc)};
+window.WU_RTMAP=function(){return rtMapScan()};window.WU_RTOSM=function(t){return rtOsmCsv(t)};window.WU_RTFIND=function(c,sc,tk){return rtFindCl(c,sc,tk)};
+/* v63: Anstiege – Liste und Karte nebeneinander, Namen für alle Anstiege, nur Rennrad-Straßen, Strava-Segmente entfernt */
+var rtSlp=function(ms){return new Promise(function(r){setTimeout(r,ms)})};
+/* Rennrad-Regel: keine Forst-, Wander-, Fuß- und Reitwege (außer ausdrücklich asphaltiert), kein Schotter, kein unbekannter Belag abseits von Straßen.
+   Höchstens 2 % Abweichung; endet der Asphalt vor dem Ziel, endet dort auch der Anstieg. */
+rtFindCl=function(c,sc,tk){if(!c||c.length<5)return[];var n=c.length,D=[0],z,out=[];for(z=1;z<n;z++)D.push(D[z-1]+rtHav(c[z-1],c[z]));
+ var al=c.map(function(x,k){var s=0,m=0;for(var q=Math.max(0,k-2);q<=Math.min(n-1,k+2);q++){s+=c[q][2]||0;m++}return s/m});
+ var bad=function(k){return(tk&&tk[k]==='x')||(sc&&(sc[k]==='g'||sc[k]==='u'))};
+ var runs=[],s0=-1,last=-1,gap=0;for(z=0;z<n;z++){if(!bad(z)){if(s0<0)s0=z;last=z;gap=0}else if(s0>=0){gap+=z?D[z]-D[z-1]:0;if(gap>30){runs.push([s0,last]);s0=-1;gap=0}}}if(s0>=0)runs.push([s0,last]);
+ runs.forEach(function(R){var i0=R[0],i1=R[1];if(i1-i0<4)return;var st=i0,mx=i0;for(var j=i0+1;j<=i1;j++){if(al[j]>al[mx])mx=j;if(al[mx]-al[j]>20||j===i1){rtClSplit(al,D,st,mx).forEach(function(S){var s1=S[0],e1=S[1],g=al[e1]-al[s1],dk=D[e1]-D[s1];if(g<100||dk<1000||g/dk<.04)return;
+   var bd=0,y;for(y=s1+1;y<=e1;y++)if(bad(y))bd+=D[y]-D[y-1];if(bd>.02*dk)return;
+   var P2=[],acc=0;for(y=s1;y<=e1;y++){if(y>s1)acc+=D[y]-D[y-1];if(y===s1||y===e1||acc>=80){P2.push([c[y][0],c[y][1],al[y]]);acc=0}}
+   var q1=Math.round(s1+(e1-s1)/3),q2=Math.round(s1+2*(e1-s1)/3);out.push({a:[c[s1][0],c[s1][1]],b:[c[e1][0],c[e1][1]],via:[[c[q1][0],c[q1][1]],[c[q2][0],c[q2][1]]],km:dk/1000,hm:Math.round(g),g:g/dk,pl:rtEnc(P2)})});st=j;mx=j}else if(al[j]<al[st])st=j}});
+ return out};
+/* Herkunft ohne Strava-Segmente */
+rtSrcTx=function(c,i){return i.src==='karte'?'aus der Karte (OpenStreetMap), nachgerechnet · neu für dich':i.src==='ki'?'Vorschlag von Claude, nachgerechnet · neu für dich':i.src==='dir'?'von dir eingetragen':'aus '+(c.n||1)+' Fahrt'+((c.n||1)>1?'en':'')};
+rtClFiltered=function(){var cf=RT.pref.cf||{},q=String(RTAF.q||'').toLowerCase();if(['','eigen','karte','ki','dir'].indexOf(RTAF.src||'')<0)RTAF.src='';
+ return rtClAll(true).map(function(c){return{c:c,i:rtClInfo(c),hid:!!(cf[c.id]&&cf[c.id].h)}}).filter(function(x){var c=x.c;if(x.hid&&!RTAF.hid)return false;if(RTAF.fav&&!c.fav)return false;
+  if(q&&(String(c.name)+' '+(c.pa||'')+' '+(c.pb||'')).toLowerCase().indexOf(q)<0)return false;if(RTAF.src&&x.i.src!==RTAF.src)return false;
+  if(RTAF.g&&c.g*100<RTAF.g)return false;if(RTAF.km&&c.km<RTAF.km)return false;if(RTAF.dist&&x.i.d>RTAF.dist)return false;return true})
+ .sort(function(a,b){var s=RTAF.sort;return s==='km'?b.c.km-a.c.km:s==='hm'?b.c.hm-a.c.hm:s==='g'?b.c.g-a.c.g:s==='steady'?(a.i.sd==null?9:a.i.sd)-(b.i.sd==null?9:b.i.sd):s==='n'?(b.c.n||0)-(a.c.n||0):s==='name'?String(a.c.name).localeCompare(String(b.c.name),'de'):s==='t'?(a.c.t||1e9)-(b.c.t||1e9):(b.c.fav-a.c.fav)||(a.i.d-b.i.d)})};
+
+/* ---------- Namen ---------- */
+var RTN2={on:false,st:''};
+function rtNmGen(c){return!c.nmU&&c.own!==2}
+function rtNmFb(c){var a=c.pa||'',b=c.pp||c.pb||'';if(a&&b&&a!==b)return a+' → '+b;if(a||b)return'Anstieg bei '+(b||a)+(c.ra?' ('+c.ra+')':'');return'Anstieg '+f1(c.km)+' km, '+Math.round(c.g*100)+' %'}
+async function rtNmKi(B){var sm=window.claude&&await window.claude.use('sample');if(!sm)throw new Error('Claude nicht verfügbar');
+ var it=B.map(function(c,k){return{i:k,unten:[+c.a[0].toFixed(3),+c.a[1].toFixed(3)],oben:[+c.b[0].toFixed(3),+c.b[1].toFixed(3)],ort_unten:c.pa||'',ziel_oben:[c.pp||'',c.pb||''].filter(Boolean).join(', '),strasse:c.ra||'',km:Math.round(c.km*10)/10,hm:c.hm,steigung:Math.round(c.g*1000)/10}});
+ var r=await sm([{role:'user',content:'Du benennst Rennrad-Anstiege in Österreich und Bayern. Gib jedem Anstieg den Namen, unter dem Radfahrer ihn dort kennen, z. B. „Gaisberg von Guggenthal“, „Rossfeld-Panoramastraße“ oder „Haunsberg von Obertrum“: Berg, Pass, Straße oder Ziel oben, und bei mehreren Auffahrten zusätzlich der Startort. Wenn du den Anstieg nicht sicher kennst, gib für ihn null zurück, statt zu raten. Antworte nur mit JSON ohne weiteren Text: {"namen":[{"i":0,"name":"…"}]}\n'+JSON.stringify(it)}],{maxTokens:4000,tag:'anstiege-namen',quiet:true,cache:false});
+ var t=String(r&&r.text||''),m=t.match(/\{[\s\S]*\}/),j={};try{j=m?JSON.parse(m[0]):{}}catch(e){j={}}var o={};
+ (j.namen||[]).forEach(function(x){if(x&&typeof x.name==='string'&&x.name.trim()&&x.i!=null)o[x.i]=x.name.trim().slice(0,50)});return o}
+function rtNmDup(){var L=(RT.lib.climbs||[]).concat(RT.pref.mcl||[]),G={};L.forEach(function(c){var k=String(c.name||'').toLowerCase();(G[k]=G[k]||[]).push(c)});
+ Object.keys(G).forEach(function(k){var g=G[k];if(g.length<2)return;g.forEach(function(c){if(rtNmGen(c)&&c.pa&&String(c.name).indexOf(c.pa)<0)c.name+=' ab '+c.pa})});
+ G={};L.forEach(function(c){var k=String(c.name||'').toLowerCase();(G[k]=G[k]||[]).push(c)});Object.keys(G).forEach(function(k){var g=G[k].filter(rtNmGen),nx=G[k].length-g.length;g.forEach(function(c,i){if(i+nx>0)c.name+=' ('+(i+nx+1)+')'})})}
+async function rtNmRun(){if(RTN2.on||!RT.lib||!window.WU_RGEO||!(window.WU_ROUTE_ON&&WU_ROUTE_ON()))return;var L=(RT.lib.climbs||[]).filter(function(c){return rtNmGen(c)&&!c.nmD});if(!L.length)return;RTN2.on=true;var lib=RT.lib;
+ try{var geo=async function(p){for(var a=0;a<2;a++){try{var r=await WU_RGEO(+p[0].toFixed(4),+p[1].toFixed(4));await rtSlp(1100);return r||{}}catch(e){await rtSlp(2500)}}return{}};
+  for(var i=0;i<L.length&&RT.lib===lib;i++){var c=L[i];if(c.pa==null){RTN2.st='Ortsnamen für Anstiege: '+(i+1)+' von '+L.length;rtMqShow();var ra=await geo(c.a),rb=await geo(c.b);c.pa=ra.place||'';c.pb=rb.place||'';c.ra=ra.road||'';c.pp=rb.poi||''}}
+  if(RT.lib!==lib)return;var K=L.filter(function(c){return c.nmS!=='ziel'});
+  for(var o=0;o<K.length;o+=50){RTN2.st='Claude benennt Anstiege …';rtMqShow();var B=K.slice(o,o+50),nm={};try{nm=await rtNmKi(B)}catch(e){}B.forEach(function(c,k){var n2=nm[k];c.name=n2||rtNmFb(c);c.nmS=n2?'ki':'ort'})}
+  L.forEach(function(c){c.nmD=1;if(!c.name)c.name=rtNmFb(c)});rtNmDup();delete RT.lib._set;await rtLibSave()}
+ finally{RTN2.on=false;RTN2.st='';rtMqShow();if(RTV.tab==='anst'&&RT.lib===lib)rtAnUpd('list','map','det')}}
+var _rtMqShow63=rtMqShow;rtMqShow=function(){var el=$('rt-mqst');if(el)el.textContent=rtAnStTx()};
+function rtAnStTx(){var lib=RT.lib||{},elig=(window.ACT||[]).filter(function(a){return a.sp==='Ride'&&a.km>15}).length,done=Object.keys(lib.seen||{}).length;
+ return(RT.libSt?RT.libSt+' ':'')+'Fahrten ausgewertet: '+Math.min(done,elig)+' von '+elig+'. '+rtMqTx()+(RTN2.st?' '+RTN2.st+'.':'')}
+var _rtLib63=rtLibBuild;rtLibBuild=async function(f){var r=await _rtLib63(f);setTimeout(function(){rtNmRun().catch(function(){})},4000);return r};
+
+/* ---------- Seite „Anstiege“: Liste und Karte nebeneinander ---------- */
+var RTAN={n:60,list:[]};
+function rtAnCol(x){return x.hid?'#868e96':x.i.src==='dir'?'#2f9e44':x.i.src==='karte'||x.i.src==='ki'?'#f08c00':'#1d6fe0'}
+function rtSpark(pr,col){if(!pr||pr.length<3)return'';var W=64,H=22,dm=pr[pr.length-1][0]||1,h0=Infinity,h1=-Infinity;pr.forEach(function(x){h0=Math.min(h0,x[1]);h1=Math.max(h1,x[1])});var dh=Math.max(10,h1-h0),pts=pr.map(function(x){return(x[0]/dm*W).toFixed(1)+','+(H-1-(x[1]-h0)/dh*(H-3)).toFixed(1)}).join(' ');
+ return'<svg class="rtspk" viewBox="0 0 '+W+' '+H+'" width="'+W+'" height="'+H+'" aria-hidden="true"><polygon points="0,'+H+' '+pts+' '+W+','+H+'" fill="'+col+'33"/><polyline points="'+pts+'" fill="none" stroke="'+col+'" stroke-width="1.5"/></svg>'}
+function rtPct(g){return String(Math.round(g*1000)/10).replace('.',',')+' %'}
+function rtAnWide(){return window.matchMedia&&matchMedia('(min-width:900px) and (orientation:landscape)').matches}
+rtAnstHtml=function(){var all=rtClAll(true),inf=all.map(rtClInfo),cnt=function(s){return inf.filter(function(i){return i.src===s}).length},nAct=['src','g','km','dist','fav','hid'].filter(function(k){return RTAF[k]&&RTAF[k]!=='0'}).length;
+ var sel=function(id,opts,v){return'<select class="ta" data-anf="'+id+'" aria-label="'+id+'">'+opts.map(function(o){return'<option value="'+o[0]+'"'+(String(v)===String(o[0])?' selected':'')+'>'+o[1]+'</option>'}).join('')+'</select>'};
+ var h='<div class="rtan"><div class="rtan-h"><span><b>'+all.length+' Anstiege</b> · '+cnt('eigen')+' gefahren · <span style="color:#f08c00">'+(cnt('karte')+cnt('ki'))+' neu für dich</span> · '+cnt('dir')+' von dir</span>'
+  +'<span class="mu" id="rt-mqst">'+E(rtAnStTx())+'</span><span class="rtmw"><button type="button" class="rtdots" data-anm="1" aria-label="Weitere Aktionen" aria-expanded="'+!!RTV.anm+'">⋯</button>'
+  +(RTV.anm?'<span class="rtmenu" role="menu"><button type="button" role="menuitem" data-anlib="more">↻ Weiter aus Fahrten lernen</button><button type="button" role="menuitem" data-anlib="scan">⌖ Kartensuche neu starten</button><button type="button" role="menuitem" data-anlib="names">✎ Namen neu vergeben</button><button type="button" role="menuitem" data-anlib="new">⟲ Alles neu lernen</button></span>':'')+'</span></div>';
+ if(RTV.add)h+='<div class="card hc rtaddc"><p><b>'+(RTV.add.a?RTV.add.b?'Anstieg prüfen und speichern':'Jetzt das Ende (oben) auf der Karte antippen.':'Den Start (Fuß) auf der Karte antippen.')+'</b></p>'+(RTV.add.r?'<p class="rtk">'+f1(RTV.add.r.km)+' km · '+RTV.add.r.hm+' Hm · Ø '+String(Math.round(RTV.add.r.hm/RTV.add.r.km/10*10)/10).replace('.',',')+' %</p><div class="rtren"><input class="ta" id="rt-addn" maxlength="50" placeholder="Name, z. B. Haunsberg" value="'+E(RTV.add.n||'')+'"><button type="button" class="pbtn sm" data-rtadds="1">Speichern</button></div>':RTV.add.b?'<p class="mu">Route wird berechnet …</p>':'')+'</div>';
+ h+='<div class="rtan-g"><div class="rtan-l card hc"><div class="rtan-tb"><input class="ta" data-anf="q" placeholder="Suchen, z. B. Gaisberg" value="'+E(RTAF.q||'')+'"><button type="button" class="pbtn sm sec'+(nAct?' on':'')+'" data-anfo="1" aria-expanded="'+!!RTV.afo+'">Filter'+(nAct?' ('+nAct+')':'')+'</button><button type="button" class="pbtn sm'+(RTV.add?' warn':'')+'" data-rtadd="1" title="Anstieg selbst eintragen">'+(RTV.add?'Abbrechen':'＋ Anstieg')+'</button></div>'
+  +'<div class="rtan-f'+(RTV.afo?' open':'')+'">'
+  +sel('sort',[['dist','Sortieren: Entfernung'],['g','Sortieren: Steigung'],['km','Sortieren: Länge'],['hm','Sortieren: Höhenmeter'],['steady','Sortieren: Gleichmäßigkeit'],['n','Sortieren: am öftesten gefahren'],['t','Sortieren: Bestzeit'],['name','Sortieren: Name']],RTAF.sort)
+  +sel('src',[['','Herkunft: alle'],['eigen','gefahren'],['karte','aus der Karte (neu)'],['ki','Vorschlag von Claude (neu)'],['dir','von dir']],RTAF.src)
+  +sel('g',[[0,'Steigung: alle'],[5,'ab 5 %'],[6,'ab 6 %'],[7,'ab 7 %'],[8,'ab 8 %'],[10,'ab 10 %']],RTAF.g)
+  +sel('km',[[0,'Länge: alle'],[2,'ab 2 km'],[4,'ab 4 km'],[7,'ab 7 km'],[10,'ab 10 km']],RTAF.km)
+  +sel('dist',[[0,'Entfernung: alle'],[10,'bis 10 km'],[20,'bis 20 km'],[30,'bis 30 km'],[50,'bis 50 km'],[70,'bis 70 km']],RTAF.dist)
+  +'<label class="rtck"><input type="checkbox" data-anf="fav"'+(RTAF.fav?' checked':'')+'> nur Favoriten</label><label class="rtck"><input type="checkbox" data-anf="hid"'+(RTAF.hid?' checked':'')+'> Ausgeblendete zeigen</label></div>'
+  +'<div class="hcl rtan-cnt" id="rt-ancnt"></div><div class="rtan-ls" id="rt-anls"></div></div>'
+  +'<div class="rtan-m card hc"><div id="rt-amap"></div><div class="card rtan-d" id="rt-adet"></div></div></div>'
+  +'<p class="mu rtan-leg"><i style="background:#1d6fe0"></i>gefahren <i style="background:#f08c00"></i>neu für dich <i style="background:#2f9e44"></i>von dir <i style="background:#868e96"></i>ausgeblendet</p></div>';
+ return h};
+function rtAnList(){var ls=$('rt-anls'),ct=$('rt-ancnt');if(!ls)return;var L=RTAN.list,all=rtClAll(true).length;if(ct)ct.textContent=L.length+' von '+all+' Anstiegen';
+ if(!L.length){ls.innerHTML='<p class="mu">'+(all?'Kein Anstieg passt zu den Filtern.':'Noch keine Anstiege. Die App lernt sie aus deinen Fahrten und sucht neue auf der Karte.')+'</p>';return}
+ ls.innerHTML=L.slice(0,RTAN.n).map(function(x){var c=x.c,i=x.i,col=rtAnCol(x);return'<div class="rtan-r'+(RTV.cs===c.id?' on':'')+(x.hid?' hid':'')+'" data-anr="'+c.id+'" role="button" tabindex="0"><i style="background:'+col+'"></i><span class="rtan-t"><b>'+(c.fav?'★ ':'')+E(c.name)+'</b><small>'+f1(c.km)+' km · '+c.hm+' Hm · Ø '+rtPct(c.g)+' · '+f1(i.d)+' km entfernt</small></span>'+rtSpark(i.prof,col)+'</div>'}).join('')
+  +(L.length>RTAN.n?'<div id="rt-anmore" class="mu" style="padding:8px;font-size:.8rem">weitere werden geladen …</div>':'');
+ var mo=$('rt-anmore');if(mo&&window.IntersectionObserver){var io=new IntersectionObserver(function(es){if(es.some(function(e){return e.isIntersecting})){io.disconnect();RTAN.n+=60;rtAnList()}});io.observe(mo)}}
+function rtAnDet(){var d=$('rt-adet');if(!d)return;var id=RTV.cs,c=id?rtClAll(true).filter(function(x){return x.id===id})[0]:null;if(!c){d.classList.remove('on');d.innerHTML='';return}
+ var cf=RT.pref.cf||{},hid=cf[id]&&cf[id].h,body=String(rtClPopup(id)||'').replace(/<div class="pb">[\s\S]*$/,'').replace(/^<b>[\s\S]*?<\/b>/,'');
+ d.innerHTML='<div class="rtan-dh">'+(RTV.ren2===id?'<div class="rtren"><input class="ta" id="rt-anrn" maxlength="50" value="'+E(c.name)+'"><button type="button" class="pbtn sm" data-anrens="'+id+'">Speichern</button><button type="button" class="pbtn sm sec" data-anrenx="1">Abbrechen</button></div>':'<b>'+(c.fav?'★ ':'')+E(c.name)+'</b>')+'<button type="button" class="rtan-x" data-anx="1" aria-label="Schließen">✕</button></div>'+body
+  +'<div class="pb rtan-db"><button type="button" class="pbtn sm sec" data-ancf="'+id+'">'+(c.fav?'★ Favorit':'☆ Favorit')+'</button><button type="button" class="pbtn sm sec" data-anren="'+id+'">✎ Umbenennen</button><button type="button" class="pbtn sm sec" data-anch="'+id+'">'+(hid?'Einblenden':'Ausblenden')+'</button>'+(c.own===2?'<button type="button" class="pbtn sm sec'+(RTV.andc===id?' warn':'')+'" data-ancd="'+id+'">'+(RTV.andc===id?'Wirklich löschen?':'Löschen')+'</button>':'')+'</div>';
+ d.classList.add('on')}
+function rtAnMap(){var el=$('rt-amap');if(!el||!window.WU_MAPLINES)return;var wide=rtAnWide(),top=el.getBoundingClientRect().top,h=wide?Math.max(360,Math.round(window.innerHeight-Math.max(60,top)-140)):Math.max(240,Math.round(window.innerHeight*.4));
+ var lp=document.querySelector('.rtan-l');if(lp)lp.style.setProperty('--rtanh',(h+40)+'px');
+ var sel=null,lines=RTAN.list.map(function(x){var c=x.c,ln=rtClLine(c);if(RTV.cs===c.id)sel=ln;return{k:c.id,lat:ln,c:rtAnCol(x),w:c.fav?6:4,o:x.hid?.5:.95,lab:c.fav?c.name:null}});
+ var pins=RTV.add?[RTV.add.a,RTV.add.b].filter(Boolean):[];if(RTV.add&&RTV.add.r)lines.push({lat:RTV.add.r.c.map(function(q){return[q[0],q[1]]}),c:'#e03131',w:7});
+ var hm0=rtHome(),R=(RTAF.dist||25)*1000,near=[];if(!sel&&hm0){lines.forEach(function(l){if(l.k!=null&&l.lat&&l.lat.length&&rtHav(l.lat[0],hm0)<R)near=near.concat(l.lat)});near.push(hm0)}
+ window.WU_MAPLINES(el,lines,{h:h,fit:sel||(near.length>2?near:null),view:RTV.aview||null,pins:pins,hint:RTV.add?'Punkte auf der Karte antippen.':'Anstieg antippen für Details.',
+  onLine:RTV.add?null:function(k){rtAnSel(k,false)},
+  onClick:RTV.add?function(la,lo){RTV.aview=el._wmView?el._wmView():null;if(!RTV.add.a)RTV.add.a=[la,lo];else if(!RTV.add.b){RTV.add.b=[la,lo];rtAddCalc()}else{RTV.add={a:[la,lo]}}rRoutes()}:null});
+ RTV.aview=null;if(RTV.cs&&el._wmSel)el._wmSel(RTV.cs,false)}
+function rtAnSel(id,fromList){RTV.cs=RTV.cs===id&&fromList?null:id;RTV.ren2=null;RTV.andc=null;
+ [].forEach.call(document.querySelectorAll('.rtan-r'),function(r){r.classList.toggle('on',r.getAttribute('data-anr')===RTV.cs)});
+ var el=$('rt-amap');if(el&&el._wmSel)el._wmSel(RTV.cs,!!fromList,rtAnWide()?[370,0]:[0,Math.round(el.clientHeight*.35)]);rtAnDet();
+ if(!fromList){var r=document.querySelector('.rtan-r.on');if(r)r.scrollIntoView({block:'nearest',behavior:'smooth'})}
+ else if(!rtAnWide()&&RTV.cs&&el)el.scrollIntoView({block:'start',behavior:'smooth'})}
+function rtAnUpd(){var a=[].slice.call(arguments),all=a.indexOf('all')>=0;if(all||a.indexOf('list')>=0||a.indexOf('map')>=0)RTAN.list=rtClFiltered();
+ if(all||a.indexOf('list')>=0)rtAnList();if(all||a.indexOf('map')>=0)rtAnMap();if(all||a.indexOf('det')>=0)rtAnDet()}
+rtAnstMap=function(){RTAN.n=60;rtAnUpd('all')};
+window.WU_RTAN=function(){return{n:RTAN.list.length,rows:document.querySelectorAll('.rtan-r').length,det:!!document.querySelector('.rtan-d.on')}};
+var RTANT=null;
+document.addEventListener('input',function(e){var t=e.target;if(!t||!t.getAttribute||!t.hasAttribute('data-anf'))return;var k=t.getAttribute('data-anf');RTAF[k]=t.type==='checkbox'?(t.checked?1:0):k==='q'||k==='sort'||k==='src'?t.value:Number(t.value);rtAfSave();
+ clearTimeout(RTANT);RTANT=setTimeout(function(){RTAN.n=60;rtAnUpd('list','map');var b=document.querySelector('[data-anfo]'),n=['src','g','km','dist','fav','hid'].filter(function(x){return RTAF[x]&&RTAF[x]!=='0'}).length;if(b){b.textContent='Filter'+(n?' ('+n+')':'');b.classList.toggle('on',!!n)}},k==='q'?350:0)});
+document.addEventListener('change',function(e){var t=e.target;if(t&&t.getAttribute&&t.hasAttribute('data-anf')&&t.type==='checkbox')t.dispatchEvent(new Event('input',{bubbles:true}))});
+document.addEventListener('keydown',function(e){var r=e.target&&e.target.closest&&e.target.closest('[data-anr]');if(r&&(e.key==='Enter'||e.key===' ')){e.preventDefault();rtAnSel(r.getAttribute('data-anr'),true)}});
+document.addEventListener('click',function(e){var b=e.target.closest&&e.target.closest('[data-anr],[data-anx],[data-ancf],[data-anch],[data-anren],[data-anrens],[data-anrenx],[data-ancd],[data-anfo],[data-anm],[data-anlib]');
+ if(!b){if(RTV.anm&&e.isTrusted&&!(e.target.closest&&e.target.closest('.rtmenu'))){RTV.anm=0;rRoutes()}return}
+ e.preventDefault();e.stopPropagation();var g=function(a){return b.getAttribute(a)},cf=RT.pref.cf=RT.pref.cf||{};
+ if(b.hasAttribute('data-anr')){rtAnSel(g('data-anr'),true);return}
+ if(b.hasAttribute('data-anx')){RTV.cs=null;rtAnSel(null,false);return}
+ if(b.hasAttribute('data-ancf')){var x=cf[g('data-ancf')]=cf[g('data-ancf')]||{};x.f=x.f?0:1;rtPrefSave();rtAnUpd('list','det');var el=$('rt-amap');if(el&&el._wmSel)el._wmSel(RTV.cs,false);return}
+ if(b.hasAttribute('data-anch')){var y=cf[g('data-anch')]=cf[g('data-anch')]||{};y.h=y.h?0:1;rtPrefSave();if(y.h&&!RTAF.hid)RTV.cs=null;rtAnUpd('all');return}
+ if(b.hasAttribute('data-anren')){RTV.ren2=g('data-anren');rtAnDet();setTimeout(function(){var i=$('rt-anrn');if(i){i.focus();i.select()}},30);return}
+ if(b.hasAttribute('data-anrenx')){RTV.ren2=null;rtAnDet();return}
+ if(b.hasAttribute('data-anrens')){var id=g('data-anrens'),nv=(($('rt-anrn')||{}).value||'').trim().slice(0,50),c=rtClAll(true).filter(function(z){return z.id===id})[0];RTV.ren2=null;
+  if(c&&nv){c.name=nv;c.nmU=1;if(c.own===2)rtPrefSave();else{delete RT.lib._set;rtLibSave()}}rtAnUpd('list','det');return}
+ if(b.hasAttribute('data-ancd')){var id2=g('data-ancd');if(RTV.andc!==id2){RTV.andc=id2;rtAnDet();return}RT.pref.mcl=(RT.pref.mcl||[]).filter(function(z){return z.id!==id2});rtPrefSave();RTV.andc=null;RTV.cs=null;rtAnUpd('all');return}
+ if(b.hasAttribute('data-anfo')){RTV.afo=!RTV.afo;var f=document.querySelector('.rtan-f');if(f)f.classList.toggle('open',!!RTV.afo);b.setAttribute('aria-expanded',!!RTV.afo);return}
+ if(b.hasAttribute('data-anm')){RTV.anm=RTV.anm?0:1;rRoutes();return}
+ if(b.hasAttribute('data-anlib')){var v=g('data-anlib');RTV.anm=0;
+  if(v==='scan'){if(RT.lib){RT.lib.climbs=(RT.lib.climbs||[]).filter(function(z){return!z.q});RT.lib.mq=null}rRoutes();rtMapScan().catch(function(){});return}
+  if(v==='names'){(RT.lib&&RT.lib.climbs||[]).forEach(function(z){if(rtNmGen(z)){z.nmD=0;if(z.nmS==='ki'||z.nmS==='ort')z.nmS=''}});rRoutes();rtNmRun().catch(function(){});return}
+  RT.libSt='Lerne …';rRoutes();rtLibBuild(v==='new').then(function(){RT.libSt='';rRoutes()});return}},true);
 /* Kontext für den Coach */
 function coCtx(){var t=tod(),X=window.ACT||[],n=S?S.ct.length:0,ph=phaseOf(t),bw=bodyAt(t),kg=bw?bw.kg:W;
  var ak=X.filter(function(a){return a.day>=addD(t,-21)}).map(function(a){var p=PM[a.day],q=LOG[a.id]||{};return{datum:a.day,name:a.name,sport:sn(a.sp),minuten:Math.round(a.sec/60),km:a.km>0?Math.round(a.km):null,hm:a.hm>0?Math.round(a.hm):null,tss:Math.round(a.tss),np:a.np?Math.round(a.np):null,puls:a.ah||null,if:a.iff?Math.round(a.iff*100)/100:null,entkopplung_prozent:a.dc==null?null:a.dc,geplant:p?p[2]:null,rpe:q.rpe||null,notiz:q.note||null,kraempfe:q.kr&&q.kr.s?krSum(q.kr):null}});

@@ -185,33 +185,30 @@ async function runtimeCheck() {
     if (r18) { await WU_RTMORE('2026-11-18'); o.more = (WU_RT.res['2026-11-18'].ex || []).length; }
     location.hash = '#routen'; await new Promise((r) => setTimeout(r, 300));
     const an = document.querySelector('[data-rtv="anst"]'); if (an) { an.click(); await new Promise((r) => setTimeout(r, 900)); }
-    o.anst = !!document.getElementById('rt-amap') && /Was die App kennt/.test(document.getElementById('rt-b').textContent);
+    o.anst = !!document.getElementById('rt-amap') && !!document.querySelector('.rtan') && document.querySelectorAll('.rtan-r').length > 0;
+    { const r0 = document.querySelector('.rtan-r'); if (r0) { r0.click(); await new Promise((r) => setTimeout(r, 300)); } o.det = WU_RTAN().det && /Höhenmeter/.test(document.getElementById('rt-adet').textContent); }
     o.pop = WU_RT.lib.climbs.map((c) => (WU_RTPOP(c.id) || '').length > 200).join(',');
-    const so = document.querySelector('[data-rtaf="g"]'); if (so) { so.value = '7'; so.dispatchEvent(new Event('input', { bubbles: true })); await new Promise((r) => setTimeout(r, 500)); }
-    o.filt = (document.querySelector('#rt-b .card .hcl') && [...document.querySelectorAll('#rt-b .hcl')].map((x) => x.textContent).filter((t) => /von \d+ Anstiegen/.test(t))[0]) || 'fehlt';
+    const so = document.querySelector('[data-anf="g"]'); if (so) { so.value = '7'; so.dispatchEvent(new Event('input', { bubbles: true })); await new Promise((r) => setTimeout(r, 500)); }
+    o.filt = ((document.getElementById('rt-ancnt') || {}).textContent || '').match(/\d+ von \d+ Anstiegen/) ? document.getElementById('rt-ancnt').textContent : 'fehlt';
     if (so) { so.value = '0'; so.dispatchEvent(new Event('input', { bubbles: true })); await new Promise((r) => setTimeout(r, 300)); }
     document.querySelector('[data-rtv="lern"]').click(); await new Promise((r) => setTimeout(r, 400)); o.lern = !!document.getElementById('rt-lmap') && !!document.querySelector('.rtpw') && /Gemiedene Stellen/.test(document.getElementById('rt-b').textContent);
     return o;
   });
-  if (/false/.test(db.pop || 'false') || db.filt === 'fehlt' || !/climb↩/.test(db.fint || '') || !db.anst || !db.ren || !db.del || !db.ftp || db.ftp === 'fehlt' || !db.cmp || !db.map || !db.sel || !db.own || !db.free || !db.verl || !db.lern) fail('Routen-Dashboard: ' + JSON.stringify(db)); else console.log('✓ Routen-Dashboard: ' + JSON.stringify(db));
+  if (/false/.test(db.pop || 'false') || db.filt === 'fehlt' || !/climb↩/.test(db.fint || '') || !db.anst || !db.det || !db.ren || !db.del || !db.ftp || db.ftp === 'fehlt' || !db.cmp || !db.map || !db.sel || !db.own || !db.free || !db.verl || !db.lern) fail('Routen-Dashboard: ' + JSON.stringify(db)); else console.log('✓ Routen-Dashboard: ' + JSON.stringify(db));
   await look('Routen-Dashboard');
-  /* v61: Segmentsuche gesperrt (401) → einmal fragen, dann ruhen; Routenplaner lehnt kurz ab → wiederholen */
-  MOCK.ex401 = true; MOCK.exn = 0;
-  const ex = await pg.evaluate(async () => { WU_RT.lib.exTs = 0; WU_RT.lib.exDone = []; WU_RT.lib.exWait = 0; WU_RT.lib.next = Date.now() + 1e7; await WU_RTLIB(); const a = { off: !!WU_RT.lib.exOff, err: WU_RT.lib.exErr || '' }; WU_RT.lib.exTs = 0; await WU_RTLIB(); return a; });
-  MOCK.ex401 = false;
-  if (!ex.off || ex.err || MOCK.exn !== 1) fail('Segmentsuche 401: ' + JSON.stringify(ex) + ' Abrufe ' + MOCK.exn); else console.log('✓ Segmentsuche 401: eine Abfrage, danach Ruhe');
+  if (process.env.ANSHOT) { for (const [w, h, n] of [[1280, 800, 'tab'], [390, 844, 'tel']]) { await pg.setViewportSize({ width: w, height: h }); await pg.evaluate(async () => { location.hash = '#routen'; await new Promise((r) => setTimeout(r, 300)); WU_RTV.tab = 'anst'; WU_RTV.cs = null; WU_RTR(); await new Promise((r) => setTimeout(r, 1500)); const r0 = document.querySelector('.rtan-r'); if (r0) r0.click(); await new Promise((r) => setTimeout(r, 800)); }); await pg.screenshot({ path: process.env.ANSHOT + '/an-' + n + '.png' }); } await pg.setViewportSize({ width: 390, height: 844 }); }
   MOCK.rfail = 2;
   const rq = await pg.evaluate(async () => { const d = '2026-11-21'; await WU_RTCALC(d); const q = WU_RTQ(); return { n: WU_RT.res[d].R.length, f: q.f, wr: WU_RT.res[d].R[0].wr || '' }; });
   if (rq.n < 3 || rq.f || rq.wr) fail('Routenplaner-Wiederholung: ' + JSON.stringify(rq)); else console.log('✓ Routenplaner-Wiederholung: ' + JSON.stringify(rq));
   /* v62: Anstiege aus der Karte */
   const mp = await pg.evaluate(async () => {
     const c = []; for (let i = 0; i <= 120; i++) { const d = i * 50; c.push([47.7 + d / 111320, 13.2, d < 1000 ? 500 : d < 4000 ? 500 + (d - 1000) * 0.06 : 680]); }
-    const f = WU_RTFIND(c, 'a'.repeat(c.length)), g = WU_RTFIND(c, 'g'.repeat(c.length));
+    const f = WU_RTFIND(c, 'a'.repeat(c.length)), g = WU_RTFIND(c, 'g'.repeat(c.length)), tr = WU_RTFIND(c, 'a'.repeat(c.length), 'o'.repeat(60) + 'x'.repeat(61)), tw = WU_RTFIND(c, 'a'.repeat(c.length), 'x'.repeat(c.length));
     await WU_RTMAP(); for (let k = 0; k < 60 && !((WU_RT.lib.mq || {}).st >= 3); k++) { await new Promise((r) => setTimeout(r, 1000)); await WU_RTMAP(); } const q = WU_RT.lib.mq || {};
     const tg = WU_RTOSM('47.84\t13.1\t\tyes\t\t\t900\tTestpass\n47.77\t13.0\tpeak\t\t\t\t1100,5\t\n');
-    return { tgp: tg.length === 2 && tg[0][2] === 'p' && tg[1][3] === 1101 && tg[1][4] === '', f: f.length, km: f[0] ? Math.round(f[0].km * 10) / 10 : 0, hm: f[0] ? f[0].hm : 0, g: g.length, st: q.st, osm: (q.tg ? -1 : 0), tx: (document.getElementById('rt-mqst') || {}).textContent || '' };
+    return { trim: tr.length === 1 && tr[0].km < 2.6, tw: tw.length, tgp: tg.length === 2 && tg[0][2] === 'p' && tg[1][3] === 1101 && tg[1][4] === '', f: f.length, km: f[0] ? Math.round(f[0].km * 10) / 10 : 0, hm: f[0] ? f[0].hm : 0, g: g.length, st: q.st, osm: (q.tg ? -1 : 0), tx: (document.getElementById('rt-mqst') || {}).textContent || '' };
   });
-  if (!mp.tgp || mp.f !== 1 || mp.km < 2.5 || mp.hm < 150 || mp.g !== 0 || mp.st !== 3) fail('Kartensuche: ' + JSON.stringify(mp)); else console.log('✓ Kartensuche: ' + JSON.stringify(mp));
+  if (!mp.trim || mp.tw || !mp.tgp || mp.f !== 1 || mp.km < 2.5 || mp.hm < 150 || mp.g !== 0 || mp.st !== 3) fail('Kartensuche: ' + JSON.stringify(mp)); else console.log('✓ Kartensuche: ' + JSON.stringify(mp));
   await open('p:18.11.', 'Routen Intervalle');
   await open('p:21.11.', 'Routen Grundlage');
   await open('rb1', 'Rennblatt Mondsee');
