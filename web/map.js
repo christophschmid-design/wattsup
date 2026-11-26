@@ -176,7 +176,7 @@
   window.WU_RCL = RCL; window.WU_SCL = SCL;
   function show0(el, p, L, opt) {
     opt = opt || {};
-    var r = prep(p), cls = climbs(r), mob = matchMedia('(pointer:coarse)').matches;
+    var r = prep(p), cls = opt.ivs ? [] : climbs(r), mob = matchMedia('(pointer:coarse)').matches, IVC = '#ff2d55';
     var modes = MODES.concat([['road', 'Straßenart'], ['surf', 'Untergrund']]).filter(function (m) { return m[0] === 'plain' || m[0] === 'g' && r.alt[0] != null || m[0] === 'hr' && r.hr || m[0] === 'w' && r.w || m[0] === 'v' && r.v || m[0] === 'road' && p.road || m[0] === 'surf' && p.surf; });
     var lay = pref('lay', 'str'), mode = pref('mode', 'plain'); if (!modes.some(function (m) { return m[0] === mode; })) mode = 'plain';
     var up = 0, top = -1e9; for (var i = 1; i < r.n; i++) { if (r.alt[i] != null && r.alt[i - 1] != null && r.alt[i] > r.alt[i - 1]) up += r.alt[i] - r.alt[i - 1]; if (r.alt[i] != null) top = Math.max(top, r.alt[i]); }
@@ -258,6 +258,14 @@
       cls.forEach(function (c, k) {
         L.marker(lat[c.b], { icon: ico(CLC[k % CLC.length], String(k + 1)) }).on('click', function () { pickClimb(k); }).addTo(track);
       });
+      /* v55: Intervallstrecken (von wo bis wo) */
+      (opt.ivs || []).forEach(function (v) {
+        var a0 = Math.max(0, Math.min(r.n - 1, v[0])), b0 = Math.max(a0, Math.min(r.n - 1, v[1]));
+        L.polyline(lat.slice(a0, b0 + 1), { renderer: ren, color: '#ffffff', weight: 12, opacity: .95, interactive: false }).addTo(track);
+        L.polyline(lat.slice(a0, b0 + 1), { renderer: ren, color: IVC, weight: 7, opacity: .95, interactive: false }).addTo(track);
+        L.marker(lat[a0], { interactive: false, icon: L.divIcon({ className: '', html: '<div style="background:' + IVC + ';color:#fff;font:800 11px/1 sans-serif;padding:4px 6px;border-radius:8px;border:2px solid #fff;white-space:nowrap;box-shadow:0 1px 4px rgba(0,0,0,.4)">▶ ' + v[2] + '</div>', iconSize: [40, 20], iconAnchor: [8, 10] }) }).addTo(track);
+        L.marker(lat[b0], { interactive: false, icon: L.divIcon({ className: '', html: '<div style="width:14px;height:14px;background:#fff;border:3px solid ' + IVC + ';border-radius:3px"></div>', iconSize: [14, 14], iconAnchor: [7, 7] }) }).addTo(track);
+      });
     }
     function view() { try { return { c: map.getCenter(), z: map.getZoom(), full: root.classList.contains('full') }; } catch (e) { return null; } }
     draw();
@@ -295,7 +303,8 @@
         var rg = mode === 'g' ? [-2, 10] : range(vs) || [0, 1], step = Math.max(1, Math.floor(r.n / 170));
         for (i = step; i < r.n; i += step) if (r.alt[i] != null && vs[i] != null) segs += '<rect x="' + X(r.d[i - step]).toFixed(1) + '" y="' + Y(r.alt[i]).toFixed(1) + '" width="' + (X(r.d[i]) - X(r.d[i - step]) + .6).toFixed(1) + '" height="' + (Hh - 18 - Y(r.alt[i])).toFixed(1) + '" fill="' + col((vs[i] - rg[0]) / (rg[1] - rg[0] || 1)) + '" opacity=".55"/>';
       }
-      var cl = cls.map(function (c, k) { return '<rect class="wm-cr" data-c="' + k + '" x="' + X(r.d[c.a]).toFixed(1) + '" y="0" width="' + (X(r.d[c.b]) - X(r.d[c.a])).toFixed(1) + '" height="' + (Hh - 18) + '" fill="' + CLC[k % CLC.length] + '" opacity="' + (sel === k ? .22 : .08) + '"/>'; }).join('');
+      var ivr = (opt.ivs || []).map(function (v) { var a0 = Math.max(0, Math.min(r.n - 1, v[0])), b0 = Math.max(a0, Math.min(r.n - 1, v[1])); return '<rect x="' + X(r.d[a0]).toFixed(1) + '" y="0" width="' + Math.max(1, X(r.d[b0]) - X(r.d[a0])).toFixed(1) + '" height="' + (Hh - 18) + '" fill="' + IVC + '" opacity=".2"/><text x="' + (X(r.d[a0]) + 2).toFixed(1) + '" y="22" font-size="9" font-weight="700" fill="' + IVC + '">' + v[2] + '</text>'; }).join('');
+      var cl = ivr + cls.map(function (c, k) { return '<rect class="wm-cr" data-c="' + k + '" x="' + X(r.d[c.a]).toFixed(1) + '" y="0" width="' + (X(r.d[c.b]) - X(r.d[c.a])).toFixed(1) + '" height="' + (Hh - 18) + '" fill="' + CLC[k % CLC.length] + '" opacity="' + (sel === k ? .22 : .08) + '"/>'; }).join('');
       var ticks = '', st = tot > 80000 ? 20000 : tot > 30000 ? 10000 : 5000;
       for (var t = st; t < tot; t += st) ticks += '<text x="' + X(t).toFixed(1) + '" y="' + (Hh - 5) + '" text-anchor="middle" font-size="9" fill="currentColor" opacity=".6">' + t / 1000 + '</text>';
       svg.innerHTML = cl + (segs || '<path d="' + area + '" fill="#1d6fe0" opacity=".18"/>') + '<path d="' + path + '" fill="none" stroke="currentColor" stroke-width="1.6" opacity=".8"/>' + ticks +
