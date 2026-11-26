@@ -870,6 +870,7 @@ nav a.rnav{display:none}body.tabdev nav a.rnav{display:flex}body.tabdev .rtentry
 .rtpwb{position:relative;width:90px;height:6px;border-radius:3px;background:linear-gradient(90deg,#4dabf7,var(--ln) 50%,#f08c00)}.rtpwb i{position:absolute;top:-4px;width:14px;height:14px;margin-left:-7px;border-radius:50%;background:var(--tx);border:2px solid var(--card)}
 .rtcl{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:7px 0;border-top:1px solid var(--ln);flex-wrap:wrap}.rtcl:first-of-type{border-top:0}.rtcl>span:first-child{display:flex;flex-direction:column}.rtcl small{color:var(--mu);font-size:.76rem}.rtcl>span:last-child{display:flex;gap:6px}.rtcl.on b{color:var(--ac)}
 .rtcl.hid b{color:var(--mu);text-decoration:line-through}.rtmorebar{margin:0 0 10px;align-items:center}.rtaddc{border-color:var(--ac)}
+.rtan-chips{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0 0}.rtchip{border:1px solid var(--ac,#1d6fe0);color:var(--ac,#1d6fe0);background:rgba(29,111,224,.08);border-radius:999px;padding:4px 10px;font:inherit;font-size:.78rem;cursor:pointer}.rtchip.sec{border-color:var(--ln);color:var(--mu);background:none}
 .rtstb{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:2px 2px 10px}.rtstb>.mu{font-size:.8rem}.rtsts{display:flex;gap:4px;background:var(--ln);border-radius:12px;padding:3px}.rtsts button{border:0;background:none;padding:6px 12px;border-radius:9px;font:inherit;font-size:.85rem;cursor:pointer;color:var(--mu)}.rtsts button[aria-pressed="true"]{background:var(--card);color:inherit;font-weight:600;box-shadow:0 1px 3px rgba(0,0,0,.15)}
 .rtst2f{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0}.rtst2f input.ta{flex:1 1 200px;width:auto}
 .rtcln{display:flex;gap:10px;align-items:center;padding:9px 0;border-top:1px solid var(--ln)}.rtcln:first-child{border-top:0}.rtpsv{flex:0 0 auto;background:rgba(127,127,127,.08);border-radius:8px}.rtcln-t{display:flex;flex-direction:column;min-width:0;flex:1}.rtcln-t b{font-size:.86rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.rtcln-t small{color:var(--mu);font-size:.74rem;margin-bottom:3px}.rtcln-b{display:flex;flex-wrap:wrap;gap:6px;margin-top:4px}
@@ -4228,8 +4229,8 @@ function rtSpark(pr,col){if(!pr||pr.length<3)return'';var W=64,H=22,dm=pr[pr.len
  return'<svg class="rtspk" viewBox="0 0 '+W+' '+H+'" width="'+W+'" height="'+H+'" aria-hidden="true"><polygon points="0,'+H+' '+pts+' '+W+','+H+'" fill="'+col+'33"/><polyline points="'+pts+'" fill="none" stroke="'+col+'" stroke-width="1.5"/></svg>'}
 function rtPct(g){return String(Math.round(g*1000)/10).replace('.',',')+' %'}
 function rtAnWide(){return window.matchMedia&&matchMedia('(min-width:900px) and (orientation:landscape)').matches}
-rtAnstHtml=function(){var all=rtClAll(true),inf=all.map(rtClInfo),cnt=function(s){return inf.filter(function(i){return i.src===s}).length},nAct=['src','g','km','dist','fav','hid'].filter(function(k){return RTAF[k]&&RTAF[k]!=='0'}).length;
- var sel=function(id,opts,v){return'<select class="ta" data-anf="'+id+'" aria-label="'+id+'">'+opts.map(function(o){return'<option value="'+o[0]+'"'+(String(v)===String(o[0])?' selected':'')+'>'+o[1]+'</option>'}).join('')+'</select>'};
+rtAnstHtml=function(){var all=rtClAll(true),inf=all.map(rtClInfo),cnt=function(s){return inf.filter(function(i){return i.src===s}).length},nAct=['src','g','km','dist','fav','hid'].filter(function(k){return RTAF[k]&&RTAF[k]!=='0'&&RTAF[k]!==0}).length;
+ var sel=function(id,opts,v){if(v&&v!=='0'&&!opts.some(function(o){return String(o[0])===String(v)}))opts=opts.concat([[v,id==='g'?'ab '+v+' %':id==='km'?'ab '+v+' km':id==='dist'?'bis '+v+' km':String(v)]]);return'<select class="ta" data-anf="'+id+'" aria-label="'+id+'">'+opts.map(function(o){return'<option value="'+o[0]+'"'+(String(v)===String(o[0])?' selected':'')+'>'+o[1]+'</option>'}).join('')+'</select>'};
  var h='<div class="rtan"><div class="rtan-h"><span><b>'+all.length+' Anstiege</b> · '+cnt('eigen')+' gefahren · <span style="color:#f08c00">'+(cnt('karte')+cnt('ki'))+' neu für dich</span> · '+cnt('dir')+' von dir</span>'
   +'<span class="mu" id="rt-mqst">'+E(rtAnStTx())+'</span><span class="rtmw"><button type="button" class="rtdots" data-anm="1" aria-label="Weitere Aktionen" aria-expanded="'+!!RTV.anm+'">⋯</button>'
   +(RTV.anm?'<span class="rtmenu" role="menu"><button type="button" role="menuitem" data-anlib="more">↻ Weiter aus Fahrten lernen</button><button type="button" role="menuitem" data-anlib="scan">⌖ Kartensuche neu starten</button><button type="button" role="menuitem" data-ancl="1">🧹 Aufräumen</button><button type="button" role="menuitem" data-anlib="names">✎ Namen neu vergeben</button><button type="button" role="menuitem" data-anlib="new">⟲ Alles neu lernen</button></span>':'')+'</span></div>';
@@ -4242,7 +4243,7 @@ rtAnstHtml=function(){var all=rtClAll(true),inf=all.map(rtClInfo),cnt=function(s
   +sel('km',[[0,'Länge: alle'],[2,'ab 2 km'],[4,'ab 4 km'],[7,'ab 7 km'],[10,'ab 10 km']],RTAF.km)
   +sel('dist',[[0,'Entfernung: alle'],[10,'bis 10 km'],[20,'bis 20 km'],[30,'bis 30 km'],[50,'bis 50 km'],[70,'bis 70 km']],RTAF.dist)
   +'<label class="rtck"><input type="checkbox" data-anf="fav"'+(RTAF.fav?' checked':'')+'> nur Favoriten</label><label class="rtck"><input type="checkbox" data-anf="hid"'+(RTAF.hid?' checked':'')+'> Ausgeblendete zeigen</label></div>'
-  +'<div class="hcl rtan-cnt" id="rt-ancnt"></div><div class="rtan-ls" id="rt-anls"></div></div>'
+  +'<div id="rt-anchips"></div><div class="hcl rtan-cnt" id="rt-ancnt"></div><div class="rtan-ls" id="rt-anls"></div></div>'
   +'<div class="rtan-m card hc"><div id="rt-amap"></div><div class="card rtan-d" id="rt-adet"></div></div></div>'
   +'<p class="mu rtan-leg"><i style="background:#1d6fe0"></i>gefahren <i style="background:#f08c00"></i>neu für dich <i style="background:#2f9e44"></i>von dir <i style="background:#868e96"></i>ausgeblendet</p></div>';
  return h};
@@ -4365,6 +4366,25 @@ document.addEventListener('click',async function(e){var b=e.target.closest&&e.ta
  if(b.hasAttribute('data-ankp')){RT.pref.ckeep=(RT.pref.ckeep||[]).concat([ids.slice().sort().join('|')]);rtPrefSave();rtAnList();return}
  if(A&&B){var K=rtKeeper(A,B);rtMerge(K,K===A?B:A);delete RT.lib._set;await rtLibSave();rtPrefSave();RTAN.list=rtClFiltered();rtAnList();rtAnMap()}},true);
 window.WU_RTMERGE=function(){return rtAutoMerge()};window.WU_RTENC=function(p){return rtEnc(p)};window.WU_RTST={set:function(h,n){CF.home2=h;CF.home2N=n},sw:function(v){rtStSwitch(v)},home:function(){return rtHome()},clean:function(){return rtCleanHtml()}};window.WU_RTPAIRS=function(){return rtPairs().map(function(p){return[p.a.id,p.b.id,Math.round(p.cA*100),Math.round(p.cB*100)]})};
+/* v65: Sammlung zwischen Handy und Tablet zusammenführen statt gegenseitig überschreiben; aktive Filter sichtbar */
+function rtLibMerge(L,R){if(!L||!R||!R.climbs)return L;L.seen=L.seen||{};Object.keys(R.seen||{}).forEach(function(k){if(!L.seen[k])L.seen[k]=R.seen[k]});
+ var cs={};(L.cells||[]).forEach(function(k){cs[k]=1});(R.cells||[]).forEach(function(k){cs[k]=1});L.cells=Object.keys(cs);L.climbs=L.climbs||[];
+ R.climbs.forEach(function(r){var m=null;for(var i=0;i<L.climbs.length;i++){var o=L.climbs[i];if(o.id===r.id||(rtHav(o.a,r.a)<300&&rtHav(o.b,r.b)<300)){m=o;break}}if(!m){L.climbs.push(r);return}
+  m.n=Math.max(m.n||0,r.n||0);if(r.own&&!m.own)m.own=r.own;if(r.t&&(!m.t||r.t<m.t)){m.t=r.t;m.w=r.w}if(!m.pl&&r.pl)m.pl=r.pl;
+  if(r.nmU&&!m.nmU){m.name=r.name;m.nmU=1}else if(!m.nmU&&r.nmD&&!m.nmD){m.name=r.name;m.nmS=r.nmS;m.nmD=1}
+  ['pa','pb','ra','pp'].forEach(function(k){if(m[k]==null&&r[k]!=null)m[k]=r[k]});if(r.mg&&!m.mg)m.mg=r.mg;m.nMg=Math.max(m.nMg||0,r.nMg||0)});
+ var a=L.mq,b=R.mq;if(!RTM.on&&b&&b.v===3&&b.home===(a&&a.home||b.home)&&(!a||a.v!==3||(b.st||0)*1e5+(b.i||0)>(a.st||0)*1e5+(a.i||0))){b.nC=Math.max(b.nC||0,a&&a.nC||0);L.mq=b}
+ L.ts=Math.max(L.ts||0,R.ts||0);return L}
+window.WU_RTLM=function(a,b){return rtLibMerge(a,b)};var RTLPL=0;async function rtLibPull(gap){if(!(DBH&&UID&&RT.lib&&RT.lib.v===3))return;if(Date.now()-RTLPL<(gap||120000))return;RTLPL=Date.now();
+ try{var sn=await DBH.doc('data/users/'+UID+'/rlib').get(),v=sn&&sn.exists?sn.data():null;if(v&&v.v===3&&v.home===RT.lib.home)rtLibMerge(RT.lib,v)}catch(e){}}
+var _rtLib65=rtLibBuild;rtLibBuild=async function(f){if(!f)await rtLibPull();return _rtLib65(f)};
+var _rtSave65=rtLibSave;rtLibSave=async function(){await rtLibPull(30000);return _rtSave65()};
+if(['','eigen','karte','ki','dir'].indexOf(RTAF.src||'')<0)RTAF.src='';
+function rtAnChips(){var L=[];if(RTAF.src)L.push(['src',({eigen:'gefahren',karte:'aus der Karte',ki:'Vorschlag von Claude',dir:'von dir'})[RTAF.src]||RTAF.src]);if(+RTAF.g)L.push(['g','Steigung ab '+RTAF.g+' %']);if(+RTAF.km)L.push(['km','Länge ab '+RTAF.km+' km']);if(+RTAF.dist)L.push(['dist','bis '+RTAF.dist+' km entfernt']);if(+RTAF.fav)L.push(['fav','nur Favoriten']);if(+RTAF.hid)L.push(['hid','mit Ausgeblendeten']);if(RTAF.q)L.push(['q','Suche „'+RTAF.q+'“']);
+ return L.length?'<div class="rtan-chips">'+L.map(function(x){return'<button type="button" class="rtchip" data-anfx="'+x[0]+'" title="Filter entfernen">'+E(x[1])+' ✕</button>'}).join('')+(L.length>1?'<button type="button" class="rtchip sec" data-anfx="*">Alle zurücksetzen</button>':'')+'</div>':''}
+var _rtAnList65=rtAnList;rtAnList=function(){_rtAnList65();var c=$('rt-anchips');if(c)c.innerHTML=rtAnChips()};
+document.addEventListener('click',function(e){var b=e.target.closest&&e.target.closest('[data-anfx]');if(!b)return;e.preventDefault();e.stopPropagation();var k=b.getAttribute('data-anfx'),D={q:'',src:'',g:0,km:0,dist:0,fav:0,hid:0};
+ Object.keys(D).forEach(function(x){if(k==='*'||k===x)RTAF[x]=D[x]});rtAfSave();RTAN.n=60;rRoutes()},true);
 /* Kontext für den Coach */
 function coCtx(){var t=tod(),X=window.ACT||[],n=S?S.ct.length:0,ph=phaseOf(t),bw=bodyAt(t),kg=bw?bw.kg:W;
  var ak=X.filter(function(a){return a.day>=addD(t,-21)}).map(function(a){var p=PM[a.day],q=LOG[a.id]||{};return{datum:a.day,name:a.name,sport:sn(a.sp),minuten:Math.round(a.sec/60),km:a.km>0?Math.round(a.km):null,hm:a.hm>0?Math.round(a.hm):null,tss:Math.round(a.tss),np:a.np?Math.round(a.np):null,puls:a.ah||null,if:a.iff?Math.round(a.iff*100)/100:null,entkopplung_prozent:a.dc==null?null:a.dc,geplant:p?p[2]:null,rpe:q.rpe||null,notiz:q.note||null,kraempfe:q.kr&&q.kr.s?krSum(q.kr):null}});

@@ -190,11 +190,12 @@ async function runtimeCheck() {
     o.pop = WU_RT.lib.climbs.map((c) => (WU_RTPOP(c.id) || '').length > 200).join(',');
     const so = document.querySelector('[data-anf="g"]'); if (so) { so.value = '7'; so.dispatchEvent(new Event('input', { bubbles: true })); await new Promise((r) => setTimeout(r, 500)); }
     o.filt = ((document.getElementById('rt-ancnt') || {}).textContent || '').match(/\d+ von \d+ Anstiegen/) ? document.getElementById('rt-ancnt').textContent : 'fehlt';
+    o.chip = !!document.querySelector('[data-anfx="g"]');
     if (so) { so.value = '0'; so.dispatchEvent(new Event('input', { bubbles: true })); await new Promise((r) => setTimeout(r, 300)); }
     document.querySelector('[data-rtv="lern"]').click(); await new Promise((r) => setTimeout(r, 400)); o.lern = !!document.getElementById('rt-lmap') && !!document.querySelector('.rtpw') && /Gemiedene Stellen/.test(document.getElementById('rt-b').textContent);
     return o;
   });
-  if (/false/.test(db.pop || 'false') || db.filt === 'fehlt' || !/climb↩/.test(db.fint || '') || !db.anst || !db.det || !db.ren || !db.del || !db.ftp || db.ftp === 'fehlt' || !db.cmp || !db.map || !db.sel || !db.own || !db.free || !db.verl || !db.lern) fail('Routen-Dashboard: ' + JSON.stringify(db)); else console.log('✓ Routen-Dashboard: ' + JSON.stringify(db));
+  if (/false/.test(db.pop || 'false') || db.filt === 'fehlt' || !/climb↩/.test(db.fint || '') || !db.anst || !db.det || !db.chip || !db.ren || !db.del || !db.ftp || db.ftp === 'fehlt' || !db.cmp || !db.map || !db.sel || !db.own || !db.free || !db.verl || !db.lern) fail('Routen-Dashboard: ' + JSON.stringify(db)); else console.log('✓ Routen-Dashboard: ' + JSON.stringify(db));
   await look('Routen-Dashboard');
   if (process.env.ANSHOT) { for (const [w, h, n] of [[1280, 800, 'tab'], [390, 844, 'tel']]) { await pg.setViewportSize({ width: w, height: h }); await pg.evaluate(async () => { location.hash = '#routen'; await new Promise((r) => setTimeout(r, 300)); WU_RTV.tab = 'anst'; WU_RTV.cs = null; WU_RTR(); await new Promise((r) => setTimeout(r, 1500)); const r0 = document.querySelector('.rtan-r'); if (r0) r0.click(); await new Promise((r) => setTimeout(r, 800)); }); await pg.screenshot({ path: process.env.ANSHOT + '/an-' + n + '.png' }); } await pg.setViewportSize({ width: 390, height: 844 }); }
   MOCK.rfail = 2;
@@ -212,9 +213,11 @@ async function runtimeCheck() {
     WU_RTMERGE(); const by = (i) => WU_RT.lib.climbs.filter((c) => c.id === i)[0];
     o.part = /^t[AC]$/.test(by('tB').mg || '') && by(by('tB').mg).n === 4; o.ask = /tA\|tC|tC\|tA/.test(WU_RTST.clean()); o.notC = !by('tC').mg; o.dbg = JSON.stringify([by('tB').mg, by('tA').n, by('tC').n, WU_RTPAIRS().filter((x) => /^t/.test(x[0]) && /^t/.test(x[1]))]);
     WU_RT.lib.climbs = WU_RT.lib.climbs.filter((c) => !/^t[ABC]$/.test(c.id));
+    const L1 = { v: 3, seen: { a: 1 }, cells: ['x'], climbs: [{ id: 'k1', a: [47.7, 13.2], b: [47.72, 13.2], n: 1, own: 1, name: 'Anstieg 2 km, 6 %' }] }, R1 = { v: 3, seen: { b: 1 }, cells: ['y'], climbs: [{ id: 'k1', a: [47.7, 13.2], b: [47.72, 13.2], n: 3, own: 1, name: 'Gaisberg', nmD: 1, nmS: 'ki' }, { id: 'k2', a: [47.8, 13.1], b: [47.81, 13.1], n: 1, own: 1 }] };
+    WU_RTLM(L1, R1); o.lm = Object.keys(L1.seen).length === 2 && L1.climbs.length === 2 && L1.climbs[0].n === 3 && L1.climbs[0].name === 'Gaisberg';
     return o;
   });
-  if (!v64.h2 || v64.bar !== 2 || !v64.back || !v64.part || !v64.ask || !v64.notC || !v64.stash) fail('Startort/Zusammenlegen: ' + JSON.stringify(v64)); else console.log('✓ Startort/Zusammenlegen: ' + JSON.stringify(v64));
+  if (!v64.h2 || v64.bar !== 2 || !v64.back || !v64.part || !v64.ask || !v64.notC || !v64.stash || !v64.lm) fail('Startort/Zusammenlegen: ' + JSON.stringify(v64)); else console.log('✓ Startort/Zusammenlegen: ' + JSON.stringify(v64));
   /* v62: Anstiege aus der Karte */
   const mp = await pg.evaluate(async () => {
     const c = []; for (let i = 0; i <= 120; i++) { const d = i * 50; c.push([47.7 + d / 111320, 13.2, d < 1000 ? 500 : d < 4000 ? 500 + (d - 1000) * 0.06 : 680]); }
