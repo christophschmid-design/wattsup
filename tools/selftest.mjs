@@ -95,7 +95,7 @@ async function runtimeCheck() {
       for (let i = 1; i < ll.length; i++) { const [a1, b1] = ll[i - 1], [a2, b2] = ll[i], dk = Math.hypot((a2 - a1) * 74500, (b2 - b1) * 111320), n = Math.max(2, Math.round(dk / 80)); for (let k = 0; k < n; k++) { const f = k / n, lo = a1 + (a2 - a1) * f, la = b1 + (b2 - b1) * f; c.push([lo, la, 450 + 250 * Math.max(0, Math.sin(la * 900))]); if (k % 10 === 0) msg.push([lo, la, 0, dk / n * 10, 0, 0, 0, 0, 0, i === 2 ? 'highway=primary surface=asphalt' : 'highway=secondary surface=asphalt', k % 30 === 0 ? 'highway=traffic_signals' : '', 0, 0]); } tot += dk; }
       return J({ type: 'FeatureCollection', features: [{ type: 'Feature', properties: { 'track-length': String(Math.round(tot * 1.25)), 'filtered ascend': '320', messages: msg }, geometry: { type: 'LineString', coordinates: c } }] });
     }
-    if (u.includes('/osm?')) return J({ n: [[47.84, 13.1, 'p', 900, 'Testpass'], [47.77, 13.0, 'g', 1100, 'Testgipfel'], [47.812, 13.041, 'v', 600, 'zu nah']] });
+    if (u.includes('/osm?')) return route.fulfill({ status: 200, contentType: 'text/plain', headers: { 'Access-Control-Allow-Origin': '*' }, body: '47.84\t13.1\t\tyes\t\t\t900\tTestpass\n47.77\t13.0\tpeak\t\t\t\t1100\tTestgipfel\n47.812\t13.041\t\t\tviewpoint\t\t600\tzu nah\n' });
     if (u.includes('/geo?')) return J({ lat: 47.81, lon: 13.04, name: 'Teststraße 1, Salzburg' });
     if (u.includes('/segments/explore') && MOCK.ex401) { MOCK.exn++; return route.fulfill({ status: 401, contentType: 'application/json', body: JSON.stringify({ message: 'Authorization Error' }) }); }
     if (u.includes('/segments/explore')) return J({ segments: [{ id: 1, name: 'Testanstieg', climb_category: 2, avg_grade: 7, distance: 3200, elev_difference: 220, start_latlng: [47.83, 13.1], end_latlng: [47.84, 13.12], points: '' }] });
@@ -208,9 +208,10 @@ async function runtimeCheck() {
     const c = []; for (let i = 0; i <= 120; i++) { const d = i * 50; c.push([47.7 + d / 111320, 13.2, d < 1000 ? 500 : d < 4000 ? 500 + (d - 1000) * 0.06 : 680]); }
     const f = WU_RTFIND(c, 'a'.repeat(c.length)), g = WU_RTFIND(c, 'g'.repeat(c.length));
     await WU_RTMAP(); for (let k = 0; k < 60 && !((WU_RT.lib.mq || {}).st >= 3); k++) { await new Promise((r) => setTimeout(r, 1000)); await WU_RTMAP(); } const q = WU_RT.lib.mq || {};
-    return { f: f.length, km: f[0] ? Math.round(f[0].km * 10) / 10 : 0, hm: f[0] ? f[0].hm : 0, g: g.length, st: q.st, osm: (q.tg ? -1 : 0), tx: (document.getElementById('rt-mqst') || {}).textContent || '' };
+    const tg = WU_RTOSM('47.84\t13.1\t\tyes\t\t\t900\tTestpass\n47.77\t13.0\tpeak\t\t\t\t1100,5\t\n');
+    return { tgp: tg.length === 2 && tg[0][2] === 'p' && tg[1][3] === 1101 && tg[1][4] === '', f: f.length, km: f[0] ? Math.round(f[0].km * 10) / 10 : 0, hm: f[0] ? f[0].hm : 0, g: g.length, st: q.st, osm: (q.tg ? -1 : 0), tx: (document.getElementById('rt-mqst') || {}).textContent || '' };
   });
-  if (mp.f !== 1 || mp.km < 2.5 || mp.hm < 150 || mp.g !== 0 || mp.st !== 3) fail('Kartensuche: ' + JSON.stringify(mp)); else console.log('✓ Kartensuche: ' + JSON.stringify(mp));
+  if (!mp.tgp || mp.f !== 1 || mp.km < 2.5 || mp.hm < 150 || mp.g !== 0 || mp.st !== 3) fail('Kartensuche: ' + JSON.stringify(mp)); else console.log('✓ Kartensuche: ' + JSON.stringify(mp));
   await open('p:18.11.', 'Routen Intervalle');
   await open('p:21.11.', 'Routen Grundlage');
   await open('rb1', 'Rennblatt Mondsee');

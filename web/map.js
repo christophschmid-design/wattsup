@@ -195,7 +195,8 @@
     if (opt.open && opt.popup) { var ol = lines.filter(function (x) { return x.k === opt.open; })[0]; if (ol && ol.lat.length) setTimeout(function () { var h = opt.popup(ol.k); if (h) L.popup({ maxWidth: 300, minWidth: 220, className: 'wm-pop' }).setLatLng(ol.lat[Math.floor(ol.lat.length / 2)]).setContent(h).openOn(map); }, 350); }
     var fb = opt.fit && opt.fit.length ? opt.fit : all;
     if (opt.view) map.setView(opt.view.c, opt.view.z); else if (fb.length) map.fitBounds(L.latLngBounds(fb), { padding: [20, 20], maxZoom: 15 }); else map.setView([47.8, 13.04], 10);
-    setTimeout(function () { map.invalidateSize(); }, 200);
+    /* erst nach dem Einblenden stimmt die Größe: dann neu einpassen, sonst ist die Karte zu weit herausgezoomt */
+    setTimeout(function () { map.invalidateSize(); if (!opt.view && fb.length) map.fitBounds(L.latLngBounds(fb), { padding: [20, 20], maxZoom: 15 }); }, 200);
     el._wmView = function () { return { c: map.getCenter(), z: map.getZoom() }; };
   };
   /* Straßenart und Untergrund: Klassen je Punkt */
