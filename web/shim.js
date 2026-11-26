@@ -1190,8 +1190,15 @@
   window.WU_OSM = async function (lat, lon, r) {
     var b = pushBase(); if (!b) throw fail('no_server', 'Push-Dienst nicht eingerichtet');
     var x; try { x = await fetch(b + '/osm?' + qs({ lat: lat, lon: lon, r: r })); } catch (e) { throw fail('network', 'Keine Verbindung zum Push-Dienst'); }
-    var t = await x.text(); if (!x.ok) throw fail('tool_error', 'Kartenabfrage: ' + (t.slice(0, 160) || 'HTTP ' + x.status), { status: x.status });
-    return { csv: t };
+    var t = await x.text(); if (x.ok) return { csv: t };
+    /* Push-Dienst kam nicht durch: direkt aus der App bei Overpass fragen (erlaubt Abrufe aus dem Browser) */
+    var A = 'around:' + Math.round(r / 1000) * 1000 + ',' + (+lat).toFixed(3) + ',' + (+lon).toFixed(3);
+    var q = '[out:csv(::lat,::lon,natural,mountain_pass,tourism,amenity,ele,name;false)][timeout:180];(node(' + A + ')[natural~"^(peak|saddle)$"];node(' + A + ')[mountain_pass=yes];node(' + A + ')[tourism~"^(viewpoint|alpine_hut)$"];node(' + A + ')[amenity=restaurant][ele];);out;';
+    var why = ['Push-Dienst: ' + (t.slice(0, 120) || 'HTTP ' + x.status)];
+    for (var ep of ['https://overpass.private.coffee/api/interpreter', 'https://overpass-api.de/api/interpreter']) {
+      try { var y = await fetch(ep, { method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded' }, body: 'data=' + encodeURIComponent(q) }); var t2 = await y.text(); if (y.ok) return { csv: t2 }; why.push(ep.split('/')[2] + ' ' + y.status); } catch (e) { why.push(ep.split('/')[2] + ' nicht erreichbar'); }
+    }
+    throw fail('tool_error', 'Kartenabfrage: ' + why.join(' · '), { status: x.status });
   };
   window.WU_RGEO = async function (lat, lon) {
     var b = pushBase(); if (!b) throw fail('no_server', 'Push-Dienst nicht eingerichtet');

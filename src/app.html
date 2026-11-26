@@ -4147,7 +4147,7 @@ async function rtKiList(home){var sm=await window.claude.use('sample');if(!sm)th
  return(j.anstiege||[]).filter(function(x){return x&&ok(x.fuss)&&ok(x.oben)&&rtHav([+x.fuss[0],+x.fuss[1]],[+x.oben[0],+x.oben[1]])>800}).slice(0,40).map(function(x){return{f:[+x.fuss[0],+x.fuss[1]],o:[+x.oben[0],+x.oben[1]],n:String(x.name||'').slice(0,40)}})}
 async function rtMqRoute(pts){var w=(RTM.t||0)+2500-Date.now();if(w>0)await new Promise(function(r){setTimeout(r,w)});while(RTQ.busy)await new Promise(function(r){setTimeout(r,2000)});RTM.t=Date.now();
  try{return await _rtRoute61(pts)}catch(e){if(/keine Route/.test(String(e&&e.message||'')))return null;await new Promise(function(r){setTimeout(r,5000)});RTM.t=Date.now();try{return await _rtRoute61(pts)}catch(e2){if(/keine Route/.test(String(e2&&e2.message||'')))return null;throw e2}}}
-async function rtMapScan(){if(RTM.on)return;var home=rtHome();if(!home||!RT.lib||RT.lib.v!==3||!window.WU_OSM||!(window.WU_ROUTE_ON&&WU_ROUTE_ON()))return;var q=rtMq();if(q.wait&&q.wait>Date.now())return;
+async function rtMapScan(){if(RTM.on)return;var home=rtHome();if(!home||!RT.lib||RT.lib.v!==3||!window.WU_OSM||!(window.WU_ROUTE_ON&&WU_ROUTE_ON()))return;var q=rtMq();if(q.wait&&q.wait>Date.now()){clearTimeout(RTM.wt);RTM.wt=setTimeout(function(){rtMapScan().catch(function(){})},q.wait-Date.now()+2000);return}
  RTM.on=true;rtMqShow();var calls=0,fails=0,since=0,found=function(cl,src,nm){if(rtAddMap(cl,src,nm)){q.nC=(q.nC||0)+1;since++}};
  try{if(!q.ki&&(q.kiN||0)<3&&window.claude){q.kiN=(q.kiN||0)+1;RTM.st='Frage Claude nach Anstiegen in der Region …';rtMqShow();try{q.kq=await rtKiList(home);q.kiC=q.kq.length;q.ki=1}catch(e){q.kiE=String(e&&e.message||e).slice(0,120)}RTM.st=''}
   while(calls<300&&RT.lib&&RT.lib.mq===q){var t=null,isKi=false;
@@ -4158,7 +4158,7 @@ async function rtMapScan(){if(RTM.on)return;var home=rtHome();if(!home||!RT.lib|
     else{var T=[t[0],t[1]],nm=t[2]||null,legs=[[home,T],[rtDest(T,rtBrg(home,T),8),T]];for(var l=0;l<legs.length;l++){var y=await rtMqRoute(legs[l]);calls++;if(y)rtFindCl(y.c,y.sc).forEach(function(cl){found(cl,'osm',nm&&rtHav(cl.b,T)<1500?nm:null)})}q.i++}
     fails=0}catch(e){fails++;if(fails>=4){q.wait=Date.now()+30*60000;break}}
    rtMqShow();if(since>=5||calls%20===0){since=0;delete RT.lib._set;await rtLibSave()}}
- }finally{RTM.on=false;await rtLibSave();rtMqShow()}}
+ }finally{RTM.on=false;await rtLibSave();rtMqShow();if(q.wait&&q.wait>Date.now()){clearTimeout(RTM.wt);RTM.wt=setTimeout(function(){rtMapScan().catch(function(){})},q.wait-Date.now()+2000)}}}
 var _rtLib62=rtLibBuild;rtLibBuild=async function(f){var r=await _rtLib62(f);setTimeout(function(){rtMapScan().catch(function(){})},3000);return r};
 window.WU_RTMAP=function(){return rtMapScan()};window.WU_RTOSM=function(t){return rtOsmCsv(t)};window.WU_RTFIND=function(c,sc){return rtFindCl(c,sc)};
 /* Kontext für den Coach */

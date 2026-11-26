@@ -197,9 +197,16 @@
     if (opt.view) map.setView(opt.view.c, opt.view.z); else if (fb.length) map.fitBounds(L.latLngBounds(fb), { padding: [20, 20], maxZoom: 15 }); else map.setView([47.8, 13.04], 10);
     /* erst nach dem Einblenden stimmt die Größe: bei jeder Größenänderung neu einpassen, bis der Nutzer selbst schiebt oder zoomt */
     var user = false, refit = function () { if (!box.clientWidth || !box.clientHeight) return; map.invalidateSize(); if (!user && !opt.view && fb.length) map.fitBounds(L.latLngBounds(fb), { padding: [20, 20], maxZoom: 15 }); };
-    ['mousedown', 'touchstart', 'wheel'].forEach(function (ev) { box.addEventListener(ev, function () { user = true; }, { passive: true }); });
+    /* nur echtes Schieben/Zoomen zählt, nicht das Scrollen der Seite über der Karte */
+    map.on('dragstart', function () { user = true; });
+    box.addEventListener('wheel', function () { user = true; }, { passive: true });
+    box.addEventListener('touchstart', function (e) { if (e.touches && e.touches.length > 1) user = true; }, { passive: true });
+    box.addEventListener('click', function (e) { if (e.target.closest && e.target.closest('.leaflet-control-zoom')) user = true; }, true);
+    box.addEventListener('dblclick', function () { user = true; });
     if (window.ResizeObserver) { var ro = new ResizeObserver(refit); ro.observe(box); }
-    setTimeout(refit, 200); setTimeout(refit, 800);
+    if (window.IntersectionObserver) { var io = new IntersectionObserver(function (es) { if (es.some(function (x) { return x.isIntersecting; })) refit(); }); io.observe(box); }
+    window.addEventListener('resize', refit);
+    map.whenReady(refit); setTimeout(refit, 200); setTimeout(refit, 800); setTimeout(refit, 2000);
     el._wmView = function () { return { c: map.getCenter(), z: map.getZoom() }; };
   };
   /* Straßenart und Untergrund: Klassen je Punkt */

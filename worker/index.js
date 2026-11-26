@@ -246,8 +246,16 @@ export default {
       if (!r) {
         const A = 'around:' + rr + ',' + la.toFixed(3) + ',' + lo.toFixed(3);
         const q = '[out:csv(::lat,::lon,natural,mountain_pass,tourism,amenity,ele,name;false)][timeout:180];(node(' + A + ')[natural~"^(peak|saddle)$"];node(' + A + ')[mountain_pass=yes];node(' + A + ')[tourism~"^(viewpoint|alpine_hut)$"];node(' + A + ')[amenity=restaurant][ele];);out;';
-        const up = await fetch('https://overpass-api.de/api/interpreter', { method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded', 'User-Agent': 'WattsUp-Trainingsapp (privat)' }, body: 'data=' + encodeURIComponent(q) });
-        if (!up.ok) return new Response('Overpass ' + up.status + ': ' + (await up.text()).slice(0, 200), { status: 502, headers: cors });
+        /* mehrere öffentliche Overpass-Server nacheinander probieren */
+        let up = null, why = [];
+        for (const ep of ['https://overpass-api.de/api/interpreter', 'https://overpass.private.coffee/api/interpreter', 'https://maps.mail.ru/osm/tools/overpass/api/interpreter']) {
+          try {
+            const x = await fetch(ep, { method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded', 'User-Agent': 'WattsUp-Trainingsapp (privat)', 'Referer': 'https://christophschmid-design.github.io/wattsup/' }, body: 'data=' + encodeURIComponent(q) });
+            if (x.ok) { up = x; break; }
+            why.push(new URL(ep).host + ' ' + x.status);
+          } catch (e) { why.push(new URL(ep).host + ' ' + String(e && e.message || e).slice(0, 40)); }
+        }
+        if (!up) return new Response('Overpass: ' + why.join(', '), { status: 502, headers: cors });
         /* Text unverändert durchreichen und zwischenspeichern: kein Parsen im Worker (CPU-Grenze) */
         r = new Response(up.body, { headers: { 'Content-Type': 'text/plain; charset=utf-8', 'Cache-Control': 'max-age=2592000' } });
         ctx.waitUntil(cache.put(ck, r.clone()));
