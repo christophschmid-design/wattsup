@@ -165,9 +165,9 @@ async function runtimeCheck() {
     for (let i = 0; i < 80 && Object.keys(WU_RT.res).filter((k) => /^f:/.test(k)).length <= n0; i++) await new Promise((r) => setTimeout(r, 250));
     const ft = Object.keys(WU_RT.res).filter((k) => /^f:/.test(k) && WU_RT.res[k].title === 'FTP-Test')[0]; o.ftp = ft ? WU_RT.res[ft].R.length + ':' + WU_RT.res[ft].R.map((x) => x.k).join(',') : 'fehlt ' + WU_RT.err + ' ' + JSON.stringify(Object.keys(WU_RT.res).map((k) => WU_RT.res[k].title));
     document.querySelector('[data-rtv="frei"]').click(); await new Promise((r) => setTimeout(r, 300));
-    const rb = document.querySelector('[data-rtren]'); if (rb) { rb.click(); await new Promise((r) => setTimeout(r, 200)); document.getElementById('rt-ren').value = 'Testname'; document.querySelector('[data-rtrens]').click(); await new Promise((r) => setTimeout(r, 200)); }
+    const mb = document.querySelector('[data-rtmenu]'); if (mb) { mb.click(); await new Promise((r) => setTimeout(r, 200)); } const rb = document.querySelector('[data-rtren]'); if (rb) { rb.click(); await new Promise((r) => setTimeout(r, 200)); document.getElementById('rt-ren').value = 'Testname'; document.querySelector('[data-rtrens]').click(); await new Promise((r) => setTimeout(r, 200)); }
     o.ren = Object.keys(WU_RT.res).some((k) => WU_RT.res[k].title === 'Testname');
-    const n1 = Object.keys(WU_RT.res).length, db1 = document.querySelector('[data-rtdel]'); if (db1) { db1.click(); await new Promise((r) => setTimeout(r, 200)); document.querySelector('[data-rtdel]').click(); await new Promise((r) => setTimeout(r, 200)); }
+    const n1 = Object.keys(WU_RT.res).length; const mb2 = document.querySelector('[data-rtmenu]'); if (mb2) { mb2.click(); await new Promise((r) => setTimeout(r, 200)); } const db1 = document.querySelector('[data-rtdel]'); if (db1) { db1.click(); await new Promise((r) => setTimeout(r, 200)); document.querySelector('[data-rtdel]').click(); await new Promise((r) => setTimeout(r, 200)); }
     o.del = Object.keys(WU_RT.res).length === n1 - 1;
     await WU_RTHIST(); o.hist = Object.keys(WU_RT.hist).length;
     document.querySelector('[data-rtv="verl"]').click(); await new Promise((r) => setTimeout(r, 500)); o.verl = !!document.querySelector('.rtrate');
@@ -182,10 +182,14 @@ async function runtimeCheck() {
     location.hash = '#routen'; await new Promise((r) => setTimeout(r, 300));
     const an = document.querySelector('[data-rtv="anst"]'); if (an) { an.click(); await new Promise((r) => setTimeout(r, 900)); }
     o.anst = !!document.getElementById('rt-amap') && /Was die App kennt/.test(document.getElementById('rt-b').textContent);
+    o.pop = WU_RT.lib.climbs.map((c) => (WU_RTPOP(c.id) || '').length > 200).join(',');
+    const so = document.querySelector('[data-rtaf="g"]'); if (so) { so.value = '7'; so.dispatchEvent(new Event('input', { bubbles: true })); await new Promise((r) => setTimeout(r, 500)); }
+    o.filt = (document.querySelector('#rt-b .card .hcl') && [...document.querySelectorAll('#rt-b .hcl')].map((x) => x.textContent).filter((t) => /von \d+ Anstiegen/.test(t))[0]) || 'fehlt';
+    if (so) { so.value = '0'; so.dispatchEvent(new Event('input', { bubbles: true })); await new Promise((r) => setTimeout(r, 300)); }
     document.querySelector('[data-rtv="lern"]').click(); await new Promise((r) => setTimeout(r, 400)); o.lern = !!document.getElementById('rt-lmap') && !!document.querySelector('.rtpw') && /Gemiedene Stellen/.test(document.getElementById('rt-b').textContent);
     return o;
   });
-  if (!/climb↩/.test(db.fint || '') || !db.anst || !db.ren || !db.del || !db.ftp || db.ftp === 'fehlt' || !db.cmp || !db.map || !db.sel || !db.own || !db.free || !db.verl || !db.lern) fail('Routen-Dashboard: ' + JSON.stringify(db)); else console.log('✓ Routen-Dashboard: ' + JSON.stringify(db));
+  if (/false/.test(db.pop || 'false') || db.filt === 'fehlt' || !/climb↩/.test(db.fint || '') || !db.anst || !db.ren || !db.del || !db.ftp || db.ftp === 'fehlt' || !db.cmp || !db.map || !db.sel || !db.own || !db.free || !db.verl || !db.lern) fail('Routen-Dashboard: ' + JSON.stringify(db)); else console.log('✓ Routen-Dashboard: ' + JSON.stringify(db));
   await look('Routen-Dashboard');
   await open('p:18.11.', 'Routen Intervalle');
   await open('p:21.11.', 'Routen Grundlage');

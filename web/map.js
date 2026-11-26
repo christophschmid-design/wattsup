@@ -45,6 +45,7 @@
     '.wm-sum b{display:block;font-size:14px}',
     '.wm-ed{position:absolute;right:52px;top:8px;z-index:500;border:0;border-radius:10px;height:36px;padding:0 10px;background:rgba(15,34,54,.82);color:#fff;font:700 12px/1 inherit;cursor:pointer}',
     '.wm-ed.on{background:#2f9e44}',
+    '.wm-pop .leaflet-popup-content{margin:10px 12px;font:13px/1.35 Inter,system-ui,sans-serif;color:#123}.wm-pop b{font-size:14px}.wm-pop table{width:100%;border-collapse:collapse;margin:6px 0}.wm-pop td{padding:2px 0;border-top:1px solid #e3e8ef}.wm-pop td:last-child{text-align:right;font-weight:600}.wm-pop .pb{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}.wm-pop button{border:1px solid #cfd8e3;background:#f3f6fa;border-radius:9px;padding:5px 8px;font:600 12px/1 inherit;cursor:pointer}',
     '.wm-zw{padding:12px 14px;border-radius:14px;background:var(--card2,rgba(127,127,127,.1));margin:10px 0;font-size:13px}'
   ].join('\n');
   function addCss() { if (document.getElementById('wm-css')) return; var s = document.createElement('style'); s.id = 'wm-css'; s.textContent = CSS; document.head.appendChild(s); }
@@ -186,11 +187,12 @@
       if (!ln.lat || ln.lat.length < 2) return; ln.lat.forEach(function (q) { all.push(q); });
       L.polyline(ln.lat, { color: '#ffffff', weight: (ln.w || 4) + 4, opacity: .8 }).addTo(map);
       var pl = L.polyline(ln.lat, { color: ln.c, weight: ln.w || 4, opacity: ln.o != null ? ln.o : .95 }).addTo(map);
-      if (opt.onLine && ln.k != null) pl.on('click', function (e) { L.DomEvent.stopPropagation(e); opt.onLine(ln.k); });
+      if (ln.k != null && (opt.popup || opt.onLine)) pl.on('click', function (e) { L.DomEvent.stopPropagation(e); if (opt.popup) { var h = opt.popup(ln.k); if (h) L.popup({ maxWidth: 300, minWidth: 220, className: 'wm-pop' }).setLatLng(e.latlng).setContent(h).openOn(map); } else opt.onLine(ln.k); });
       if (ln.lab) L.marker(ln.lat[ln.lat.length - 1], { interactive: false, icon: L.divIcon({ className: '', html: '<div style="background:' + ln.c + ';color:#fff;font:700 10px/1 sans-serif;padding:3px 5px;border-radius:6px;border:1px solid #fff;white-space:nowrap">' + ln.lab + '</div>', iconSize: [10, 10], iconAnchor: [0, 16] }) }).addTo(map);
     });
     (opt.pins || []).forEach(function (q) { L.circleMarker(q, { radius: 7, color: '#fff', weight: 3, fillColor: '#e03131', fillOpacity: 1 }).addTo(map); });
     if (opt.onClick) map.on('click', function (e) { opt.onClick(e.latlng.lat, e.latlng.lng); });
+    if (opt.open && opt.popup) { var ol = lines.filter(function (x) { return x.k === opt.open; })[0]; if (ol && ol.lat.length) setTimeout(function () { var h = opt.popup(ol.k); if (h) L.popup({ maxWidth: 300, minWidth: 220, className: 'wm-pop' }).setLatLng(ol.lat[Math.floor(ol.lat.length / 2)]).setContent(h).openOn(map); }, 350); }
     var fb = opt.fit && opt.fit.length ? opt.fit : all;
     if (opt.view) map.setView(opt.view.c, opt.view.z); else if (fb.length) map.fitBounds(L.latLngBounds(fb), { padding: [20, 20], maxZoom: 15 }); else map.setView([47.8, 13.04], 10);
     setTimeout(function () { map.invalidateSize(); }, 200);
