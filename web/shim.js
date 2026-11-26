@@ -91,8 +91,6 @@
     try { return await http(SV + '/api/v3' + path, { headers: { Authorization: 'Bearer ' + tk } }); }
     catch (e) {
       if (e.code !== 'needs_reauth') throw e;
-      /* Segmentsuche ist bei Strava seit 1.9.2026 gesperrt: nicht als Verbindungsproblem prüfen (spart Abfragen) */
-      if (/^\/segments\/explore/.test(path)) throw fail('tool_error', 'Strava lehnt diesen Abruf ab (/segments/explore): ' + e.message, { status: 401 });
       /* 401 bei einem einzelnen Endpunkt heißt oft nur „fehlende Berechtigung für diesen Aufruf“.
          Die Verbindung nur löschen, wenn auch das eigene Profil abgelehnt wird. */
       var ok = false; try { await http(SV + '/api/v3/athlete', { headers: { Authorization: 'Bearer ' + tk } }); ok = true; } catch (x) { if (x.code !== 'needs_reauth') ok = true; }
@@ -132,11 +130,6 @@
     return out;
   }
   var STRAVA = {
-    /* v51: Segmente in einem Gebiet (für neue Anstiege) */
-    explore_segments: async function (q) {
-      var o0 = { bounds: q.bounds, activity_type: 'riding' }; if (q.min_cat != null) o0.min_cat = q.min_cat; var j = await sv('/segments/explore?' + qs(o0)) || {};
-      return { segments: (j.segments || []).map(function (x) { return { id: x.id, name: x.name, cat: x.climb_category, grade: x.avg_grade, km: x.distance / 1000, hm: x.elev_difference, a: x.start_latlng, b: x.end_latlng, pts: x.points }; }) };
-    },
     list_activities: async function (q) {
       var per = Math.min(100, q.first || 30), page = Number(q.after || 1);
       var p = { per_page: per, page: page };
@@ -437,7 +430,7 @@
     if (c !== false) CACHE[ck] = { p: p, t: now() };
     return { payload: p, cache: { storedAt: now() } };
   }
-  var MCP = { callTool: callTool, server: async function (name) { var o = {}; ['list_activities', 'get_activity_streams', 'explore_segments', 'get_activity_laps', 'get_athlete_zones', 'get_athlete_profile', 'get_athlete_best_efforts', 'get_active_streak', 'list_events', 'create_event', 'delete_event', 'widgets-daily-claude'].forEach(function (t) { o[t] = function (i) { return callTool(name, t, i).then(function (r) { return r.payload; }); }; }); return o; } };
+  var MCP = { callTool: callTool, server: async function (name) { var o = {}; ['list_activities', 'get_activity_streams', 'get_activity_laps', 'get_athlete_zones', 'get_athlete_profile', 'get_athlete_best_efforts', 'get_active_streak', 'list_events', 'create_event', 'delete_event', 'widgets-daily-claude'].forEach(function (t) { o[t] = function (i) { return callTool(name, t, i).then(function (r) { return r.payload; }); }; }); return o; } };
 
   /* ---------- Dateien speichern ---------- */
   function b64(u8) { var s = '', i, ch = 0x8000; for (i = 0; i < u8.length; i += ch) s += String.fromCharCode.apply(null, u8.subarray(i, i + ch)); return btoa(s); }
