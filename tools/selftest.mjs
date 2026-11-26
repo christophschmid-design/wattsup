@@ -161,6 +161,9 @@ async function runtimeCheck() {
     const b = document.querySelector('[data-rts="1"]'); if (b) b.click(); await new Promise((r) => setTimeout(r, 800));
     o.sel = !!document.querySelector('.rtth.on[data-rts="1"]');
     if (fk) { await WU_RTEDIT(fk, [[47.85, 13.1], [47.83, 13.15]], null); o.own = !!(WU_RT.res[fk].R[3] && WU_RT.res[fk].R[3].ed); }
+    document.getElementById('rtf-ty').value = 'ftp'; document.getElementById('rtf-go').click(); const n0 = Object.keys(WU_RT.res).filter((k) => /^f:/.test(k)).length;
+    for (let i = 0; i < 80 && Object.keys(WU_RT.res).filter((k) => /^f:/.test(k)).length <= n0; i++) await new Promise((r) => setTimeout(r, 250));
+    const ft = Object.keys(WU_RT.res).filter((k) => /^f:/.test(k) && WU_RT.res[k].title === 'FTP-Test')[0]; o.ftp = ft ? WU_RT.res[ft].R.length + ':' + WU_RT.res[ft].R.map((x) => x.k).join(',') : 'fehlt ' + WU_RT.err + ' ' + JSON.stringify(Object.keys(WU_RT.res).map((k) => WU_RT.res[k].title));
     await WU_RTHIST(); o.hist = Object.keys(WU_RT.hist).length;
     document.querySelector('[data-rtv="verl"]').click(); await new Promise((r) => setTimeout(r, 500)); o.verl = !!document.querySelector('.rtrate');
     const t = document.querySelector('[data-rtr$="|1"]'); if (t) { t.click(); await new Promise((r) => setTimeout(r, 400)); }
@@ -168,7 +171,7 @@ async function runtimeCheck() {
     document.querySelector('[data-rtv="lern"]').click(); await new Promise((r) => setTimeout(r, 400)); o.lern = !!document.getElementById('rt-lmap');
     return o;
   });
-  if (!db.cmp || !db.map || !db.sel || !db.own || !db.free || !db.verl || !db.lern) fail('Routen-Dashboard: ' + JSON.stringify(db)); else console.log('✓ Routen-Dashboard: ' + JSON.stringify(db));
+  if (!db.ftp || db.ftp === 'fehlt' || !db.cmp || !db.map || !db.sel || !db.own || !db.free || !db.verl || !db.lern) fail('Routen-Dashboard: ' + JSON.stringify(db)); else console.log('✓ Routen-Dashboard: ' + JSON.stringify(db));
   await look('Routen-Dashboard');
   await open('p:18.11.', 'Routen Intervalle');
   await open('p:21.11.', 'Routen Grundlage');
