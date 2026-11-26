@@ -207,7 +207,7 @@ async function runtimeCheck() {
   const mp = await pg.evaluate(async () => {
     const c = []; for (let i = 0; i <= 120; i++) { const d = i * 50; c.push([47.7 + d / 111320, 13.2, d < 1000 ? 500 : d < 4000 ? 500 + (d - 1000) * 0.06 : 680]); }
     const f = WU_RTFIND(c, 'a'.repeat(c.length)), g = WU_RTFIND(c, 'g'.repeat(c.length));
-    await WU_RTMAP(); const q = WU_RT.lib.mq || {};
+    await WU_RTMAP(); for (let k = 0; k < 60 && !((WU_RT.lib.mq || {}).st >= 3); k++) { await new Promise((r) => setTimeout(r, 1000)); await WU_RTMAP(); } const q = WU_RT.lib.mq || {};
     return { f: f.length, km: f[0] ? Math.round(f[0].km * 10) / 10 : 0, hm: f[0] ? f[0].hm : 0, g: g.length, st: q.st, osm: (q.tg ? -1 : 0), tx: (document.getElementById('rt-mqst') || {}).textContent || '' };
   });
   if (mp.f !== 1 || mp.km < 2.5 || mp.hm < 150 || mp.g !== 0 || mp.st !== 3) fail('Kartensuche: ' + JSON.stringify(mp)); else console.log('✓ Kartensuche: ' + JSON.stringify(mp));
