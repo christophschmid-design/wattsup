@@ -214,10 +214,13 @@ async function runtimeCheck() {
     o.part = /^t[AC]$/.test(by('tB').mg || '') && by(by('tB').mg).n === 4; o.ask = /tA\|tC|tC\|tA/.test(WU_RTST.clean()); o.notC = !by('tC').mg; o.dbg = JSON.stringify([by('tB').mg, by('tA').n, by('tC').n, WU_RTPAIRS().filter((x) => /^t/.test(x[0]) && /^t/.test(x[1]))]);
     WU_RT.lib.climbs = WU_RT.lib.climbs.filter((c) => !/^t[ABC]$/.test(c.id));
     const L1 = { v: 3, seen: { a: 1 }, cells: ['x'], climbs: [{ id: 'k1', a: [47.7, 13.2], b: [47.72, 13.2], n: 1, own: 1, name: 'Anstieg 2 km, 6 %' }] }, R1 = { v: 3, seen: { b: 1 }, cells: ['y'], climbs: [{ id: 'k1', a: [47.7, 13.2], b: [47.72, 13.2], n: 3, own: 1, name: 'Gaisberg', nmD: 1, nmS: 'ki' }, { id: 'k2', a: [47.8, 13.1], b: [47.81, 13.1], n: 1, own: 1 }] };
+    { const P = WU_RT.pref, cf0 = JSON.stringify(P.cf || {}), m0 = JSON.stringify(P.mcl || []); P.cf = { z1: { f: 1, t: 5 }, z2: { h: 1, t: 50 } }; P.mcl = [{ id: 'm1', t: 5 }, { id: 'm2', t: 5 }];
+      const r = WU_RTPM({ pref: { cf: { z1: { f: 0, t: 10 }, z2: { h: 0, t: 20 } }, mcl: [{ id: 'm3', t: 9 }], mdel: { m2: 7 }, ts: 1 }, hist: {} });
+      o.pm = r.pref.cf.z1.f === 0 && r.pref.cf.z2.h === 1 && r.pref.mcl.map((c) => c.id).sort().join() === 'm1,m3'; P.cf = JSON.parse(cf0); P.mcl = JSON.parse(m0); }
     WU_RTLM(L1, R1); o.lm = Object.keys(L1.seen).length === 2 && L1.climbs.length === 2 && L1.climbs[0].n === 3 && L1.climbs[0].name === 'Gaisberg';
     return o;
   });
-  if (!v64.h2 || v64.bar !== 2 || !v64.back || !v64.part || !v64.ask || !v64.notC || !v64.stash || !v64.lm) fail('Startort/Zusammenlegen: ' + JSON.stringify(v64)); else console.log('✓ Startort/Zusammenlegen: ' + JSON.stringify(v64));
+  if (!v64.h2 || v64.bar !== 2 || !v64.back || !v64.part || !v64.ask || !v64.notC || !v64.stash || !v64.lm || !v64.pm) fail('Startort/Zusammenlegen: ' + JSON.stringify(v64)); else console.log('✓ Startort/Zusammenlegen: ' + JSON.stringify(v64));
   /* v62: Anstiege aus der Karte */
   const mp = await pg.evaluate(async () => {
     const c = []; for (let i = 0; i <= 120; i++) { const d = i * 50; c.push([47.7 + d / 111320, 13.2, d < 1000 ? 500 : d < 4000 ? 500 + (d - 1000) * 0.06 : 680]); }

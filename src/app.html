@@ -3622,9 +3622,31 @@ try{var _rp=JSON.parse(localStorage.getItem('rtp1')||'null');if(_rp){RT.pref=_rp
 function rtPw(k){var v=RT.pref&&RT.pref.w&&RT.pref.w[k];return Math.max(-3,Math.min(3,Number(v)||0))}
 function rtPrefPts(u,o){var c=o.c;if(!c||!c.length)return 0;var A=RT.pref.avoid||{},Lk=RT.pref.like||{},n=0,av=0,lk=0,i;for(i=0;i<c.length;i+=4){n++;var k=rtCell(c[i]);if((A[k]||0)>=1)av++;else if((Lk[k]||0)>=1)lk++}
  var pts=n?-30*av/n+10*lk/n:0;if(u.ty!=='int'&&o.km>0)pts+=rtPw('hm')*Math.max(-2,Math.min(2,(o.hm/o.km-10)/5));return Math.round(Math.max(-10,Math.min(10,pts)))}
-var RTPS=null;function rtPrefSave(){RT.pref.ts=Date.now();try{localStorage.setItem('rtp1',JSON.stringify({pref:RT.pref,hist:RT.hist}))}catch(e){}
- clearTimeout(RTPS);RTPS=setTimeout(function(){if(DBH&&UID)try{DBP(DBH.doc('data/users/'+UID+'/rtpref').set({pref:RT.pref,hist:RT.hist,ts:RT.pref.ts}),'Routen-Vorlieben speichern')}catch(e){}},1500)}
-var RTPL=false;async function rtPrefLoad(){if(RTPL||!DBH||!UID)return;RTPL=true;try{var sn=await DBH.doc('data/users/'+UID+'/rtpref').get(),v=sn&&sn.exists?sn.data():null;if(v&&v.ts>(RT.pref.ts||0)){RT.pref=v.pref||RT.pref;RT.hist=v.hist||RT.hist;try{localStorage.setItem('rtp1',JSON.stringify({pref:RT.pref,hist:RT.hist}))}catch(e){}}}catch(e){RTPL=false}}
+/* Vorlieben, Anstiegs-Einstellungen, eigene Anstiege und Verlauf: zwischen Geräten zusammenführen statt überschreiben.
+   Jeder geänderte Eintrag bekommt beim Speichern einen Zeitstempel t; gelöschte eigene Anstiege eine Löschmarke. */
+var RTPS=null,RTPSH=null,RTPLT=0;setTimeout(function(){if(!RTPSH)RTPSH=rtPrefShadow()},0);
+function rtPrefShadow(){var o={cf:{},mcl:{},hist:{}};Object.keys(RT.pref.cf||{}).forEach(function(k){o.cf[k]=JSON.stringify(RT.pref.cf[k])});(RT.pref.mcl||[]).forEach(function(c){o.mcl[c.id]=JSON.stringify(c)});Object.keys(RT.hist||{}).forEach(function(k){o.hist[k]=JSON.stringify(RT.hist[k])});return o}
+function rtPrefStamp(){var now=Date.now(),sh=RTPSH||rtPrefShadow(),P=RT.pref;P.mdel=P.mdel||{};
+ Object.keys(P.cf||{}).forEach(function(k){var e=P.cf[k],x=JSON.parse(JSON.stringify(e));delete x.t;var y=sh.cf[k]?JSON.parse(sh.cf[k]):null;if(y)delete y.t;if(!y||JSON.stringify(x)!==JSON.stringify(y))e.t=now});
+ var ids={};(P.mcl||[]).forEach(function(c){ids[c.id]=1;var x=JSON.parse(JSON.stringify(c));delete x.t;var y=sh.mcl[c.id]?JSON.parse(sh.mcl[c.id]):null;if(y)delete y.t;if(!y||JSON.stringify(x)!==JSON.stringify(y))c.t=now});
+ Object.keys(sh.mcl).forEach(function(id){if(!ids[id])P.mdel[id]=now});
+ Object.keys(RT.hist||{}).forEach(function(k){var e=RT.hist[k],x=JSON.parse(JSON.stringify(e));delete x.t;var y=sh.hist[k]?JSON.parse(sh.hist[k]):null;if(y)delete y.t;if(!y||JSON.stringify(x)!==JSON.stringify(y))e.t=now})}
+function rtPrefMerge(v){if(!v||!v.pref)return;var L=RT.pref,R=v.pref,newer=(R.ts||0)>(L.ts||0);
+ var cf=L.cf=L.cf||{};Object.keys(R.cf||{}).forEach(function(k){var a=cf[k],b=R.cf[k];if(!a||(b.t||0)>(a.t||0))cf[k]=b});
+ var md=L.mdel=L.mdel||{};Object.keys(R.mdel||{}).forEach(function(k){md[k]=Math.max(md[k]||0,R.mdel[k])});
+ var by={};(L.mcl||[]).forEach(function(c){by[c.id]=c});(R.mcl||[]).forEach(function(c){var a=by[c.id];if(!a||(c.t||0)>(a.t||0))by[c.id]=c});
+ L.mcl=Object.keys(by).map(function(k){return by[k]}).filter(function(c){return!(md[c.id]&&md[c.id]>=(c.t||0))});
+ var kp={};(L.ckeep||[]).concat(R.ckeep||[]).forEach(function(k){kp[k]=1});L.ckeep=Object.keys(kp);
+ ['avoid','like'].forEach(function(n){var o=L[n]=L[n]||{};Object.keys(R[n]||{}).forEach(function(k){o[k]=Math.max(o[k]||0,R[n][k])})});
+ if(newer&&R.w)L.w=R.w;
+ var ev=L.ev=L.ev||{};Object.keys(R.ev||{}).forEach(function(k){var seen={},all=(ev[k]||[]).concat(R.ev[k]||[]).filter(function(x){var j=JSON.stringify(x);if(seen[j])return false;seen[j]=1;return true});all.sort(function(a,b){return a.d<b.d?-1:a.d>b.d?1:0});ev[k]=all.slice(-12)});
+ var H=RT.hist=RT.hist||{};Object.keys(v.hist||{}).forEach(function(k){var a=H[k],b=v.hist[k];if(!a||(b.t||0)>(a.t||0))H[k]=b});
+ L.ts=Math.max(L.ts||0,R.ts||0)}
+async function rtPrefPull(){if(!DBH||!UID)return;try{var sn=await DBH.doc('data/users/'+UID+'/rtpref').get(),v=sn&&sn.exists?sn.data():null;if(v){rtPrefStamp();rtPrefMerge(v);try{localStorage.setItem('rtp1',JSON.stringify({pref:RT.pref,hist:RT.hist}))}catch(e){}}}catch(e){}}
+function rtPrefSave(){rtPrefStamp();RT.pref.ts=Date.now();RTPSH=rtPrefShadow();try{localStorage.setItem('rtp1',JSON.stringify({pref:RT.pref,hist:RT.hist}))}catch(e){}
+ clearTimeout(RTPS);RTPS=setTimeout(async function(){if(!(DBH&&UID))return;await rtPrefPull();RTPSH=rtPrefShadow();try{await DBP(DBH.doc('data/users/'+UID+'/rtpref').set({pref:RT.pref,hist:RT.hist,ts:RT.pref.ts}),'Routen-Vorlieben speichern')}catch(e){}},1500)}
+async function rtPrefLoad(){if(!DBH||!UID||Date.now()-RTPLT<120000)return;RTPLT=Date.now();await rtPrefPull();RTPSH=rtPrefShadow()}
+window.WU_RTPM=function(v){rtPrefMerge(v);return{pref:RT.pref,hist:RT.hist}};
 function rtPrune(o,max){var ks=Object.keys(o);if(ks.length<=max)return;ks.sort(function(a,b){return o[a]-o[b]});ks.slice(0,ks.length-max).forEach(function(k){delete o[k]})}
 function rtAdd(o,k,v){o[k]=Math.round(((o[k]||0)+v)*100)/100;if(o[k]<=0)delete o[k]}
 function rtCellsOf(c,step){var o={},acc=0;for(var i=0;i<c.length;i++){if(i)acc+=rtHav(c[i-1],c[i]);if(i&&acc<(step||80))continue;acc=0;o[rtCell(c[i])]=i}return o}
