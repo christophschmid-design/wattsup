@@ -3499,26 +3499,30 @@ async function rtRoute(pts){if(!window.WU_ROUTE)throw new Error('Routenplaner nu
 function rtCell(q){return Math.round(q[0]*400)+':'+Math.round(q[1]*270)}
 function rtNew(c){if(!RT.lib||!RT.lib.cells)return.5;var S2=RT.lib._set||(RT.lib._set=new Set(RT.lib.cells)),n=0,k=0,i;for(i=0;i<c.length;i+=3){k++;if(!S2.has(rtCell(c[i])))n++}return k?n/k:.5}
 /* Bibliothek: Anstiege aus deinen Fahrten und Strava-Segmenten, besuchte Rasterzellen */
+/* v56: Anstieg sauber abgrenzen: flacher Vorlauf und Auslauf weg, bei 1 km fast flach (unter 1,5 %) in zwei Anstiege teilen */
+function rtClSplit(al,D,st,mx){var gr=function(a,b){return(al[b]-al[a])/Math.max(1,D[b]-D[a])},fw=function(i,m,e){var j=i;while(j<e&&D[j]-D[i]<m)j++;return j},bw=function(i,m,s){var j=i;while(j>s&&D[i]-D[j]<m)j--;return j},out=[],guard=0;
+ (function cut(s0,e0){if(++guard>20)return;while(s0<e0&&gr(s0,fw(s0,500,e0))<.03)s0++;while(e0>s0&&gr(bw(e0,500,s0),e0)<.03)e0--;if(e0-s0<3||D[e0]-D[s0]<800)return;
+  for(var i=s0;i<e0;i++){var k=fw(i,1000,e0);if(D[k]-D[i]<1000)break;if(gr(i,k)<.015){cut(s0,i);cut(k,e0);return}}out.push([s0,e0])})(st,mx);return out}
 async function rtLibBuild(){var home=rtHome();if(!home||!window.claude)return;var m=null;try{m=await window.claude.use('mcp')}catch(e){}if(!m)return;
- if(DBH&&UID&&!RT.lib){try{var sn=await DBH.doc('data/users/'+UID+'/rlib').get(),v=sn&&sn.exists?sn.data():null;if(v&&v.climbs&&v.home===CF.home){RT.lib=v;try{localStorage.setItem('rlib1',JSON.stringify(v))}catch(e){}}}catch(e){}}
- if(RT.lib&&RT.lib.home===CF.home&&Date.now()-(RT.lib.ts||0)<30*864e5)return;
+ if(DBH&&UID&&!RT.lib){try{var sn=await DBH.doc('data/users/'+UID+'/rlib').get(),v=sn&&sn.exists?sn.data():null;if(v&&v.climbs&&v.home===CF.home&&v.v===2){RT.lib=v;try{localStorage.setItem('rlib1',JSON.stringify(v))}catch(e){}}}catch(e){}}
+ if(RT.lib&&RT.lib.home===CF.home&&RT.lib.v===2&&Date.now()-(RT.lib.ts||0)<30*864e5)return;
  RT.libSt='Lerne deine Anstiege aus Strava …';var cells={},climbs=[],X=(window.ACT||[]).filter(function(a){return a.sp==='Ride'&&a.km>15}),hil=X.filter(function(a){return a.hm/a.km>9}).sort(function(a,b){return b.day<a.day?-1:1}).slice(0,24),fl=X.filter(function(a){return hil.indexOf(a)<0}).sort(function(a,b){return b.day<a.day?-1:1}).slice(0,16);
  function addC(c){for(var k=0;k<climbs.length;k++){var o=climbs[k];if(rtHav(o.a,c.a)<300&&rtHav(o.b,c.b)<300){o.n++;if(c.t&&(!o.t||c.t<o.t)){o.t=c.t;o.w=c.w}return}}c.n=1;climbs.push(c)}
  var L=hil.concat(fl);for(var i=0;i<L.length;i++){if(typeof rlOn==='function'&&rlOn())break;var a=L[i],p=null;try{p=(await CT(m,'Strava','get_activity_streams',{activity_id:String(a.id),resolution:hil.indexOf(a)>=0?1500:400,streams:['location','altitude','distance','watts']})).payload}catch(e){if(e&&e.code==='rate_limited')break;continue}
   if(!p||!p.location||!p.location.length)continue;var loc=p.location,j;if(rtHav(loc[0],home)>40000&&rtHav(loc[loc.length-1],home)>40000)continue;
   for(j=0;j<loc.length;j++)cells[rtCell(loc[j])]=1;
   if(p.altitude&&p.distance&&p.altitude.length===loc.length){var al=p.altitude.map(function(x,k){var s=0,n=0;for(var q=Math.max(0,k-2);q<=Math.min(p.altitude.length-1,k+2);q++){s+=p.altitude[q];n++}return s/n}),st=0,mx=0;
-   for(j=1;j<al.length;j++){if(al[j]>al[mx])mx=j;if(al[mx]-al[j]>20||j===al.length-1){var g=al[mx]-al[st],dk=(p.distance[mx]-p.distance[st]);if(g>=80&&dk>=800&&g/dk>=.035){var md=Math.round((st+mx)/2),q1=Math.round(st+(mx-st)/3),q2=Math.round(st+2*(mx-st)/3);
-    var tt=p.time?(p.time[mx]-p.time[st])/60:null,ww=null;if(p.watts){var sw=0,nw=0;for(var z=st;z<=mx;z++)if(p.watts[z]!=null){sw+=p.watts[z];nw++}ww=nw?Math.round(sw/nw):null}
-    if(rtHav(loc[st],home)<35000)addC({a:loc[st],b:loc[mx],via:[loc[q1],loc[q2]],km:dk/1000,hm:Math.round(g),g:g/dk,t:tt,w:ww,own:1})}st=j;mx=j}else if(al[j]<al[st])st=j}}
+   for(j=1;j<al.length;j++){if(al[j]>al[mx])mx=j;if(al[mx]-al[j]>20||j===al.length-1){rtClSplit(al,p.distance,st,mx).forEach(function(S2){var s1=S2[0],e1=S2[1],g=al[e1]-al[s1],dk=(p.distance[e1]-p.distance[s1]);if(g>=80&&dk>=800&&g/dk>=.035){var q1=Math.round(s1+(e1-s1)/3),q2=Math.round(s1+2*(e1-s1)/3);
+    var tt=p.time?(p.time[e1]-p.time[s1])/60:null,ww=null;if(p.watts){var sw=0,nw=0;for(var z=s1;z<=e1;z++)if(p.watts[z]!=null){sw+=p.watts[z];nw++}ww=nw?Math.round(sw/nw):null}
+    if(rtHav(loc[s1],home)<35000)addC({a:loc[s1],b:loc[e1],via:[loc[q1],loc[q2]],km:dk/1000,hm:Math.round(g),g:g/dk,t:tt,w:ww,own:1})}});st=j;mx=j}else if(al[j]<al[st])st=j}}
   RT.libSt='Lerne deine Anstiege aus Strava ('+(i+1)+' von '+L.length+') …';await new Promise(function(r){setTimeout(r,700)})}
  /* neue Anstiege aus Strava-Segmenten rund um den Start */
  var B=[[-.22,-.32,0,0],[-.22,0,0,.32],[0,-.32,.22,0],[0,0,.22,.32]];for(var b=0;b<B.length;b++){try{var r=(await CT(m,'Strava','explore_segments',{bounds:[home[0]+B[b][0],home[1]+B[b][1],home[0]+B[b][2],home[1]+B[b][3]].map(function(x){return x.toFixed(4)}).join(',')})).payload;
   (r&&r.segments||[]).forEach(function(s){if(!(s.km>=1&&s.grade>=3&&s.hm>=60))return;var pts=s.pts?rtDec(s.pts,2):[s.a,s.b],k,hit=null;for(k=0;k<climbs.length;k++)if(rtHav(climbs[k].a,s.a)<500&&rtHav(climbs[k].b,s.b)<500)hit=climbs[k];
    if(hit){hit.name=hit.name||s.name;return}climbs.push({a:s.a,b:s.b,via:[pts[Math.floor(pts.length/3)],pts[Math.floor(2*pts.length/3)]],km:s.km,hm:Math.round(s.hm),g:s.grade/100,name:s.name,n:0,own:0})})}catch(e){if(e&&e.code==='rate_limited')break}}
  climbs.forEach(function(c,k){c.id='c'+k;if(!c.name)c.name='Anstieg '+f1(c.km)+' km, '+Math.round(c.g*100)+' %'});
- RT.lib={ts:Date.now(),home:CF.home,cells:Object.keys(cells),climbs:climbs};RT.libSt='';try{localStorage.setItem('rlib1',JSON.stringify(RT.lib))}catch(e){}
- if(DBH&&UID){try{await DBP(DBH.doc('data/users/'+UID+'/rlib').set({ts:RT.lib.ts,home:RT.lib.home,cells:RT.lib.cells,climbs:climbs}),'Routen-Bibliothek speichern')}catch(e){}}}
+ RT.lib={v:2,ts:Date.now(),home:CF.home,cells:Object.keys(cells),climbs:climbs};RT.libSt='';try{localStorage.setItem('rlib1',JSON.stringify(RT.lib))}catch(e){}
+ if(DBH&&UID){try{await DBP(DBH.doc('data/users/'+UID+'/rlib').set({v:2,ts:RT.lib.ts,home:RT.lib.home,cells:RT.lib.cells,climbs:climbs}),'Routen-Bibliothek speichern')}catch(e){}}}
 /* Bewertung */
 function rtScore(u,o){var dur=25*Math.max(0,1-Math.abs(o.est-u.mn)/(.35*u.mn)),traf=20*Math.max(0,1-3*(1+.15*rtPw('traf'))*o.ps)-(o.pMax>2000?5:0),nov=u.ty==='int'?(o.own?20:10):20*Math.min(1,o.nw/.4);
  var s={Dauer:Math.round(dur),Eignung:Math.round(o.fit),Verkehr:Math.max(0,Math.round(traf)),[u.ty==='int'?'Bewährt':'Neu']:Math.round(nov)},vl=rtPrefPts(u,o);s.ges=Math.max(0,Math.min(100,s.Dauer+s.Eignung+s.Verkehr+s[u.ty==='int'?'Bewährt':'Neu']+vl));if(vl)s.Vorlieben=vl;return s}
@@ -3551,7 +3555,11 @@ function rtIvQ(c,rc,sc,nf,pp,s,e,u){var len=pp.d[e]-pp.d[s];if(len<100)return{q:
  var q=100;for(var k in P)q+=P[k];return{q:Math.max(0,Math.round(q)),P:P,sig:sig,gm:gm,km:len/1000,b:Math.round(100*b/len)}}
 function rtIvSum(L,reps){if(!L.length)return 0;var m=L.reduce(function(a2,x){return a2+x.q},0)/L.length;return Math.round(m*Math.min(1,L.length/Math.max(1,reps)))}
 /* Platzierung an Anstiegen: Intervalle starten am Fuß jeder Auffahrt */
-function rtIvClimb(c,rc,sc,nf,u,asc,k){var pp=rtIvPrep(c),P=u.pw*FTP,L=[],n=0;asc.forEach(function(A){var s=A[0];for(var j=0;j<k&&n<u.reps;j++){var e=rtIvEnd(c,pp,s,P,u.on);if(e<0||e>A[1])e=Math.min(A[1],e<0?A[1]:e);if(e-s<3)break;var r=rtIvQ(c,rc,sc,nf,pp,s,e,u);n++;L.push({s:s,e:e,q:r.q,P:r.P,sig:r.sig,gm:r.gm,km:r.km,b:r.b,lab:String(n)});var s2=rtIvEnd(c,pp,e,.55*FTP,u.off);if(s2<0||s2>=A[1])break;s=s2}});return L}
+function rtIvClimb(c,rc,sc,nf,u,asc,k){var pp=rtIvPrep(c),P=u.pw*FTP,L=[],n=0;
+ /* v56: ein Intervall pro Auffahrt: das beste Stück innerhalb des Anstiegs suchen, nicht stur ab dem Fuß */
+ if(k===1&&asc.length){var A0=asc[0],best=null,last=-1e9;for(var s0=A0[0];s0<A0[1];s0++){if(pp.d[s0]-last<100)continue;last=pp.d[s0];var e0=rtIvEnd(c,pp,s0,P,u.on);if(e0<0||e0>A0[1])break;var q0=rtIvQ(c,rc,sc,nf,pp,s0,e0,u);if(!best||q0.q>best.q+3)best={o:s0-A0[0],e:e0-A0[0],r:q0}}
+  if(best){asc.forEach(function(A){if(n>=u.reps)return;var s1=A[0]+best.o,e1=Math.min(A[1],A[0]+best.e),r1=rtIvQ(c,rc,sc,nf,pp,s1,e1,u);n++;L.push({s:s1,e:e1,q:r1.q,P:r1.P,sig:r1.sig,gm:r1.gm,km:r1.km,b:r1.b,lab:String(n)})});return L}}
+ asc.forEach(function(A){var s=A[0];for(var j=0;j<k&&n<u.reps;j++){var e=rtIvEnd(c,pp,s,P,u.on);if(e<0||e>A[1])e=Math.min(A[1],e<0?A[1]:e);if(e-s<3)break;var r=rtIvQ(c,rc,sc,nf,pp,s,e,u);n++;L.push({s:s,e:e,q:r.q,P:r.P,sig:r.sig,gm:r.gm,km:r.km,b:r.b,lab:String(n)});var s2=rtIvEnd(c,pp,e,.55*FTP,u.off);if(s2<0||s2>=A[1])break;s=s2}});return L}
 /* Platzierung auf Runden: nach dem Einfahren jeweils das beste Stück suchen */
 function rtIvLoop(c,rc,sc,nf,u){var pp=rtIvPrep(c),P=u.pw*FTP,n=c.length,L=[],wu=rtIvEnd(c,pp,0,.65*FTP,(u.test?15:12)*60),i,ttot=0,tz=[0];if(wu<0)return L;
  for(i=1;i<n;i++){ttot+=(pp.d[i]-pp.d[i-1])/rtV(.65*FTP,pp.g[i]);tz.push(ttot)}var lim=n-1;while(lim>0&&ttot-tz[lim]<8*60)lim--;var from=wu;
@@ -3575,7 +3583,7 @@ function rtZw(d,p,u,best){var r=[],h=rtHome()||[47.8,13.04],s=rtSun(d,h),st=rtSt
  if(en>s.unter-15)r.push('Ende ca. '+hmS(en)+', Sonnenuntergang '+hmS(s.unter));else if(st<s.auf)r.push('Start vor Sonnenaufgang ('+hmS(s.auf)+')');
  if((dy.rainProbabilityValue||0)>=60)r.push('Regenrisiko '+dy.rainProbabilityValue+' %');if((dy.snowProbabilityValue||0)>=40)r.push('Schneerisiko '+dy.snowProbabilityValue+' %');if(dy.temperature!=null&&dy.temperature<3)r.push('nur '+Math.round(dy.temperature)+'° tagsüber');
  if(u.prec)r.push('genau dosierte Intervalle, draußen schwer sauber zu fahren');var lim=u.key?70:60;if(best&&best.s.ges<lim)r.push('keine Route mit mindestens '+lim+' Punkten');if(!best&&!u.prec)r.push('keine passende Route gefunden');return r}
-function rtSig(d,p){return['v4',RT.pref&&RT.pref.ts||0,d,p[2],p[3],FTP,Math.round(W),CF.home,RT.lib?RT.lib.ts:0].join('|')}
+function rtSig(d,p){return['v5',RT.pref&&RT.pref.ts||0,d,p[2],p[3],FTP,Math.round(W),CF.home,RT.lib?RT.lib.ts:0].join('|')}
 async function rtCalc(d){var p=PM[d],home=rtHome();if(!p||!home)return;var u=rtUnit(d,p),L=u.ty==='int'?await rtClimbs(u,home):await rtLoops(u,home);
  if(u.ty==='int'&&L.length<3){var lo=await rtLoops({mn:u.mn,ty:'ga',pw:.65,on:0,reps:0},home);lo.forEach(function(x){x.fit=Math.min(x.fit,10);x.notes=['Kein weiterer passender Anstieg: Runde ohne gezielte Intervallstrecke.']});L=L.concat(lo)}
  L.forEach(function(o){o.s=rtScore(u,o)});L.sort(function(a,b){return b.s.ges-a.s.ges});
