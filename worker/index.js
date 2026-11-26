@@ -241,7 +241,7 @@ export default {
     if (url.pathname === '/osm') {
       const la = Number(url.searchParams.get('lat')), lo = Number(url.searchParams.get('lon')), rr = Math.round(Number(url.searchParams.get('r')) / 1000) * 1000;
       if (!isFinite(la) || !isFinite(lo) || !(rr >= 5000 && rr <= 100000)) return new Response('bad', { status: 400, headers: cors });
-      const ck = new Request('https://wattsup-cache.invalid/osm?lat=' + la.toFixed(2) + '&lon=' + lo.toFixed(2) + '&r=' + rr), cache = caches.default;
+      const ck = new Request('https://wattsup-cache.invalid/osm?lat=' + la.toFixed(2) + '&lon=' + lo.toFixed(2) + '&r=' + rr + '&v=2'), cache = caches.default;
       let r = await cache.match(ck);
       if (!r) {
         const A = 'around:' + rr + ',' + la.toFixed(3) + ',' + lo.toFixed(3);
