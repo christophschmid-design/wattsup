@@ -212,6 +212,7 @@ async function runtimeCheck() {
     WU_RT.lib.climbs.push(mk('tA', 47.70, 47.73), mk('tB', 47.705, 47.725), mk('tC', 47.705, 47.735));
     WU_RTMERGE(); const by = (i) => WU_RT.lib.climbs.filter((c) => c.id === i)[0];
     o.part = /^t[AC]$/.test(by('tB').mg || '') && by(by('tB').mg).n === 4; o.ask = /tA\|tC|tC\|tA/.test(WU_RTST.clean()); o.notC = !by('tC').mg; o.dbg = JSON.stringify([by('tB').mg, by('tA').n, by('tC').n, WU_RTPAIRS().filter((x) => /^t/.test(x[0]) && /^t/.test(x[1]))]);
+    { by('tA').sf = 0.3; const q0 = WU_RTFILT([47.6, 13.0, 47.69, 13.1]); o.bel = q0.g.indexOf('tA') >= 0 && q0.l.indexOf('tA') < 0 && q0.l.indexOf('tC') >= 0 && q0.v.indexOf('tC') < 0; by('tA').sf = 0; const q1 = WU_RTFILT([47.70, 13.2, 47.74, 13.3]); o.vis = q1.v.indexOf('tA') >= 0; }
     { const ids = ['tA', 'tC']; const before = Object.keys(WU_RT.res).length; await WU_RTROUND({ rnd: ids, ty: 'int', reps: 3, on: 2, pw: 95, auto: true, mn: 0 });
       const k = Object.keys(WU_RT.res).filter((x) => WU_RT.res[x].f && WU_RT.res[x].f.rnd).pop(), r = k && WU_RT.res[k];
       o.rnd = !!r && r.R.length >= 1 && r.R[0].k === 'round' && (r.R[0].iv || []).length === 3 && Object.keys(WU_RT.res).length === before + 1;
@@ -227,7 +228,7 @@ async function runtimeCheck() {
     WU_RTLM(L1, R1); o.lm = Object.keys(L1.seen).length === 2 && L1.climbs.length === 2 && L1.climbs[0].n === 3 && L1.climbs[0].name === 'Gaisberg';
     return o;
   });
-  if (!v64.h2 || v64.bar !== 2 || !v64.back || !v64.part || !v64.ask || !v64.notC || !v64.stash || !v64.lm || !v64.pm || !v64.rnd || !v64.ord) fail('Startort/Zusammenlegen: ' + JSON.stringify(v64)); else console.log('✓ Startort/Zusammenlegen: ' + JSON.stringify(v64));
+  if (!v64.h2 || v64.bar !== 2 || !v64.back || !v64.part || !v64.ask || !v64.notC || !v64.stash || !v64.lm || !v64.pm || !v64.rnd || !v64.ord || !v64.bel || !v64.vis) fail('Startort/Zusammenlegen: ' + JSON.stringify(v64)); else console.log('✓ Startort/Zusammenlegen: ' + JSON.stringify(v64));
   { const nt = await pg.evaluate(() => WU_SRCTEST()); if (!(nt[0] === nt[1] + 1)) fail('Glocke Datenquelle: ' + JSON.stringify(nt)); else console.log('✓ Glocke Datenquelle: ' + JSON.stringify(nt)); }
   /* v62: Anstiege aus der Karte */
   const mp = await pg.evaluate(async () => {
