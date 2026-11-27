@@ -1,4 +1,3 @@
-import { skiCheck, skiText } from './ski.js';
 /* ---------- Coach bei geschlossener App (v43) ----------
    Die App schickt beim Öffnen einen kleinen Stand (Plan der nächsten 14 Tage, erledigte Tage, Rennen).
    Strava meldet neue Aktivitäten. Stündlich prüft der Worker ein paar Regeln und schickt höchstens
@@ -117,9 +116,9 @@ async function pushData(env, athlete, data) {
 }
 
 export default {
-  // Freitags: Skitour-Vorschlag fürs Wochenende (nur Dezember bis April)
+  // stündlich: Coach-Regeln
   async scheduled(event, env, ctx) {
-    const m = new Date().getUTCMonth() + 1, now = new Date(event.scheduledTime || Date.now());
+    const now = new Date(event.scheduledTime || Date.now());
     if (!env.ATHLETE) return;
     // Coach-Regeln (stündlich)
     if (env.COACH) ctx.waitUntil((async () => {
@@ -128,13 +127,6 @@ export default {
       await push(env, env.ATHLETE, r.t, r.b, { k: 'coach' });
       await stub.mark(vie(now).day, r.k);
     })().catch(e => console.log('coach', e.message)));
-    // Skitour nur freitags 17 Uhr UTC
-    if (!(now.getUTCDay() === 5 && now.getUTCHours() === 17)) return;
-    ctx.waitUntil((async () => {
-      const r = await skiCheck();
-      if (!r.lagebericht && m > 4 && m < 12) return; // außerhalb der Saison ohne Lagebericht keine Nachricht
-      const t = skiText(r); await push(env, env.ATHLETE + '_ski', t.title, t.body, { k: 'ski' });
-    })().catch(e => console.log(e.message)));
   },
   async fetch(req, env, ctx) {
     const url = new URL(req.url);
@@ -271,11 +263,6 @@ export default {
       return Response.json(j[0] ? { lat: Number(j[0].lat), lon: Number(j[0].lon), name: j[0].display_name } : { error: 'nicht gefunden' }, { headers: cors });
     }
 
-    // Skitour-Vorschlag für die App
-    if (url.pathname === '/ski') {
-      try { return Response.json(await skiCheck(), { headers: Object.assign({ 'Cache-Control': 'max-age=1800' }, cors) }); }
-      catch (e) { return Response.json({ error: e.message }, { status: 500, headers: cors }); }
-    }
 
     // Test aus der App
     if (url.pathname === '/test') {

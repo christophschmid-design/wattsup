@@ -530,7 +530,6 @@
       grp('Planung', [
         row('pg:claude', 'Claude und Kosten', c.aKey ? 'Modell automatisch, diesen Monat ' + usd(sum) + (lim > 0 ? ' von ' + usd(lim) : '') : 'Noch kein Schlüssel', c.aKey ? (lim > 0 && sum >= lim ? st(false, 'Grenze') : lim > 0 && sum >= lim * .8 ? st('w', '80 %') : st(true, 'bereit')) : st(false, 'aus'))
       ]) +
-      grp('Zusatzfunktionen', [row('pg:ski', 'Skitouren', 'Vorschläge fürs Wochenende mit Lawinenlage', c.skiOn !== false ? st(true, 'an') : st('w', 'aus'))]) +
       grp('App', (CAPN ? [
         row('pg:notif', 'Benachrichtigungen', nOnN + ' von 4 aktiv' + (c.pushOk ? ', Push aktiv' : ''), c.pushOk ? '' : st('w', 'Push aus')),
         row('pg:app', 'App-Version', UPD ? '1.' + UPD.cur + (UPD.newer ? ', neu: 1.' + UPD.latest : ', aktuell') : 'Version und Updates', UPD && UPD.newer ? st('w', 'Update') : '')
@@ -592,12 +591,6 @@
       '<div class="wu-c"><h3 style="margin-top:0">Diagnose für Claude</h3><p class="wu-mu">Fasst Versionen, Verbindungen, Abgleich und die letzten Fehler zusammen. Kopieren und im Chat mit Claude einfügen, das ersetzt Screenshots.</p><button class="wu-b" data-wu="diag">Diagnose erstellen und kopieren</button><textarea id="wu-diag" readonly rows="8" style="width:100%;margin-top:10px;font:12px/1.4 ui-monospace,monospace"></textarea></div>' + '<div class="wu-c"><h3 style="margin-top:0">Sicherung als Datei</h3><p class="wu-mu">Bewertungen, Pläne, Morgengefühl, Gewicht und Einstellungen als Datei. Schlüssel sind nicht enthalten.</p><button class="wu-b alt" data-wu="exp">Sicherung exportieren</button></div>' +
       '<div class="wu-c"><h3 style="margin-top:0">Übernehmen</h3><p class="wu-mu">Eine Sicherung oder den Export aus der Claude-Version („Daten für WattsUp exportieren“) wählen.</p><input type="file" id="wu-imp" accept=".json,.txt,application/json,text/plain"></div>';
   }
-  function pageSki() {
-    var c = cfg();
-    return hdr('Skitouren', 'Eine Zusatzfunktion abseits der Trainingsplanung.') + '<div class="wu-c">' + chk('wu-skiOn', 'Skitouren-Vorschläge verwenden', c.skiOn !== false) +
-      '<p class="wu-mu">Schaltet die Vorschläge im Menü, den Hinweis am Freitag um 18 Uhr und die Berücksichtigung in der Wochenplanung gemeinsam ein oder aus. Geprüft werden 37 Touren in Salzburg, Bayern, Tirol und der Steiermark nach Lawinenlage, Schnee und Wetter, mit Link zu Skitourenguru.</p></div>' +
-      '<button class="wu-b alt" data-wu="app:ski">Vorschläge ansehen</button>';
-  }
   function pageIntervals() {
     var c = cfg(), ftp = window.WU_IV ? (window.WU_IV(false) || {}).ftp : null;
     return hdr('Zwift über intervals.icu', 'Überträgt die geplanten Zwift-Einheiten der nächsten 7 Tage an intervals.icu. Von dort erscheinen sie in Zwift unter Workouts → Eigene → Intervals.icu, die Einheit von heute direkt auf dem Startbildschirm.') +
@@ -613,7 +606,7 @@
   }
   function saveBtn() { return '<button class="wu-b" data-wu="save">Speichern</button>'; }
   function render(note) {
-    var f = { inbox: pageInbox, intervals: pageIntervals, ski: pageSki, home: pageHome, strava: pageStrava, google: pageGoogle, health: pageHealth, claude: pageClaude, notif: pageNotif, app: pageApp, data: pageData }[PG] || pageHome;
+    var f = { inbox: pageInbox, intervals: pageIntervals, home: pageHome, strava: pageStrava, google: pageGoogle, health: pageHealth, claude: pageClaude, notif: pageNotif, app: pageApp, data: pageData }[PG] || pageHome;
     return f(note);
   }
   function saveForm() {
@@ -622,7 +615,6 @@
     var p = {};
     [['wu-stId', 'stId'], ['wu-stSec', 'stSec'], ['wu-gId', 'gId'], ['wu-gSec', 'gSec'], ['wu-aKey', 'aKey'], ['wu-pushUrl', 'pushUrl'], ['wu-ivKey', 'ivKey']].forEach(function (x) { var val = v(x[0]); if (val !== undefined) p[x[1]] = val; });
     if (v('wu-cal') !== undefined) p.cal = v('wu-cal') || CAL0;
-    if (document.getElementById('wu-skiOn')) { var was = cfg().skiOn !== false, now2 = cb('wu-skiOn'); p.skiOn = now2; if (was !== now2 && FM && cfg().pushTopic) { try { if (now2) FM.subscribeToTopic({ topic: cfg().pushTopic + '_ski' }); else FM.unsubscribeFromTopic({ topic: cfg().pushTopic + '_ski' }); } catch (e) { } } }
     if (document.getElementById('wu-ivOn')) { p.ivOn = cb('wu-ivOn'); p.ivAdj = cb('wu-ivAdj'); p.ivSetOn = cb('wu-ivSetOn'); if (p.ivSetOn !== (cfg().ivSetOn !== false)) p.ivSetSig = ''; if (p.ivAdj !== (cfg().ivAdj !== false) || p.ivOn !== (cfg().ivOn !== false)) p.ivSig = ''; }
     if (v('wu-ivKey') !== undefined && v('wu-ivKey') !== (cfg().ivKey || '')) p.ivSig = '';
     if (v('wu-limit') !== undefined) { var lim = parseFloat(String(v('wu-limit') || '0').replace(',', '.')); p.limit = isNaN(lim) ? 0 : lim; }
@@ -1029,14 +1021,6 @@
     document.addEventListener('visibilitychange', function () { if (document.visibilityState === 'visible') hcSync(false); });
   }
 
-  /* Skitour-Vorschlag vom Push-Dienst holen (Do bis So, höchstens alle 30 Minuten) */
-  async function skiSync(force) {
-    var c = cfg(), base = pushBase(), wd = new Date().getDay();
-    if (!base || cfg().skiOn === false || (!force && !(wd >= 4 || wd === 0))) return;
-    if (!force && now() - (c.skiLast || 0) < 30 * 60000) return;
-    try { var r = await http(base + '/ski'); setCfg({ skiLast: now() }); for (var i = 0; i < 50 && !window.WU_SKISET; i++) await new Promise(function (ok) { setTimeout(ok, 300); }); if (window.WU_SKISET && r && r.alle) window.WU_SKISET(r); } catch (e) { }
-  }
-  WU.skiSync = skiSync;
 
   /* Zwift über intervals.icu: geplante Zwift-Einheiten der nächsten 7 Tage übertragen.
      Nur Workouts hin, nichts zurück. Läuft nur, wenn sich etwas geändert hat. */
@@ -1110,15 +1094,14 @@
   };
   setTimeout(function () { ivSync(false); }, 6000);
   setInterval(function () { if (document.visibilityState === 'visible') ivSync(false); }, 60000);
-  window.WU_SKI_ON = function () { return cfg().skiOn !== false; };
-  setTimeout(function () { skiSync(false); }, 2500);
+  try { localStorage.removeItem('ski1'); } catch (e) { }
 
   /* Sprung aus einer Benachrichtigung direkt in den passenden Dialog */
   var T0 = now();
   window.WU_GO = function (o) { if (o.k === 'woche') { try { WU.close(); } catch (e) { } location.hash = '#plan'; return; } if (o.k === 'coach' && window.WU_OPEN && window.WU_STATE) { try { WU.close(); } catch (e) { } window.WU_OPEN('coach'); return; } if (o.k === 'coach' || o.k === 'plan') { try { sessionStorage.setItem('wu_go', JSON.stringify({ k: o.k, t: now() })); } catch (e) { } goRun(); return; } goFrom(o); };
   if (CAPN && PL.App && PL.App.getLaunchUrl) setTimeout(function () { PL.App.getLaunchUrl().then(function (r) { var u = r && r.url; if (u && /^wattsup:\/\/go/.test(u)) { var m = /[?&]k=([a-z]+)/.exec(u); if (m) window.WU_GO({ k: m[1] }); } }).catch(function () { }); }, 1500);
   function goFrom(o) {
-    if (!o || (o.k !== 'mood' && o.k !== 'act' && o.k !== 'plan' && o.k !== 'ski' && o.k !== 'coach')) { if (now() - T0 > 8000) location.reload(); return; }
+    if (!o || (o.k !== 'mood' && o.k !== 'act' && o.k !== 'plan' && o.k !== 'coach')) { if (now() - T0 > 8000) location.reload(); return; }
     try { sessionStorage.setItem('wu_go', JSON.stringify({ k: o.k, id: o.id || null, t: now() })); } catch (e) { }
     if (now() - T0 > 8000) location.reload(); else goRun();
   }
@@ -1131,7 +1114,6 @@
       if (now() - t0 > 25000) { done(); return; }
       if (!window.WU_OPEN || !window.WU_STATE) { setTimeout(tick, 400); return; }
       if (o.k === 'coach') { done(); WU.close(); window.WU_OPEN('coach'); return; }
-      if (o.k === 'ski') { done(); WU.close(); skiSync(true).then(function () { window.WU_OPEN('ski'); }); return; }
       if (o.k === 'plan') { done(); WU.close(); var nm = new Date(); nm.setDate(nm.getDate() + ((8 - nm.getDay()) % 7 || 7)); window.WU_OPEN('w:' + nm.getFullYear() + '-' + ('0' + (nm.getMonth() + 1)).slice(-2) + '-' + ('0' + nm.getDate()).slice(-2)); return; }
       if (o.k === 'mood') { done(); WU.close(); var go = function () { window.WU_OPEN('mood'); }; if (typeof hcSync === 'function' && cfg().hcOk) { Promise.race([hcSync(false), new Promise(function (r) { setTimeout(r, 6000); })]).then(go, go); } else go(); return; }
       var L = window.WU_ACTS ? window.WU_ACTS() : [], a = o.id ? L.filter(function (x) { return x.id === String(o.id); })[0] : null;
@@ -1219,7 +1201,6 @@
     toast('Push wird eingerichtet …');
     var a = await athlete(), topic = 'wattsup_' + a.id;
     await FM.subscribeToTopic({ topic: topic });
-    if (cfg().skiOn !== false) try { await FM.subscribeToTopic({ topic: topic + '_ski' }); } catch (e) { }
     var base = 'https://www.strava.com/api/v3/push_subscriptions', au = qs({ client_id: c.stId, client_secret: c.stSec });
     var ex = await http(base + '?' + au) || [], has = false;
     for (var i = 0; i < ex.length; i++) {
@@ -1251,7 +1232,8 @@
     var r = await http(pushBase() + '/test?athlete=' + encodeURIComponent(id));
     toast(r && r.ok ? 'Push ist aktiv. Die Test-Nachricht sollte gleich erscheinen.' : 'Test fehlgeschlagen: ' + (r && r.error || ''));
   }
-  if (CAPN && FM && cfg().pushOk && cfg().pushTopic && cfg().skiOn !== false && !cfg().skiSub) { FM.subscribeToTopic({ topic: cfg().pushTopic + '_ski' }).then(function () { setCfg({ skiSub: 1 }); }).catch(function () { }); }
+  /* Skitouren entfernt: frühere Anmeldung für die Skitour-Nachrichten einmal abmelden */
+  if (CAPN && FM && cfg().pushTopic && !cfg().skiOff) { FM.unsubscribeFromTopic({ topic: cfg().pushTopic + '_ski' }).then(function () { setCfg({ skiOff: 1 }); }).catch(function () { }); }
   if (CAPN && FM) {
     FM.addListener('notificationActionPerformed', function (e) { var d = (e && e.notification && e.notification.data) || {}; goFrom({ k: d.k, id: d.id }); });
     FM.addListener('notificationReceived', function (e) { var n = e && e.notification; if (n && n.title) toast(n.title + (n.body ? ': ' + n.body : '')); });
