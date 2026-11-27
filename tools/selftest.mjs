@@ -95,6 +95,7 @@ async function runtimeCheck() {
       for (let i = 1; i < ll.length; i++) { const [a1, b1] = ll[i - 1], [a2, b2] = ll[i], dk = Math.hypot((a2 - a1) * 74500, (b2 - b1) * 111320), n = Math.max(2, Math.round(dk / 80)); for (let k = 0; k < n; k++) { const f = k / n, lo = a1 + (a2 - a1) * f, la = b1 + (b2 - b1) * f; c.push([lo, la, 450 + 250 * Math.max(0, Math.sin(la * 900))]); if (k % 10 === 0) msg.push([lo, la, 0, dk / n * 10, 0, 0, 0, 0, 0, i === 2 ? 'highway=primary surface=asphalt' : 'highway=secondary surface=asphalt', k % 30 === 0 ? 'highway=traffic_signals' : '', 0, 0]); } tot += dk; }
       return J({ type: 'FeatureCollection', features: [{ type: 'Feature', properties: { 'track-length': String(Math.round(tot * 1.25)), 'filtered ascend': '320', messages: msg }, geometry: { type: 'LineString', coordinates: c } }] });
     }
+    if (u.includes('/roads?')) return J({ elements: [{ type: 'way', tags: { ref: 'L108', highway: 'secondary' }, geometry: [{ lat: 47.80, lon: 13.06 }, { lat: 47.805, lon: 13.065 }, { lat: 47.81, lon: 13.07 }] }, { type: 'way', tags: { ref: 'L108', highway: 'secondary' }, geometry: [{ lat: 47.82, lon: 13.08 }, { lat: 47.815, lon: 13.075 }, { lat: 47.81, lon: 13.07 }] }, { type: 'way', tags: { name: 'Feldweg', highway: 'residential', surface: 'gravel' }, geometry: [{ lat: 47.8, lon: 13.0 }, { lat: 47.82, lon: 13.0 }] }] });
     if (u.includes('/osm?')) return route.fulfill({ status: 200, contentType: 'text/plain', headers: { 'Access-Control-Allow-Origin': '*' }, body: '47.84\t13.1\t\tyes\t\t\t900\tTestpass\n47.77\t13.0\tpeak\t\t\t\t1100\tTestgipfel\n47.812\t13.041\t\t\tviewpoint\t\t600\tzu nah\n' });
     if (u.includes('/geo?')) return J({ lat: 47.81, lon: 13.04, name: 'Teststraße 1, Salzburg' });
     if (u.includes('/segments/explore') && MOCK.ex401) { MOCK.exn++; return route.fulfill({ status: 401, contentType: 'application/json', body: JSON.stringify({ message: 'Authorization Error' }) }); }
@@ -229,6 +230,10 @@ async function runtimeCheck() {
     return o;
   });
   if (!v64.h2 || v64.bar !== 2 || !v64.back || !v64.part || !v64.ask || !v64.notC || !v64.stash || !v64.lm || !v64.pm || !v64.rnd || !v64.ord || !v64.bel || !v64.vis) fail('Startort/Zusammenlegen: ' + JSON.stringify(v64)); else console.log('✓ Startort/Zusammenlegen: ' + JSON.stringify(v64));
+  { const rd = await pg.evaluate(async () => { const ch = WU_RTCHAINS([{ type: 'way', tags: { ref: 'L108' }, geometry: [{ lat: 47.80, lon: 13.06 }, { lat: 47.81, lon: 13.07 }] }, { type: 'way', tags: { ref: 'L108' }, geometry: [{ lat: 47.82, lon: 13.08 }, { lat: 47.81, lon: 13.07 }] }, { type: 'way', tags: { name: 'X', surface: 'gravel' }, geometry: [{ lat: 47.8, lon: 13.0 }, { lat: 47.82, lon: 13.0 }] }]);
+    await WU_RTROADS(); for (let k = 0; k < 40 && !(WU_RT.lib.rq && WU_RT.lib.rq.t.filter((t) => t.done).length > 5); k++) await new Promise((r) => setTimeout(r, 1000));
+    const q = WU_RT.lib.rq || { t: [] }; return { ch: ch.length === 1 && ch[0].k === 'L108' && ch[0].p.length === 3, tiles: q.t.length, inner: q.t.filter((t) => t.c === 'all').length, done: q.t.filter((t) => t.done).length }; });
+    if (!rd.ch || rd.tiles < 40 || !rd.inner || !rd.done) fail('Straßensuche: ' + JSON.stringify(rd)); else console.log('✓ Straßensuche: ' + JSON.stringify(rd)); }
   { const nt = await pg.evaluate(() => WU_SRCTEST()); if (!(nt[0] === nt[1] + 1)) fail('Glocke Datenquelle: ' + JSON.stringify(nt)); else console.log('✓ Glocke Datenquelle: ' + JSON.stringify(nt)); }
   /* v62: Anstiege aus der Karte */
   const mp = await pg.evaluate(async () => {

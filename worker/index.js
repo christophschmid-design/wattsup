@@ -230,6 +230,24 @@ export default {
       }
       return new Response(r.body, { headers: Object.assign({ 'Content-Type': 'application/json' }, cors) });
     }
+    // v69: Straßen einer Kachel mit Verlauf (für die Suche nach Anstiegen entlang der Straßen); Antwort unverändert durchreichen
+    if (url.pathname === '/roads') {
+      const S = Number(url.searchParams.get('s')), W = Number(url.searchParams.get('w')), N = Number(url.searchParams.get('n')), E = Number(url.searchParams.get('e')), cl = url.searchParams.get('c') === 'all' ? 'all' : 'main';
+      if (![S, W, N, E].every(isFinite) || N <= S || E <= W || N - S > .6 || E - W > .9) return new Response('bad', { status: 400, headers: cors });
+      const bb = [S, W, N, E].map(function (x) { return x.toFixed(3); }).join(','), ck = new Request('https://wattsup-cache.invalid/roads?bb=' + bb + '&c=' + cl + '&v=1'), cache = caches.default;
+      let r = await cache.match(ck);
+      if (!r) {
+        const q = '[out:json][timeout:180];(way(' + bb + ')[highway~"^(primary|secondary|tertiary)$"];' + (cl === 'all' ? 'way(' + bb + ')[highway~"^(unclassified|residential)$"][name];' : '') + ');out tags geom;';
+        let up = null, why = [];
+        for (const ep of ['https://overpass-api.de/api/interpreter', 'https://overpass.private.coffee/api/interpreter', 'https://maps.mail.ru/osm/tools/overpass/api/interpreter']) {
+          try { const x = await fetch(ep, { method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded', 'User-Agent': 'WattsUp-Trainingsapp (privat)', 'Referer': 'https://christophschmid-design.github.io/wattsup/' }, body: 'data=' + encodeURIComponent(q) }); if (x.ok) { up = x; break; } why.push(new URL(ep).host + ' ' + x.status); } catch (e) { why.push(new URL(ep).host + ' ' + String(e && e.message || e).slice(0, 40)); }
+        }
+        if (!up) return new Response('Overpass: ' + why.join(', '), { status: 502, headers: cors });
+        r = new Response(up.body, { headers: { 'Content-Type': 'application/json', 'Cache-Control': 'max-age=2592000' } });
+        ctx.waitUntil(cache.put(ck, r.clone()));
+      }
+      return new Response(r.body, { headers: Object.assign({ 'Content-Type': 'application/json' }, cors) });
+    }
     // v62: mögliche Ziele für Anstiege (Gipfel, Sättel, Pässe, Hütten, Aussichtspunkte) aus OpenStreetMap
     if (url.pathname === '/osm') {
       const la = Number(url.searchParams.get('lat')), lo = Number(url.searchParams.get('lon')), rr = Math.round(Number(url.searchParams.get('r')) / 1000) * 1000;

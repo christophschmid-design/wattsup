@@ -37,7 +37,7 @@
 
   /* Abrufe an den eigenen Push-Dienst und an Overpass über den normalen Browser-Abruf statt über die native Schicht:
      bei langen Abrufen hat die native Schicht Antworten vertauscht (Overpass bekam eine Google-Drive-Liste zurück) */
-  function wf(url, opt) { var b = pushBase(), w = window.CapacitorWebFetch, m = String(opt && opt.method || 'GET').toUpperCase(); return w && ((b && url.indexOf(b) === 0 && m === 'GET') || /overpass|maps\.mail\.ru\/osm/.test(url)) ? w : fetch; }
+  function wf(url, opt) { var b = pushBase(), w = window.CapacitorWebFetch, m = String(opt && opt.method || 'GET').toUpperCase(); return w && ((b && url.indexOf(b) === 0 && m === 'GET') || /overpass|maps\.mail\.ru\/osm/.test(url) || (b && url.indexOf(b + '/roads') === 0)) ? w : fetch; }
   async function http(url, opt) {
     opt = opt || {};
     var r;
@@ -1165,6 +1165,12 @@
     return await http(b + '/route?' + qs({ lonlats: lonlats, profile: profile || 'fastbike' }));
   };
   window.WU_ROUTE_ON = function () { return !!pushBase(); };
+  window.WU_ROADS = async function (bb, cls) {
+    var b = pushBase(); if (!b) throw fail('no_server', 'Push-Dienst nicht eingerichtet');
+    var u0 = b + '/roads?' + qs({ s: bb[0].toFixed(3), w: bb[1].toFixed(3), n: bb[2].toFixed(3), e: bb[3].toFixed(3), c: cls || 'main' }), x; try { x = await wf(u0)(u0); } catch (e) { throw fail('network', 'Keine Verbindung zum Push-Dienst'); }
+    var t = await x.text(); if (!x.ok) throw fail('tool_error', 'Straßenabfrage: ' + (t.slice(0, 160) || 'HTTP ' + x.status), { status: x.status, retryable: x.status >= 500 });
+    try { return JSON.parse(t); } catch (e) { throw fail('tool_error', 'Straßenabfrage: unlesbare Antwort'); }
+  };
   window.WU_OSM = async function (lat, lon, r) {
     var b = pushBase(); if (!b) throw fail('no_server', 'Push-Dienst nicht eingerichtet');
     var u0 = b + '/osm?' + qs({ lat: lat, lon: lon, r: r }), x; try { x = await wf(u0)(u0); } catch (e) { throw fail('network', 'Keine Verbindung zum Push-Dienst'); }
