@@ -306,6 +306,11 @@
       cls.forEach(function (c, k) {
         L.marker(lat[c.b], { icon: ico(CLC[k % CLC.length], String(k + 1)) }).on('click', function () { pickClimb(k); }).addTo(track);
       });
+      /* v67: doppelt gefahrene Abschnitte orange */
+      (opt.dbl || []).forEach(function (v) {
+        var a0 = Math.max(0, Math.min(r.n - 1, v[0])), b0 = Math.max(a0, Math.min(r.n - 1, v[1]));
+        L.polyline(lat.slice(a0, b0 + 1), { renderer: ren, color: '#f08c00', weight: 10, opacity: .55, interactive: false }).addTo(track);
+      });
       /* v55: Intervallstrecken (von wo bis wo) */
       (opt.ivs || []).forEach(function (v) {
         var a0 = Math.max(0, Math.min(r.n - 1, v[0])), b0 = Math.max(a0, Math.min(r.n - 1, v[1]));
